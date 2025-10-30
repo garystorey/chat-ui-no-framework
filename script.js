@@ -75,17 +75,27 @@ function openChatInstant() {
   if (suggestionsEl) suggestionsEl.style.display = "none";
 }
 
-function addMessage(text, cls) {
+function addMessage(content, cls, options = {}) {
+  const { renderAsHtml = false } = options;
   const m = document.createElement("div");
   m.classList.add("message", cls);
   m.setAttribute("role", "article");
   m.setAttribute("aria-label", `${cls === "user" ? "User" : "Bot"} message`);
-  m.innerHTML = renderMarkdown(text);
+  m.innerHTML = renderAsHtml ? content : renderMarkdown(content);
   messagesEl.appendChild(m);
   messagesEl.scrollTo({
     top: messagesEl.scrollHeight,
     behavior: reduceMotion ? "auto" : "smooth",
   });
+}
+
+function buildEchoMessage(text) {
+  const userHtml = renderMarkdown(text);
+  const combined = `
+    <p class="message-heading">You said:</p>
+    <blockquote class="message-quote">${userHtml}</blockquote>
+  `;
+  return DOMPurify.sanitize(combined.trim());
 }
 
 // Accessible typing indicator
@@ -134,7 +144,8 @@ inputPanel.addEventListener("submit", (e) => {
   showTyping();
   setTimeout(() => {
     hideTyping();
-    addMessage(`You said:\n\n> ${txt}`, "bot");
+    const echoMessage = buildEchoMessage(txt);
+    addMessage(echoMessage, "bot", { renderAsHtml: true });
   }, 350 + Math.min(1400, Math.max(250, txt.length * 8))); // tiny dynamic delay
 });
 
