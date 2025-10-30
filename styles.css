@@ -8,9 +8,9 @@
   --accent-2: color-mix(in oklab, var(--brand-orange) 70%, black 30%);
 
   --user-msg-bg-dark: #141a22;
-  --user-msg-bg-light: #fff4f2;
+  --user-msg-bg-light: #eef1f6;
   --user-msg-text-dark: #fffaf9;
-  --user-msg-text-light: #20110e;
+  --user-msg-text-light: #1f252d;
 
   --font: Inter, "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue",
     Arial, sans-serif;
@@ -29,7 +29,7 @@
 
   /* Glow */
   --glow: 0 0 0px rgba(0, 0, 0, 0), 0 0 0px rgba(0, 0, 0, 0);
-  --focus-ring: 0 0 0 2px #fff, 0 0 0 4px var(--accent);
+  --focus-ring: 0 0 0 2px #f0f3f8, 0 0 0 4px var(--accent);
 }
 
 * {
@@ -79,44 +79,44 @@ body {
 
 /* Light/Dark palettes */
 body.light {
-  --bg: #e7e2d8;
-  --panel: #f5f1eaef;
+  --bg: #d7dbe3;
+  --panel: #e6e9f0f0;
   /* translucent for glass */
-  --panel-solid: #f5f1ea;
-  --panel-border: rgba(65, 60, 52, 0.1);
-  --input-bg: rgba(238, 232, 223, 0.9);
-  --text: #2a241d;
-  --muted: #5f5648;
-  --user-msg-bg: color-mix(in oklab, #efe3d4 82%, white 18%);
+  --panel-solid: #e1e5ec;
+  --panel-border: rgba(36, 43, 52, 0.12);
+  --input-bg: rgba(215, 220, 229, 0.9);
+  --text: #20262f;
+  --muted: #59616f;
+  --user-msg-bg: color-mix(in oklab, #cfd4dd 74%, #e3e7ef 26%);
   --user-msg-text: var(--user-msg-text-light);
-  --shadow: 0 8px 18px rgba(70, 62, 52, 0.06);
-  --divider: rgba(68, 62, 54, 0.07);
-  --grid-line: rgba(68, 62, 54, 0.04);
+  --shadow: 0 12px 30px rgba(34, 41, 51, 0.12);
+  --divider: rgba(43, 49, 58, 0.12);
+  --grid-line: rgba(43, 49, 58, 0.07);
 }
 
 body.light {
   background-image: radial-gradient(
       46rem 46rem at 0% -20%,
-      color-mix(in oklab, #f0dcc3 18%, transparent) 0,
+      color-mix(in oklab, #c9ced8 30%, transparent) 0,
       transparent 58%
     ),
     radial-gradient(
       32rem 32rem at 108% 0%,
-      color-mix(in oklab, #d7ddd4 16%, transparent) 0,
+      color-mix(in oklab, #b7bdc9 24%, transparent) 0,
       transparent 64%
     ),
     linear-gradient(
       180deg,
       transparent 0,
       transparent 66%,
-      color-mix(in oklab, #bfb5a6 8%, transparent) 100%
+      color-mix(in oklab, #aeb4bf 12%, transparent) 100%
     ),
     linear-gradient(
       120deg,
-      color-mix(in oklab, #efd5b6 9%, transparent) 0%,
+      color-mix(in oklab, #d3d8e2 12%, transparent) 0%,
       transparent 48%,
       transparent 52%,
-      color-mix(in oklab, #cbd4cc 7%, transparent) 100%
+      color-mix(in oklab, #bcc2cf 10%, transparent) 100%
     );
 }
 
@@ -413,7 +413,7 @@ textarea:focus {
 .send-btn {
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   border: none;
-  color: white;
+  color: #f7f1ee;
   font-size: 1.05rem;
   padding: 0.85rem 0.95rem;
   border-radius: 12px;
