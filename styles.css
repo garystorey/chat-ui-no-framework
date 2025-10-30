@@ -293,6 +293,29 @@ body.chat-open .chat-container {
   border-bottom-left-radius: 6px;
 }
 
+.message-heading {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+}
+
+.message-quote {
+  margin: 0;
+  padding-left: 1rem;
+  border-left: 3px solid color-mix(in oklab, var(--accent) 70%, transparent);
+}
+
+.message-quote pre {
+  margin: 0.75rem 0 0;
+}
+
+.message-quote > :first-child {
+  margin-top: 0;
+}
+
+.message-quote > :last-child {
+  margin-bottom: 0;
+}
+
 @keyframes messageIn {
   from {
     opacity: 0;
