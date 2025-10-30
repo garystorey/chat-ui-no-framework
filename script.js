@@ -54,6 +54,7 @@ marked.setOptions({
   },
   breaks: true,
   gfm: true,
+  langPrefix: "hljs language-",
 });
 function renderMarkdown(text) {
   return DOMPurify.sanitize(marked.parse(text));
