@@ -33,7 +33,7 @@ function setTheme(theme) {
 
 function updateThemeToggleUI() {
   const isLight = document.body.classList.contains("light");
-  themeToggleBtn.textContent = isLight ? "☀️" : "🌓";
+  themeToggleBtn.textContent = isLight ? "🌙" : "☀️";
   themeToggleBtn.setAttribute("aria-checked", String(isLight));
   themeToggleBtn.setAttribute(
     "aria-label",
