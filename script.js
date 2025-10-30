@@ -14,17 +14,22 @@ const reduceMotion = window.matchMedia(
 
 // Initial theme from system preference
 const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-document.body.className = prefersDark ? "dark" : "light";
+setTheme(prefersDark ? "dark" : "light");
 updateThemeToggleUI();
 updateHighlightTheme();
 
 // Toggle via emoji button
 themeToggleBtn.addEventListener("click", () => {
   const isLight = document.body.classList.contains("light");
-  document.body.className = isLight ? "dark" : "light";
+  setTheme(isLight ? "dark" : "light");
   updateThemeToggleUI();
   updateHighlightTheme();
 });
+
+function setTheme(theme) {
+  document.body.classList.remove("light", "dark");
+  document.body.classList.add(theme);
+}
 
 function updateThemeToggleUI() {
   const isLight = document.body.classList.contains("light");
