@@ -435,6 +435,7 @@ textarea:focus {
   transition: transform var(--duration-sm) var(--ease-out),
     background var(--duration-sm) var(--ease-out);
   color: var(--text);
+  line-height:1.6;
 }
 
 .suggestion-card:hover {
