@@ -1,0 +1,66 @@
+.message {
+  padding: 1rem 1.2rem;
+  border-radius: 1rem;
+  line-height: 1.55;
+  font-size: 0.95rem;
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+  max-width: 80ch;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+}
+
+.message--user {
+  align-self: flex-end;
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  box-shadow: none;
+}
+
+.message--bot {
+  align-self: flex-start;
+}
+
+.message p {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+
+.message p:last-child,
+.message ul:last-child,
+.message ol:last-child,
+.message blockquote:last-child,
+.message pre:last-child {
+  margin-bottom: 0;
+}
+
+.message blockquote {
+  margin: 0;
+  border-left: 4px solid var(--color-accent);
+  padding-left: 1rem;
+  color: var(--color-text-muted);
+}
+
+.message pre {
+  background: rgba(15, 23, 42, 0.45);
+  padding: 0.85rem;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+}
+
+body[data-theme='light'] .message pre {
+  background: rgba(226, 232, 240, 0.7);
+}
+
+.message code {
+  font-family: 'Fira Code', 'SFMono-Regular', Consolas, 'Liberation Mono',
+    Menlo, monospace;
+}
+
+.message-heading {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.message-quote {
+  color: inherit;
+}
