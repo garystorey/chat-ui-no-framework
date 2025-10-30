@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chat UI – Endava</title>
+    <meta name="description" content="A chat UI for SOW-based developer sourcing." />
+    <link rel="stylesheet" href="styles.css" />
+    <link id="hljs-theme" rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css" />
+</head>
+
+<body class="dark">
+    <a href="#messages" class="skip-link">Skip to messages</a>
+    <div class="chat-wrapper">
+        <header class="topbar" role="banner">
+            <h1 class="sr-only">Chat</h1>
+            <button id="themeToggleBtn" class="theme-toggle-btn" role="switch" aria-checked="false"
+                aria-label="Switch to light mode" title="Switch to light mode" type="button">🌓</button>
+        </header>
+
+        <main class="chat-container" role="main" aria-hidden="true">
+            <div id="messages" class="messages" role="log" aria-live="polite" aria-relevant="additions"></div>
+        </main>
+
+        <form class="input-panel" id="inputPanel" role="search" aria-label="Enter your request" novalidate>
+            <div class="input-group">
+                <label for="inputText" class="sr-only">Enter your request</label>
+                <textarea id="inputText" rows="3" aria-describedby="inputHint" spellcheck="true" required
+                    autofocus></textarea>
+                <div id="inputHint" class="sr-only">Press Enter to send and Shift+Enter for newline</div>
+            </div>
+            <button id="sendBtn" class="send-btn" aria-label="Send message" type="submit">➤</button>
+        </form>
+        <h2 class="sr-only">Suggestions:</h2>
+        <div id="suggestions" class="suggestions">
+            <button class="suggestion-card" type="button">
+                Find me the top 5 Python developers with 5+ years of experience that have worked on at least 2 Endava projects.
+            </button>
+            <button class="suggestion-card" type="button">
+                Below is a statement of work. Give me the top 5 candidates for each position listed. Make sure they match the required skills and experience.
+            </button>
+            <button class="suggestion-card" type="button">
+                Show me React developers available in the next two weeks with strong TypeScript and Tailwind CSS skills.
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
