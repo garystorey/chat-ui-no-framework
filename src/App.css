@@ -1,0 +1,31 @@
+.app {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem 3rem;
+}
+
+.chat-wrapper {
+  width: min(100%, var(--layout-max-width));
+  display: grid;
+  gap: var(--layout-gap);
+}
+
+.suggestions {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.suggestions--hidden {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .app {
+    padding: 1.5rem 0.75rem 2.5rem;
+  }
+
+  .chat-window {
+    max-height: none;
+  }
+}
