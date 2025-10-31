@@ -89,64 +89,46 @@ body {
 }
 
 body.light {
-  --bg: #d7dbe3;
-  --panel: #e6e9f0f0;
-  --panel-solid: #e1e5ec;
-  --panel-border: rgba(36, 43, 52, 0.12);
-  --input-bg: rgba(215, 220, 229, 0.9);
-  --text: #20262f;
-  --muted: #59616f;
-  --user-msg-bg: color-mix(in oklab, #cfd4dd 74%, #e3e7ef 26%);
+  --bg: #f2f4fb;
+  --panel: color-mix(in oklab, #fcfdff 92%, var(--accent) 8%);
+  --panel-solid: #f8f9fd;
+  --panel-border: rgba(56, 70, 96, 0.14);
+  --input-bg: rgba(246, 248, 253, 0.95);
+  --text: #1c2533;
+  --muted: #4a5568;
+  --user-msg-bg: color-mix(in oklab, #eef1fa 58%, var(--accent) 42%);
   --user-msg-text: var(--user-msg-text-light);
-  --shadow: 0 12px 30px rgba(34, 41, 51, 0.12);
-  --divider: rgba(43, 49, 58, 0.12);
-  --grid-line: rgba(43, 49, 58, 0.07);
+  --shadow: 0 18px 42px rgba(38, 51, 86, 0.14);
+  --divider: rgba(34, 44, 61, 0.12);
+  --grid-line: rgba(34, 44, 61, 0.08);
+  --glow: 0 0 0px rgba(255, 255, 255, 0), 0 22px 48px rgba(255, 121, 96, 0.16);
 }
 
 body.light {
   background-image: radial-gradient(
-      46rem 46rem at 0% -20%,
-      color-mix(
-        in oklab,
-        color-mix(in oklab, #c9ced8 60%, var(--accent) 40%) 42%,
-        transparent
-      ) 0,
-      transparent 58%
+      52rem 52rem at -12% -20%,
+      color-mix(in oklab, var(--accent) 34%, #f9fafe 66%) 0%,
+      transparent 68%
     ),
     radial-gradient(
-      32rem 32rem at 108% 0%,
-      color-mix(
-        in oklab,
-        color-mix(in oklab, #b7bdc9 58%, var(--accent) 42%) 38%,
-        transparent
-      ) 0,
+      36rem 36rem at 110% 0%,
+      color-mix(in oklab, var(--accent) 28%, #eff3ff 72%) 0%,
       transparent 64%
     ),
     linear-gradient(
       180deg,
       transparent 0,
-      transparent 66%,
-      color-mix(
-        in oklab,
-        color-mix(in oklab, #aeb4bf 62%, var(--accent) 38%) 22%,
-        transparent
-      ) 100%
+      transparent 62%,
+      color-mix(in oklab, var(--accent) 18%, #e1e6f6 82%) 100%
     ),
     linear-gradient(
       120deg,
-      color-mix(
-        in oklab,
-        color-mix(in oklab, #d3d8e2 64%, var(--accent) 36%) 24%,
-        transparent
-      ) 0%,
-      transparent 48%,
-      transparent 52%,
-      color-mix(
-        in oklab,
-        color-mix(in oklab, #bcc2cf 60%, var(--accent) 40%) 18%,
-        transparent
-      ) 100%
+      color-mix(in oklab, var(--accent) 20%, #f3f6ff 80%) 0%,
+      transparent 46%,
+      transparent 54%,
+      color-mix(in oklab, var(--accent) 12%, #e1e7f8 88%) 100%
     );
+  background-color: var(--bg);
 }
 
 body.dark {
