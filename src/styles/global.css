@@ -108,7 +108,7 @@ body.light {
       46rem 46rem at 0% -20%,
       color-mix(
         in oklab,
-        color-mix(in oklab, #c9ced8 82%, var(--accent) 18%) 30%,
+        color-mix(in oklab, #c9ced8 60%, var(--accent) 40%) 42%,
         transparent
       ) 0,
       transparent 58%
@@ -117,7 +117,7 @@ body.light {
       32rem 32rem at 108% 0%,
       color-mix(
         in oklab,
-        color-mix(in oklab, #b7bdc9 80%, var(--accent) 20%) 24%,
+        color-mix(in oklab, #b7bdc9 58%, var(--accent) 42%) 38%,
         transparent
       ) 0,
       transparent 64%
@@ -128,7 +128,7 @@ body.light {
       transparent 66%,
       color-mix(
         in oklab,
-        color-mix(in oklab, #aeb4bf 84%, var(--accent) 16%) 12%,
+        color-mix(in oklab, #aeb4bf 62%, var(--accent) 38%) 22%,
         transparent
       ) 100%
     ),
@@ -136,14 +136,14 @@ body.light {
       120deg,
       color-mix(
         in oklab,
-        color-mix(in oklab, #d3d8e2 88%, var(--accent) 12%) 12%,
+        color-mix(in oklab, #d3d8e2 64%, var(--accent) 36%) 24%,
         transparent
       ) 0%,
       transparent 48%,
       transparent 52%,
       color-mix(
         in oklab,
-        color-mix(in oklab, #bcc2cf 84%, var(--accent) 16%) 10%,
+        color-mix(in oklab, #bcc2cf 60%, var(--accent) 40%) 18%,
         transparent
       ) 100%
     );
