@@ -478,6 +478,34 @@ const App = () => {
     [activeChatId, setChatOpen, setInputValue, setMessages, setSidebarCollapsed, setTyping]
   );
 
+  const suggestionsClasses = ['suggestions'];
+
+  if (isChatOpen) {
+    suggestionsClasses.push('suggestions--hidden');
+  }
+
+  const suggestionsSection = (
+    <section
+      className={suggestionsClasses.join(' ')}
+      aria-hidden={isChatOpen}
+      aria-labelledby="suggestions-heading"
+    >
+      <h2 id="suggestions-heading" className="sr-only">
+        Suggested prompts
+      </h2>
+      {suggestions.map((suggestion) => (
+        <Card
+          key={suggestion.id}
+          title={suggestion.title}
+          description={suggestion.description}
+          actionLabel={suggestion.actionLabel}
+          icon={suggestion.icon}
+          onSelect={() => handleSuggestionSelect(suggestion.prompt)}
+        />
+      ))}
+    </section>
+  );
+
   return (
     <div className="app">
       <a href="#messages" className="skip-link">
@@ -494,31 +522,19 @@ const App = () => {
       />
       <div className="chat-wrapper">
         <div className="chat-main">
-          <div className="chat-main__content">
-            <section
-              className={`suggestions ${isChatOpen ? 'suggestions--hidden' : ''}`}
-              aria-hidden={isChatOpen}
-              aria-labelledby="suggestions-heading"
-            >
-              <h2 id="suggestions-heading" className="sr-only">
-                Suggested prompts
-              </h2>
-              {suggestions.map((suggestion) => (
-                <Card
-                  key={suggestion.id}
-                  title={suggestion.title}
-                  description={suggestion.description}
-                  actionLabel={suggestion.actionLabel}
-                  icon={suggestion.icon}
-                  onSelect={() => handleSuggestionSelect(suggestion.prompt)}
-                />
-              ))}
-            </section>
+          <div
+            className={`chat-main__content ${isFreshChat ? 'chat-main__content--centered' : ''}`}
+          >
             {isFreshChat ? (
-              <div className="chat-main__inline-input">
-                <UserInput value={inputValue} onChange={setInputValue} onSend={handleSend} />
-              </div>
-            ) : null}
+              <>
+                <div className="chat-main__inline-input">
+                  <UserInput value={inputValue} onChange={setInputValue} onSend={handleSend} />
+                </div>
+                {suggestionsSection}
+              </>
+            ) : (
+              suggestionsSection
+            )}
             <ChatWindow messages={messages} isTyping={isTyping} isOpen={isChatOpen} />
           </div>
         </div>
