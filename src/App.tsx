@@ -121,16 +121,53 @@ const truncate = (value: string, maxLength: number) => {
 
 const cloneMessages = (items: Message[]): Message[] => items.map((item) => ({ ...item }));
 
+const normalizeWhitespace = (value: string) => value.replace(/\s+/g, ' ').trim();
+
+const getPlainTextFromHtml = (value: string) => {
+  if (!value) {
+    return '';
+  }
+
+  if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+    const container = document.createElement('div');
+    container.innerHTML = value;
+    const text = container.textContent ?? container.innerText ?? '';
+    return normalizeWhitespace(text);
+  }
+
+  return normalizeWhitespace(value.replace(/<[^>]*>/g, ' '));
+};
+
+const getMessagePlainText = (message?: Message) => {
+  if (!message) {
+    return '';
+  }
+
+  if (message.renderAsHtml) {
+    return getPlainTextFromHtml(message.content);
+  }
+
+  return normalizeWhitespace(message.content);
+};
+
+const buildChatTitle = (message?: Message, fallback = 'Conversation') =>
+  truncate(getMessagePlainText(message) || getPlainTextFromHtml(fallback) || 'Conversation', 60) ||
+  'Conversation';
+
+const buildChatPreview = (message?: Message, fallback = 'Conversation') =>
+  truncate(getMessagePlainText(message) || getPlainTextFromHtml(fallback) || 'Conversation', 80) ||
+  'Conversation';
+
 const createChatRecordFromMessages = (messages: Message[]): ChatSummary => {
   const firstUserMessage = messages.find((message) => message.sender === 'user');
   const lastMessage = messages[messages.length - 1];
-  const titleSource = firstUserMessage?.content ?? 'Conversation';
-  const previewSource = lastMessage?.content ?? titleSource;
+  const title = buildChatTitle(firstUserMessage);
+  const preview = buildChatPreview(lastMessage, title);
 
   return {
     id: getId(),
-    title: truncate(titleSource, 60) || 'Conversation',
-    preview: truncate(previewSource, 80) || 'Conversation',
+    title,
+    preview,
     updatedAt: Date.now(),
     messages: cloneMessages(messages),
   };
@@ -193,10 +230,12 @@ const App = () => {
   }, []);
 
   const updateActiveChat = useCallback(
-    (nextMessages: Message[], previewSource: string) => {
+    (nextMessages: Message[], previewMessage?: Message) => {
       if (!activeChatId) {
         return;
       }
+
+      const previewCandidate = previewMessage ?? nextMessages[nextMessages.length - 1];
 
       setChatHistory((current) =>
         current
@@ -204,10 +243,7 @@ const App = () => {
             chat.id === activeChatId
               ? {
                   ...chat,
-                  preview:
-                    truncate(previewSource, 80) ||
-                    truncate(chat.preview, 80) ||
-                    'Conversation',
+                  preview: buildChatPreview(previewCandidate, chat.preview),
                   updatedAt: Date.now(),
                   messages: cloneMessages(nextMessages),
                 }
@@ -233,10 +269,7 @@ const App = () => {
             chat.id === activeChatId
               ? {
                   ...chat,
-                  preview:
-                    truncate(lastMessage?.content ?? chat.preview, 80) ||
-                    truncate(chat.preview, 80) ||
-                    'Conversation',
+                  preview: buildChatPreview(lastMessage, chat.preview),
                   updatedAt: Date.now(),
                   messages: cloneMessages(messages),
                 }
@@ -271,7 +304,7 @@ const App = () => {
 
       setMessages((current) => {
         const next = [...current, userMessage];
-        updateActiveChat(next, userMessage.content);
+        updateActiveChat(next, userMessage);
         return next;
       });
 
@@ -289,7 +322,7 @@ const App = () => {
 
         setMessages((current) => {
           const next = [...current, botMessage];
-          updateActiveChat(next, botMessage.content);
+          updateActiveChat(next, botMessage);
           return next;
         });
       }, delay);
