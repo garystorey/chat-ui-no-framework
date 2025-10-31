@@ -10,8 +10,8 @@ const highlightThemeHref: Record<Theme, string> = {
   dark: 'https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css',
 };
 
-const getPreferredTheme = (mediaQueryList: MediaQueryList): Theme =>
-  mediaQueryList.matches ? 'dark' : 'light';
+const getPreferredTheme = (mediaQuery: { matches: boolean }): Theme =>
+  mediaQuery.matches ? 'dark' : 'light';
 
 const getNextTheme = (current: Theme): Theme => (current === 'light' ? 'dark' : 'light');
 
