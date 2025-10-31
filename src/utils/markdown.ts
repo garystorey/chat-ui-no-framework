@@ -3,7 +3,7 @@ import hljs from 'highlight.js';
 import { marked } from 'marked';
 
 marked.setOptions({
-  highlight(code, language) {
+  highlight(code: string, language?: string) {
     if (language && hljs.getLanguage(language)) {
       return hljs.highlight(code, { language }).value;
     }
