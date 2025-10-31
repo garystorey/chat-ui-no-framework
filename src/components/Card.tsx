@@ -25,7 +25,6 @@ const Card = ({ title, description, actionLabel, icon, onSelect }: CardProps) =>
         type="button"
         className="suggestion-card__cta"
         onClick={handleClick}
-        aria-label={`${actionLabel} – ${title}`}
       >
         {actionLabel}
       </button>
