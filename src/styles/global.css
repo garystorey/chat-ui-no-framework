@@ -1,6 +1,7 @@
 :root {
   --max-chat-width: 120ch;
-  --bubble-radius: 18px;
+  --chat-open-height: 65vh;
+  --bubble-radius: 1rem;
 
   /* Brand palette */
   --brand-orange: #ff5640;
@@ -17,7 +18,6 @@
   --font-body: Inter, 'Segoe UI', Roboto, system-ui, -apple-system,
     'Helvetica Neue', Arial, sans-serif;
 
-  --chat-open-height: 70vh;
   --bottom-gap: 100px;
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);

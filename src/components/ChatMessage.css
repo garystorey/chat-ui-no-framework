@@ -1,5 +1,5 @@
 .message {
-  max-width: 92%;
+  width: 92%;
   padding: 1rem 1.2rem;
   border-radius: var(--bubble-radius);
   margin: 0.5rem 0;

@@ -1,5 +1,5 @@
 .app {
-  width: min(100%, 120ch);
+  width: 120ch;
   margin: 0 auto;
   display: flex;
   justify-content: center;
@@ -10,7 +10,6 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  min-height: 100dvh;
   padding: 1.6rem;
   background: linear-gradient(140deg, color-mix(in oklab, var(--panel) 60%, transparent) 0%, color-mix(in oklab, var(--panel-solid) 92%, transparent) 100%);
   border-radius: clamp(1.5rem, 4vw, 2.5rem);
