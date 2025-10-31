@@ -43,7 +43,8 @@ const App = () => {
   }, [setTheme]);
 
   useEffect(() => {
-    document.body.dataset.theme = theme;
+    document.body.classList.remove('light', 'dark');
+    document.body.classList.add(theme);
     const link = document.getElementById('hljs-theme');
     if (link) {
       const href =
@@ -53,6 +54,13 @@ const App = () => {
       link.setAttribute('href', href);
     }
   }, [theme]);
+
+  useEffect(() => {
+    document.body.classList.toggle('chat-open', isChatOpen);
+    return () => {
+      document.body.classList.remove('chat-open');
+    };
+  }, [isChatOpen]);
 
   useEffect(() => {
     return () => {

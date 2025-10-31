@@ -1,31 +1,30 @@
 .app {
+  width: 100%;
   display: flex;
   justify-content: center;
-  padding: 2rem 1rem 3rem;
 }
 
 .chat-wrapper {
-  width: min(100%, var(--layout-max-width));
-  display: grid;
-  gap: var(--layout-gap);
+  width: 100%;
+  max-width: var(--max-chat-width);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 100dvh;
 }
 
 .suggestions {
   display: grid;
-  gap: 0.75rem;
-  margin-top: 0.5rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
 }
 
 .suggestions--hidden {
   display: none;
 }
 
-@media (max-width: 720px) {
-  .app {
-    padding: 1.5rem 0.75rem 2.5rem;
-  }
-
-  .chat-window {
-    max-height: none;
+@media (max-width: 900px) {
+  .suggestions {
+    grid-template-columns: 1fr;
   }
 }
