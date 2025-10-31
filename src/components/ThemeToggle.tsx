@@ -1,21 +1,15 @@
-import { useAtom } from 'jotai';
-import { memo, useCallback } from 'react';
-import { themeAtom } from '../atoms/chatAtoms';
+import { memo } from 'react';
+import useTheme from '../hooks/useTheme';
 import './ThemeToggle.css';
 
 const ThemeToggle = () => {
-  const [theme, setTheme] = useAtom(themeAtom);
-  const isLight = theme === 'light';
-
-  const handleToggle = useCallback(() => {
-    setTheme(isLight ? 'dark' : 'light');
-  }, [isLight, setTheme]);
+  const { isLight, toggleTheme } = useTheme();
 
   return (
     <button
       type="button"
       className="theme-toggle"
-      onClick={handleToggle}
+      onClick={toggleTheme}
       role="switch"
       aria-checked={isLight}
       aria-label={isLight ? 'Switch to dark mode' : 'Switch to light mode'}
