@@ -97,6 +97,15 @@ const Sidebar = ({
                 <li key={chat.id} className="sidebar__chat-item">
                   <button
                     type="button"
+                    className={`sidebar__chat ${chat.id === activeChatId ? 'sidebar__chat--active' : ''}`}
+                    onClick={() => onSelectChat(chat.id)}
+                    title={chat.title}
+                  >
+                    <span className="sidebar__chat-title">{chat.title}</span>
+                    <span className="sidebar__chat-preview">{chat.preview}</span>
+                  </button>
+                  <button
+                    type="button"
                     className="sidebar__chat-remove"
                     onClick={(event) => {
                       event.stopPropagation();
@@ -106,15 +115,6 @@ const Sidebar = ({
                     title={`Remove ${chat.title}`}
                   >
                     ×
-                  </button>
-                  <button
-                    type="button"
-                    className={`sidebar__chat ${chat.id === activeChatId ? 'sidebar__chat--active' : ''}`}
-                    onClick={() => onSelectChat(chat.id)}
-                    title={chat.title}
-                  >
-                    <span className="sidebar__chat-title">{chat.title}</span>
-                    <span className="sidebar__chat-preview">{chat.preview}</span>
                   </button>
                 </li>
               ))}

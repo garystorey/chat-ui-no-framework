@@ -186,7 +186,6 @@ const App = () => {
   );
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const typingTimeoutRef = useRef<number>(0);
-  const autoCollapsedRef = useRef(false);
   const isFreshChat = messages.length === 0;
 
   useTheme();
@@ -272,11 +271,6 @@ const App = () => {
       if (!isChatOpen) {
         setChatOpen(true);
       }
-      if (!autoCollapsedRef.current) {
-        setSidebarCollapsed(true);
-        autoCollapsedRef.current = true;
-      }
-
       const userMessage: Message = { id: getId(), sender: 'user', content: text };
 
       setMessages((current) => {
@@ -306,15 +300,7 @@ const App = () => {
 
       return true;
     },
-    [
-      isChatOpen,
-      setChatOpen,
-      setInputValue,
-      setMessages,
-      setTyping,
-      setSidebarCollapsed,
-      updateActiveChat,
-    ]
+    [isChatOpen, setChatOpen, setInputValue, setMessages, setTyping, updateActiveChat]
   );
 
   const handleSuggestionSelect = useCallback(
@@ -342,7 +328,6 @@ const App = () => {
     setInputValue('');
     setChatOpen(false);
     setSidebarCollapsed(false);
-    autoCollapsedRef.current = false;
   }, [
     archiveCurrentConversation,
     setChatOpen,
@@ -371,21 +356,8 @@ const App = () => {
       setMessages(cloneMessages(selectedChat.messages));
       setInputValue('');
       setChatOpen(true);
-
-      if (!autoCollapsedRef.current) {
-        setSidebarCollapsed(true);
-        autoCollapsedRef.current = true;
-      }
     },
-    [
-      archiveCurrentConversation,
-      chatHistory,
-      setChatOpen,
-      setInputValue,
-      setMessages,
-      setSidebarCollapsed,
-      setTyping,
-    ]
+    [archiveCurrentConversation, chatHistory, setChatOpen, setInputValue, setMessages, setTyping]
   );
 
   const handleRemoveChat = useCallback(
@@ -439,7 +411,6 @@ const App = () => {
         setMessages([]);
         setChatOpen(false);
         setSidebarCollapsed(false);
-        autoCollapsedRef.current = false;
         setInputValue('');
         return;
       }

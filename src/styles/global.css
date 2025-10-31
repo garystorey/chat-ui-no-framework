@@ -104,48 +104,48 @@ body {
 }
 
 body.light {
-  --bg: #f2f4fb;
-  --panel: color-mix(in oklab, #fcfdff 92%, var(--accent) 8%);
-  --panel-solid: #f8f9fd;
-  --panel-border: rgba(56, 70, 96, 0.14);
-  --input-bg: rgba(246, 248, 253, 0.95);
-  --text: #1c2533;
-  --muted: #4a5568;
-  --user-msg-bg: color-mix(in oklab, #eef1fa 58%, var(--accent) 42%);
+  --bg: #dfe3ec;
+  --panel: color-mix(in oklab, #e6e9f2 68%, #c4cad9 32%);
+  --panel-solid: #e1e5ef;
+  --panel-border: rgba(47, 60, 86, 0.24);
+  --input-bg: rgba(219, 224, 235, 0.95);
+  --text: #151d29;
+  --muted: #3f4a5d;
+  --user-msg-bg: color-mix(in oklab, #dde2ef 46%, var(--accent) 54%);
   --user-msg-text: var(--user-msg-text-light);
-  --shadow: 0 18px 42px rgba(38, 51, 86, 0.14);
-  --shadow-soft: 0 16px 32px rgba(34, 46, 75, 0.18);
-  --shadow-strong: 0 30px 80px rgba(31, 43, 68, 0.22);
-  --accent-button-text: #fffdfc;
-  --accent-contrast: color-mix(in oklab, var(--accent) 88%, #ffffff 12%);
-  --divider: rgba(34, 44, 61, 0.12);
-  --grid-line: rgba(34, 44, 61, 0.08);
-  --glow: 0 0 0px rgba(255, 255, 255, 0), 0 22px 48px rgba(255, 121, 96, 0.16);
+  --shadow: 0 18px 48px rgba(29, 39, 61, 0.2);
+  --shadow-soft: 0 16px 36px rgba(29, 41, 64, 0.22);
+  --shadow-strong: 0 30px 80px rgba(24, 33, 53, 0.3);
+  --accent-button-text: #fff8f6;
+  --accent-contrast: color-mix(in oklab, var(--accent) 78%, #26130e 22%);
+  --divider: rgba(28, 36, 52, 0.16);
+  --grid-line: rgba(28, 36, 52, 0.1);
+  --glow: 0 0 0px rgba(255, 255, 255, 0), 0 18px 42px rgba(255, 110, 82, 0.18);
 }
 
 body.light {
   background-image: radial-gradient(
       52rem 52rem at -12% -20%,
-      color-mix(in oklab, var(--accent) 34%, #f9fafe 66%) 0%,
+      color-mix(in oklab, var(--accent) 24%, #d1d7e6 76%) 0%,
       transparent 68%
     ),
     radial-gradient(
       36rem 36rem at 110% 0%,
-      color-mix(in oklab, var(--accent) 28%, #eff3ff 72%) 0%,
+      color-mix(in oklab, var(--accent) 22%, #ccd2e1 78%) 0%,
       transparent 64%
     ),
     linear-gradient(
       180deg,
       transparent 0,
       transparent 62%,
-      color-mix(in oklab, var(--accent) 18%, #e1e6f6 82%) 100%
+      color-mix(in oklab, var(--accent) 16%, #c8cedd 84%) 100%
     ),
     linear-gradient(
       120deg,
-      color-mix(in oklab, var(--accent) 20%, #f3f6ff 80%) 0%,
+      color-mix(in oklab, var(--accent) 16%, #d2d8e7 84%) 0%,
       transparent 46%,
       transparent 54%,
-      color-mix(in oklab, var(--accent) 12%, #e1e7f8 88%) 100%
+      color-mix(in oklab, var(--accent) 10%, #c3cadd 90%) 100%
     );
   background-color: var(--bg);
 }
