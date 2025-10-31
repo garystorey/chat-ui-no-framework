@@ -6,6 +6,8 @@
   --brand-orange: #ff5640;
   --accent: var(--brand-orange);
   --accent-strong: color-mix(in oklab, var(--brand-orange) 70%, black 30%);
+  --accent-button-text: #fef9f8;
+  --accent-contrast: color-mix(in oklab, var(--accent) 75%, #1c1f24 25%);
 
   --user-msg-bg-dark: #141a22;
   --user-msg-bg-light: #eef1f6;
@@ -25,6 +27,8 @@
 
   --glow: 0 0 0px rgba(0, 0, 0, 0), 0 0 0px rgba(0, 0, 0, 0);
   --focus-ring: 0 0 0 2px #f0f3f8, 0 0 0 4px var(--accent);
+  --shadow-soft: 0 18px 36px rgba(10, 14, 18, 0.24);
+  --shadow-strong: 0 28px 70px rgba(6, 9, 15, 0.46);
 
   /* default to dark theme values */
   --bg: #070b10;
@@ -99,6 +103,10 @@ body.light {
   --user-msg-bg: color-mix(in oklab, #eef1fa 58%, var(--accent) 42%);
   --user-msg-text: var(--user-msg-text-light);
   --shadow: 0 18px 42px rgba(38, 51, 86, 0.14);
+  --shadow-soft: 0 16px 32px rgba(34, 46, 75, 0.18);
+  --shadow-strong: 0 30px 80px rgba(31, 43, 68, 0.22);
+  --accent-button-text: #fffdfc;
+  --accent-contrast: color-mix(in oklab, var(--accent) 88%, #ffffff 12%);
   --divider: rgba(34, 44, 61, 0.12);
   --grid-line: rgba(34, 44, 61, 0.08);
   --glow: 0 0 0px rgba(255, 255, 255, 0), 0 22px 48px rgba(255, 121, 96, 0.16);
@@ -142,6 +150,10 @@ body.dark {
   --user-msg-bg: var(--user-msg-bg-dark);
   --user-msg-text: var(--user-msg-text-dark);
   --shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  --shadow-soft: 0 20px 42px rgba(2, 4, 8, 0.45);
+  --shadow-strong: 0 40px 90px rgba(2, 4, 8, 0.6);
+  --accent-button-text: #fff6f4;
+  --accent-contrast: color-mix(in oklab, var(--accent) 65%, #fdf2ee 35%);
   --divider: rgba(255, 255, 255, 0.08);
   --grid-line: rgba(255, 255, 255, 0.05);
 }
@@ -190,6 +202,10 @@ button {
 }
 
 body.chat-open .suggestions {
+  display: none;
+}
+
+body.chat-open .hero {
   display: none;
 }
 

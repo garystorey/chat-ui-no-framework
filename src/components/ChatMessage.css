@@ -1,28 +1,30 @@
 .message {
   max-width: 92%;
-  padding: 0.9rem 1.1rem;
+  padding: 1rem 1.2rem;
   border-radius: var(--bubble-radius);
   margin: 0.5rem 0;
   font-size: 1rem;
-  line-height: 1.55;
+  line-height: 1.6;
   word-wrap: break-word;
-  border: 1px solid var(--panel-border);
-  backdrop-filter: blur(4px);
+  border: 1px solid color-mix(in oklab, var(--panel-border) 70%, transparent);
+  backdrop-filter: blur(12px);
   animation: messageIn var(--duration-md) var(--ease-out) both;
-  background: var(--input-bg);
+  background: color-mix(in oklab, var(--panel) 86%, transparent);
   color: var(--text);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
 }
 
 .message--user {
-  background: var(--user-msg-bg);
+  background: linear-gradient(135deg, color-mix(in oklab, var(--user-msg-bg) 85%, white 15%), var(--user-msg-bg));
   color: var(--user-msg-text);
   margin-left: auto;
-  border-bottom-right-radius: 6px;
+  border-bottom-right-radius: 10px;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.16);
 }
 
 .message--bot {
   margin-right: auto;
-  border-bottom-left-radius: 6px;
+  border-bottom-left-radius: 10px;
 }
 
 .message p {
