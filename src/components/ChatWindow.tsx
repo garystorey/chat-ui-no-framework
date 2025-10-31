@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { memo, useEffect, useMemo, useRef } from 'react';
 import type { Message } from '../atoms/chatAtoms';
 import ChatMessage from './ChatMessage';
 import './ChatWindow.css';
@@ -57,4 +57,4 @@ const ChatWindow = ({ messages, isTyping, isOpen }: ChatWindowProps) => {
   );
 };
 
-export default ChatWindow;
+export default memo(ChatWindow);

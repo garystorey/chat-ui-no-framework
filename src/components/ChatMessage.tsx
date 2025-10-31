@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import type { Message } from '../atoms/chatAtoms';
 import { renderMarkdown } from '../utils/markdown';
 import './ChatMessage.css';
@@ -25,4 +25,4 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
   );
 };
 
-export default ChatMessage;
+export default memo(ChatMessage);

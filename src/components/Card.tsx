@@ -1,3 +1,4 @@
+import { memo, useCallback } from 'react';
 import './Card.css';
 
 type CardProps = {
@@ -6,11 +7,15 @@ type CardProps = {
 };
 
 const Card = ({ text, onSelect }: CardProps) => {
+  const handleClick = useCallback(() => {
+    onSelect(text);
+  }, [onSelect, text]);
+
   return (
-    <button type="button" className="suggestion-card" onClick={() => onSelect(text)}>
+    <button type="button" className="suggestion-card" onClick={handleClick}>
       {text}
     </button>
   );
 };
 
-export default Card;
+export default memo(Card);

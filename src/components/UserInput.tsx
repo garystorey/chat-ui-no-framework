@@ -1,4 +1,4 @@
-import { FormEvent, KeyboardEvent, useEffect, useRef } from 'react';
+import { ChangeEvent, FormEvent, KeyboardEvent, useCallback, useEffect, useRef } from 'react';
 import './UserInput.css';
 
 type UserInputProps = {
@@ -17,23 +17,44 @@ const UserInput = ({ value, onChange, onSend }: UserInputProps) => {
     textarea.style.height = `${textarea.scrollHeight}px`;
   }, [value]);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const sent = onSend(value.trim());
-    if (sent) {
-      onChange('');
-    }
-  };
-
-  const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      const sent = onSend(value.trim());
-      if (sent) {
-        onChange('');
+      const trimmed = value.trim();
+      if (!trimmed) {
+        return;
       }
-    }
-  };
+      const sent = onSend(trimmed);
+      if (!sent) {
+        return;
+      }
+    },
+    [onSend, value]
+  );
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLTextAreaElement>) => {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        const trimmed = value.trim();
+        if (!trimmed) {
+          return;
+        }
+        const sent = onSend(trimmed);
+        if (!sent) {
+          return;
+        }
+      }
+    },
+    [onSend, value]
+  );
+
+  const handleChange = useCallback(
+    (event: ChangeEvent<HTMLTextAreaElement>) => {
+      onChange(event.target.value);
+    },
+    [onChange]
+  );
 
   return (
     <form
@@ -54,7 +75,7 @@ const UserInput = ({ value, onChange, onSend }: UserInputProps) => {
           value={value}
           spellCheck
           required
-          onChange={(event) => onChange(event.target.value)}
+          onChange={handleChange}
           onKeyDown={handleKeyDown}
           aria-describedby="inputHint"
           aria-label="Message input"

@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { messagesAtom, themeAtom, typingAtom } from './atoms/chatAtoms';
 import Header from './components/Header';
 import ChatWindow from './components/ChatWindow';
@@ -70,38 +70,46 @@ const App = () => {
     };
   }, []);
 
-  const handleSend = (text: string) => {
-    if (!text) {
-      return false;
-    }
+  const handleSend = useCallback(
+    (text: string) => {
+      if (!text) {
+        return false;
+      }
 
-    setChatOpen(true);
-    setMessages((current) => [
-      ...current,
-      { id: getId(), sender: 'user', content: text },
-    ]);
-    setInputValue('');
-
-    setTyping(true);
-    const delay = 350 + Math.min(1400, Math.max(250, text.length * 8));
-    typingTimeoutRef.current = window.setTimeout(() => {
-      setTyping(false);
+      if (!isChatOpen) {
+        setChatOpen(true);
+      }
       setMessages((current) => [
         ...current,
-        { id: getId(), sender: 'bot', content: buildEchoMessage(text), renderAsHtml: true },
+        { id: getId(), sender: 'user', content: text },
       ]);
-    }, delay);
+      setInputValue('');
 
-    return true;
-  };
+      setTyping(true);
+      const delay = 350 + Math.min(1400, Math.max(250, text.length * 8));
+      typingTimeoutRef.current = window.setTimeout(() => {
+        setTyping(false);
+        setMessages((current) => [
+          ...current,
+          { id: getId(), sender: 'bot', content: buildEchoMessage(text), renderAsHtml: true },
+        ]);
+      }, delay);
 
-  const handleSuggestionSelect = (value: string) => {
-    setInputValue(value);
-    const container = document.getElementById('inputText');
-    if (container instanceof HTMLTextAreaElement) {
-      container.focus();
-    }
-  };
+      return true;
+    },
+    [isChatOpen, setChatOpen, setInputValue, setMessages, setTyping]
+  );
+
+  const handleSuggestionSelect = useCallback(
+    (value: string) => {
+      setInputValue(value);
+      const container = document.getElementById('inputText');
+      if (container instanceof HTMLTextAreaElement) {
+        container.focus();
+      }
+    },
+    [setInputValue]
+  );
 
   return (
     <div className="app">
