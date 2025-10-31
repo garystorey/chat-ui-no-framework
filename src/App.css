@@ -1,8 +1,10 @@
 .app {
-  width: 120ch;
+  width: min(100%, calc(var(--max-chat-width) + 20rem));
   margin: 0 auto;
   display: flex;
   justify-content: center;
+  align-items: stretch;
+  gap: 1.5rem;
 }
 
 .chat-wrapper {
@@ -16,6 +18,8 @@
   border: 1px solid var(--panel-border);
   box-shadow: var(--shadow-strong);
   backdrop-filter: blur(24px) saturate(140%);
+  max-width: var(--max-chat-width);
+  flex: 1 1 0;
 }
 
 .suggestions {
@@ -29,6 +33,11 @@
 }
 
 @media (max-width: 900px) {
+  .app {
+    width: 100%;
+    gap: 1rem;
+  }
+
   .chat-wrapper {
     padding: 1.2rem;
     border-radius: 1.75rem;

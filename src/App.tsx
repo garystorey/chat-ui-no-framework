@@ -5,6 +5,7 @@ import Header from './components/Header';
 import ChatWindow from './components/ChatWindow';
 import UserInput from './components/UserInput';
 import Card from './components/Card';
+import Sidebar, { ChatSummary } from './components/Sidebar';
 import { buildEchoMessage } from './utils/markdown';
 import './App.css';
 
@@ -48,13 +49,50 @@ const getId = () => {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 };
 
+const defaultChats: ChatSummary[] = [
+  {
+    id: getId(),
+    title: 'Team pairing ideas',
+    preview: 'Brainstorming specialists for the payments pod.',
+    updatedAt: Date.now() - 1000 * 60 * 15,
+  },
+  {
+    id: getId(),
+    title: 'Staffing follow-up',
+    preview: 'Summaries of open roles for the Atlanta office.',
+    updatedAt: Date.now() - 1000 * 60 * 60,
+  },
+  {
+    id: getId(),
+    title: 'Client kickoff notes',
+    preview: 'Next steps for onboarding the Nimbus initiative.',
+    updatedAt: Date.now() - 1000 * 60 * 90,
+  },
+];
+
+const createNewChatSummary = (): ChatSummary => ({
+  id: getId(),
+  title: 'New chat',
+  preview: 'Start a conversation',
+  updatedAt: Date.now(),
+});
+
 const App = () => {
   const [messages, setMessages] = useAtom(messagesAtom);
   const [isTyping, setTyping] = useAtom(typingAtom);
   const [theme, setTheme] = useAtom(themeAtom);
   const [inputValue, setInputValue] = useState('');
   const [isChatOpen, setChatOpen] = useState(false);
+  const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const initialActiveChatIdRef = useRef('');
+  const [chatHistory, setChatHistory] = useState<ChatSummary[]>(() => {
+    const freshChat = createNewChatSummary();
+    initialActiveChatIdRef.current = freshChat.id;
+    return [freshChat, ...defaultChats].sort((a, b) => b.updatedAt - a.updatedAt);
+  });
+  const [activeChatId, setActiveChatId] = useState(() => initialActiveChatIdRef.current);
   const typingTimeoutRef = useRef<number>(0);
+  const autoCollapsedRef = useRef(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -106,11 +144,30 @@ const App = () => {
       if (!isChatOpen) {
         setChatOpen(true);
       }
+      if (!autoCollapsedRef.current) {
+        setSidebarCollapsed(true);
+        autoCollapsedRef.current = true;
+      }
       setMessages((current) => [
         ...current,
         { id: getId(), sender: 'user', content: text },
       ]);
       setInputValue('');
+      setChatHistory((current) => {
+        const preview = text.length > 80 ? `${text.slice(0, 77).trimEnd()}…` : text;
+        return current
+          .map((chat) =>
+            chat.id === activeChatId
+              ? {
+                  ...chat,
+                  title: chat.title === 'New chat' ? preview : chat.title,
+                  preview,
+                  updatedAt: Date.now(),
+                }
+              : chat
+          )
+          .sort((a, b) => b.updatedAt - a.updatedAt);
+      });
 
       setTyping(true);
       const delay = 350 + Math.min(1400, Math.max(250, text.length * 8));
@@ -124,7 +181,7 @@ const App = () => {
 
       return true;
     },
-    [isChatOpen, setChatOpen, setInputValue, setMessages, setTyping]
+    [activeChatId, isChatOpen, setChatOpen, setInputValue, setMessages, setTyping]
   );
 
   const handleSuggestionSelect = useCallback(
@@ -138,11 +195,33 @@ const App = () => {
     [setInputValue]
   );
 
+  const handleNewChat = useCallback(() => {
+    const freshChat = createNewChatSummary();
+    setChatHistory((current) => [freshChat, ...current].sort((a, b) => b.updatedAt - a.updatedAt));
+    setActiveChatId(freshChat.id);
+    setMessages([]);
+    setChatOpen(false);
+    setSidebarCollapsed(false);
+    autoCollapsedRef.current = false;
+  }, [setMessages]);
+
+  const handleSelectChat = useCallback((chatId: string) => {
+    setActiveChatId(chatId);
+  }, []);
+
   return (
     <div className="app">
       <a href="#messages" className="skip-link">
         Skip to messages
       </a>
+      <Sidebar
+        collapsed={isSidebarCollapsed}
+        onToggle={() => setSidebarCollapsed((value) => !value)}
+        chats={chatHistory}
+        activeChatId={activeChatId}
+        onSelectChat={handleSelectChat}
+        onNewChat={handleNewChat}
+      />
       <div className="chat-wrapper">
         <Header />
         <section
