@@ -5,7 +5,7 @@
   gap: 1rem;
   padding: 0.75rem 1rem;
   background: color-mix(in oklab, var(--panel-solid) 90%, transparent);
-  border-radius: 1.75rem;
+  border-radius: 1.05rem;
   border: 1px solid color-mix(in oklab, var(--panel-border) 70%, transparent);
   box-shadow: var(--shadow-soft);
   backdrop-filter: blur(16px) saturate(140%);
@@ -15,7 +15,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  border-radius: 1.25rem;
+  border-radius: 0.75rem;
   border: 1px solid color-mix(in oklab, var(--panel-border) 65%, transparent);
   padding: 0.55rem 1rem;
   background: color-mix(in oklab, var(--panel) 82%, transparent);
@@ -54,7 +54,7 @@
   justify-content: center;
   width: 1.5rem;
   height: 1.5rem;
-  border-radius: 999px;
+  border-radius: 0.6rem;
   background: color-mix(in oklab, var(--panel-solid) 84%, transparent);
   color: inherit;
 }

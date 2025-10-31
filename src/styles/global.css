@@ -1,7 +1,7 @@
 :root {
   --max-chat-width: 120ch;
   --chat-open-height: 65vh;
-  --bubble-radius: 1rem;
+  --bubble-radius: 0.75rem;
 
   /* Brand palette */
   --brand-orange: #ff5640;

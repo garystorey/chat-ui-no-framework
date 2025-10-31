@@ -149,6 +149,7 @@ const App = () => {
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const typingTimeoutRef = useRef<number>(0);
   const autoCollapsedRef = useRef(false);
+  const isFreshChat = messages.length === 0;
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -479,10 +480,17 @@ const App = () => {
                 />
               ))}
             </section>
+            {isFreshChat ? (
+              <div className="chat-main__inline-input">
+                <UserInput value={inputValue} onChange={setInputValue} onSend={handleSend} />
+              </div>
+            ) : null}
             <ChatWindow messages={messages} isTyping={isTyping} isOpen={isChatOpen} />
           </div>
         </div>
-        <UserInput value={inputValue} onChange={setInputValue} onSend={handleSend} />
+        {!isFreshChat ? (
+          <UserInput value={inputValue} onChange={setInputValue} onSend={handleSend} />
+        ) : null}
       </div>
     </div>
   );

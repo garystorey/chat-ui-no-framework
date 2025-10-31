@@ -18,13 +18,13 @@
   background: linear-gradient(135deg, color-mix(in oklab, var(--user-msg-bg) 85%, white 15%), var(--user-msg-bg));
   color: var(--user-msg-text);
   margin-left: auto;
-  border-bottom-right-radius: 10px;
+  border-bottom-right-radius: 6px;
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.16);
 }
 
 .message--bot {
   margin-right: auto;
-  border-bottom-left-radius: 10px;
+  border-bottom-left-radius: 6px;
 }
 
 .message p {

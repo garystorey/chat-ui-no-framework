@@ -1,7 +1,7 @@
 .input-panel {
   background: color-mix(in oklab, var(--panel-solid) 94%, transparent);
   border: 1px solid color-mix(in oklab, var(--panel-border) 70%, transparent);
-  border-radius: 1.9rem;
+  border-radius: 1.15rem;
   padding: 0.9rem 0.95rem;
   display: flex;
   flex-direction: row;
@@ -35,7 +35,7 @@ body.chat-open .input-panel {
   align-items: center;
   gap: 0.75rem;
   background: color-mix(in oklab, var(--panel) 84%, transparent);
-  border-radius: 1.6rem;
+  border-radius: 0.85rem;
   border: 1px solid color-mix(in oklab, var(--panel-border) 70%, transparent);
   padding: 0.35rem 0.75rem;
   position: relative;
@@ -70,7 +70,7 @@ body.chat-open .input-panel {
   justify-content: center;
   width: 2.25rem;
   height: 2.25rem;
-  border-radius: 1rem;
+  border-radius: 0.6rem;
   background: color-mix(in oklab, var(--panel-solid) 90%, transparent);
   color: var(--accent);
   flex-shrink: 0;
@@ -86,7 +86,7 @@ body.chat-open .input-panel {
   color: var(--accent-button-text);
   font-size: 1rem;
   padding: 0.95rem 1.1rem;
-  border-radius: 1.4rem;
+  border-radius: 0.75rem;
   cursor: pointer;
   flex-shrink: 0;
   display: inline-flex;
@@ -96,6 +96,12 @@ body.chat-open .input-panel {
   box-shadow: var(--shadow-soft);
   transition: transform var(--duration-sm) var(--ease-out),
     filter var(--duration-sm) var(--ease-out);
+}
+
+.chat-main__inline-input .input-panel {
+  position: static;
+  margin: 0;
+  bottom: auto;
 }
 
 .input-panel__submit:hover {
