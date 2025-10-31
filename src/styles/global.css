@@ -45,6 +45,12 @@
   --grid-line: rgba(255, 255, 255, 0.05);
 }
 
+html,
+body,
+#root {
+  height: 100%;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -59,8 +65,8 @@ body {
   background: var(--bg);
   color: var(--text);
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: stretch;
   min-height: 100dvh;
   padding: 1.75rem 1.25rem;
   padding-bottom: calc(2rem + env(safe-area-inset-bottom));
@@ -90,6 +96,11 @@ body {
     );
   background-size: auto, auto, auto, auto;
   background-position: center center, center center, center center, center;
+}
+
+#root {
+  flex: 1 1 auto;
+  display: flex;
 }
 
 body.light {

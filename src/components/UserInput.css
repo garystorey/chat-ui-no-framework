@@ -12,6 +12,10 @@
   backdrop-filter: blur(18px) saturate(150%);
   position: sticky;
   bottom: 0;
+  width: 100%;
+  max-width: var(--max-chat-width);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 body.chat-open .input-panel {

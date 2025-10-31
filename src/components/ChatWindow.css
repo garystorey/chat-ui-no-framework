@@ -1,32 +1,42 @@
 
 .chat-window {
-  background: color-mix(in oklab, var(--panel-solid) 94%, transparent);
+  width: 100%;
+  max-width: var(--max-chat-width);
+  margin: 0 auto;
   border-radius: 1.75rem;
-  padding: 1.5rem;
+  background: color-mix(in oklab, var(--panel-solid) 94%, transparent);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: var(--shadow-soft);
-  border: 1px solid color-mix(in oklab, var(--panel-border) 70%, transparent);
   backdrop-filter: blur(20px) saturate(160%);
-  height: 0;
+  border: 0 solid color-mix(in oklab, var(--panel-border) 70%, transparent);
+  box-shadow: none;
+  padding: 0;
   pointer-events: none;
   opacity: 0;
   transform: translateY(12px);
   transition: opacity var(--duration-md) var(--ease-out),
     transform var(--duration-md) var(--ease-out);
+  max-height: 0;
+  flex: 0 0 auto;
 }
 
 .chat-window--open {
-  height: var(--chat-open-height);
   pointer-events: auto;
   opacity: 1;
   transform: none;
+  padding: 1.5rem;
+  border-width: 1px;
+  box-shadow: var(--shadow-soft);
+  max-height: none;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
-
 .chat-window__messages {
-  display: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
   flex: 1 1 auto;
   min-height: 0;
   margin: 0;
@@ -41,12 +51,6 @@
     black calc(100% - 24px),
     transparent 100%
   );
-}
-
-.chat-window--open .chat-window__messages {
-  display: flex;
-  flex-direction: column;
-  gap: 1.1rem;
 }
 
 .chat-window__messages::before,

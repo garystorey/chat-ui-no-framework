@@ -209,6 +209,58 @@ const App = () => {
     setActiveChatId(chatId);
   }, []);
 
+  const handleRemoveChat = useCallback(
+    (chatId: string) => {
+      let nextActiveId = activeChatId;
+      let shouldReset = false;
+      let removalOccurred = false;
+
+      setChatHistory((current) => {
+        if (current.length === 0) {
+          return current;
+        }
+
+        const filtered = current.filter((chat) => chat.id !== chatId);
+
+        if (filtered.length === current.length) {
+          return current;
+        }
+
+        removalOccurred = true;
+
+        if (filtered.length === 0) {
+          const freshChat = createNewChatSummary();
+          nextActiveId = freshChat.id;
+          shouldReset = true;
+          return [freshChat];
+        }
+
+        if (chatId === activeChatId) {
+          nextActiveId = filtered[0].id;
+          shouldReset = true;
+        }
+
+        return filtered;
+      });
+
+      if (!removalOccurred) {
+        return;
+      }
+
+      if (nextActiveId !== activeChatId) {
+        setActiveChatId(nextActiveId);
+      }
+
+      if (shouldReset) {
+        setMessages([]);
+        setChatOpen(false);
+        setSidebarCollapsed(false);
+        autoCollapsedRef.current = false;
+      }
+    },
+    [activeChatId, setChatOpen, setMessages, setSidebarCollapsed]
+  );
+
   return (
     <div className="app">
       <a href="#messages" className="skip-link">
@@ -216,34 +268,39 @@ const App = () => {
       </a>
       <Sidebar
         collapsed={isSidebarCollapsed}
-        onToggle={() => setSidebarCollapsed((value) => !value)}
+        onToggle={() => setSidebarCollapsed((prev: boolean) => !prev)}
         chats={chatHistory}
         activeChatId={activeChatId}
         onSelectChat={handleSelectChat}
         onNewChat={handleNewChat}
+        onRemoveChat={handleRemoveChat}
       />
       <div className="chat-wrapper">
         <Header />
-        <section
-          className={`suggestions ${isChatOpen ? 'suggestions--hidden' : ''}`}
-          aria-hidden={isChatOpen}
-          aria-labelledby="suggestions-heading"
-        >
-          <h2 id="suggestions-heading" className="sr-only">
-            Suggested prompts
-          </h2>
-          {suggestions.map((suggestion) => (
-            <Card
-              key={suggestion.id}
-              title={suggestion.title}
-              description={suggestion.description}
-              actionLabel={suggestion.actionLabel}
-              icon={suggestion.icon}
-              onSelect={() => handleSuggestionSelect(suggestion.prompt)}
-            />
-          ))}
-        </section>
-        <ChatWindow messages={messages} isTyping={isTyping} isOpen={isChatOpen} />
+        <div className="chat-main">
+          <div className="chat-main__content">
+            <section
+              className={`suggestions ${isChatOpen ? 'suggestions--hidden' : ''}`}
+              aria-hidden={isChatOpen}
+              aria-labelledby="suggestions-heading"
+            >
+              <h2 id="suggestions-heading" className="sr-only">
+                Suggested prompts
+              </h2>
+              {suggestions.map((suggestion) => (
+                <Card
+                  key={suggestion.id}
+                  title={suggestion.title}
+                  description={suggestion.description}
+                  actionLabel={suggestion.actionLabel}
+                  icon={suggestion.icon}
+                  onSelect={() => handleSuggestionSelect(suggestion.prompt)}
+                />
+              ))}
+            </section>
+            <ChatWindow messages={messages} isTyping={isTyping} isOpen={isChatOpen} />
+          </div>
+        </div>
         <UserInput value={inputValue} onChange={setInputValue} onSend={handleSend} />
       </div>
     </div>
