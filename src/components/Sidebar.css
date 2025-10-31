@@ -153,6 +153,7 @@
   overflow-x: hidden;
 }
 
+
 .sidebar__chat-item {
   display: flex;
   align-items: center;
@@ -160,7 +161,7 @@
 }
 
 .sidebar__chat {
-  width: 100%;
+  flex: 1;
   text-align: left;
   background: transparent;
   border: 1px solid transparent;
