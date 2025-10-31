@@ -15,6 +15,7 @@ type SidebarProps = {
   onToggle: () => void;
   onNewChat: () => void;
   onSelectChat: (chatId: string) => void;
+  onRemoveChat: (chatId: string) => void;
 };
 
 const Sidebar = ({
@@ -24,13 +25,12 @@ const Sidebar = ({
   onToggle,
   onNewChat,
   onSelectChat,
+  onRemoveChat,
 }: SidebarProps) => {
-  const [isSearchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     if (collapsed) {
-      setSearchOpen(false);
       setSearchTerm('');
     }
   }, [collapsed]);
@@ -68,19 +68,11 @@ const Sidebar = ({
             </span>
             <span className="sidebar__action-label">New Chat</span>
           </button>
-          <button
-            type="button"
-            className="sidebar__action"
-            onClick={() => setSearchOpen((value) => !value)}
-            aria-expanded={isSearchOpen}
-          >
-            <span className="sidebar__action-icon" aria-hidden>
-              🔍
-            </span>
-            <span className="sidebar__action-label">Search Chats</span>
-          </button>
-          {isSearchOpen && !collapsed && (
+          {!collapsed && (
             <label className="sidebar__search">
+              <span className="sidebar__search-icon" aria-hidden>
+                🔍
+              </span>
               <span className="sr-only">Search chats</span>
               <input
                 type="search"
@@ -95,7 +87,7 @@ const Sidebar = ({
           <h2 className="sidebar__section-title">Chats</h2>
           <ul className="sidebar__chat-list">
             {filteredChats.map((chat) => (
-              <li key={chat.id}>
+              <li key={chat.id} className="sidebar__chat-item">
                 <button
                   type="button"
                   className={`sidebar__chat ${chat.id === activeChatId ? 'sidebar__chat--active' : ''}`}
@@ -104,6 +96,17 @@ const Sidebar = ({
                 >
                   <span className="sidebar__chat-title">{chat.title}</span>
                   <span className="sidebar__chat-preview">{chat.preview}</span>
+                </button>
+                <button
+                  type="button"
+                  className="sidebar__chat-remove"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onRemoveChat(chat.id);
+                  }}
+                  aria-label={`Remove ${chat.title}`}
+                >
+                  ×
                 </button>
               </li>
             ))}

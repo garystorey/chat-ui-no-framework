@@ -1,14 +1,15 @@
+
 .app {
-  width: min(100%, calc(var(--max-chat-width) + 20rem));
-  margin: 0 auto;
+  flex: 1 1 auto;
   display: flex;
-  justify-content: center;
   align-items: stretch;
   gap: 1.5rem;
+  width: 100%;
+  min-height: 0;
 }
 
 .chat-wrapper {
-  width: 100%;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -18,14 +19,37 @@
   border: 1px solid var(--panel-border);
   box-shadow: var(--shadow-strong);
   backdrop-filter: blur(24px) saturate(140%);
+  min-height: 0;
+}
+
+.chat-main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.chat-main__content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-height: 0;
+}
+
+.chat-wrapper > .topbar {
+  width: 100%;
   max-width: var(--max-chat-width);
-  flex: 1 1 0;
+  margin: 0 auto;
 }
 
 .suggestions {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.25rem;
+  width: 100%;
+  max-width: var(--max-chat-width);
+  margin: 0 auto;
 }
 
 .suggestions--hidden {
@@ -34,7 +58,6 @@
 
 @media (max-width: 900px) {
   .app {
-    width: 100%;
     gap: 1rem;
   }
 
