@@ -2,7 +2,7 @@
   flex-shrink: 0;
   width: 280px;
   padding: 1.25rem;
-  border-radius: clamp(1.5rem, 4vw, 2.5rem);
+  border-radius: clamp(1rem, 3vw, 1.6rem);
   border: 1px solid var(--panel-border);
   background: color-mix(in oklab, var(--panel) 92%, transparent 8%);
   box-shadow: var(--shadow-soft);
@@ -36,7 +36,7 @@
 .sidebar__toggle {
   background: var(--panel-solid);
   border: 1px solid var(--panel-border);
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   color: var(--text);
   padding: 0.35rem 0.55rem;
   display: inline-flex;
@@ -67,7 +67,7 @@
   width: 100%;
   background: color-mix(in oklab, var(--accent) 16%, var(--panel-solid) 84%);
   border: 1px solid color-mix(in oklab, var(--accent) 26%, var(--panel-border) 74%);
-  border-radius: 1rem;
+  border-radius: 0.75rem;
   color: var(--text);
   padding: 0.65rem 0.85rem;
   display: flex;
@@ -101,7 +101,7 @@
   align-items: center;
   gap: 0.6rem;
   padding: 0.55rem 0.75rem;
-  border-radius: 1rem;
+  border-radius: 0.65rem;
   border: 1px solid var(--panel-border);
   background: var(--input-bg);
   color: var(--text);
@@ -164,7 +164,7 @@
   text-align: left;
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 1rem;
+  border-radius: 0.75rem;
   padding: 0.65rem 0.75rem;
   color: inherit;
   cursor: pointer;
@@ -208,7 +208,7 @@
   border: 1px solid color-mix(in oklab, var(--panel-border) 70%, transparent);
   background: color-mix(in oklab, var(--panel-solid) 90%, transparent);
   color: var(--muted);
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   width: 2rem;
   height: 2rem;
   display: inline-flex;

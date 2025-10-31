@@ -4,7 +4,7 @@
   gap: 0.75rem;
   background: color-mix(in oklab, var(--panel-solid) 86%, transparent);
   border: 1px solid var(--panel-border);
-  border-radius: 1.25rem;
+  border-radius: 0.9rem;
   padding: 1.4rem 1.5rem;
   color: var(--text);
   box-shadow: var(--shadow-soft);
@@ -32,7 +32,7 @@
 .suggestion-card__icon {
   width: 2.5rem;
   height: 2.5rem;
-  border-radius: 0.85rem;
+  border-radius: 0.5rem;
   display: grid;
   place-items: center;
   font-size: 1.35rem;
@@ -63,7 +63,7 @@
   font-weight: 600;
   font-size: 0.95rem;
   padding: 0.55rem 1.1rem;
-  border-radius: 999px;
+  border-radius: 0.75rem;
   cursor: pointer;
   box-shadow: var(--shadow-soft);
   transition: transform var(--duration-sm) var(--ease-out),
