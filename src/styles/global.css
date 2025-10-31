@@ -1,5 +1,5 @@
 :root {
-  --max-chat-width: 1100px;
+  --max-chat-width: 120ch;
   --bubble-radius: 18px;
 
   /* Brand palette */
@@ -175,10 +175,10 @@ button {
   background: var(--panel-solid);
   color: var(--text);
   padding: 0.5rem 0.75rem;
-  border-radius: 8px;
+  border-radius: .5rem;
   border: 1px solid var(--panel-border);
   transition: top var(--duration-sm) var(--ease-out);
-  z-index: 999;
+  z-index: 99;
 }
 
 .skip-link:focus {

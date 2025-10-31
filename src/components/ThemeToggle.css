@@ -1,18 +1,18 @@
 .theme-toggle {
-  background: color-mix(in oklab, var(--panel) 70%, transparent);
+  background-color: color-mix(in oklab, var(--panel) 70%, transparent);
   border: 1px solid var(--panel-border);
   font-size: 1.2rem;
   line-height: 1;
   cursor: pointer;
   padding: 0.5rem 0.6rem;
-  border-radius: 10px;
+  border-radius: .75rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   box-shadow: var(--shadow);
   backdrop-filter: blur(6px);
   transition: transform var(--duration-sm) var(--ease-out),
-    background var(--duration-sm) var(--ease-out),
+    background-color var(--duration-sm) var(--ease-out),
     border-color var(--duration-sm) var(--ease-out);
 }
 

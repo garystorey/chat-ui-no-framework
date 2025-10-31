@@ -1,7 +1,7 @@
 .input-panel {
   background: var(--input-bg);
   border: 1px solid var(--panel-border);
-  border-radius: 14px;
+  border-radius: .75rem;
   padding: 0.75rem;
   display: flex;
   flex-direction: row;
@@ -31,11 +31,11 @@ body.chat-open .input-panel {
   overflow-y: hidden;
   resize: none;
   border: 0;
-  border-radius: 10px;
-  padding: 0.9rem 1rem;
-  font-size: 1.02rem;
+  border-radius: .75rem;
+  padding: 1rem;
+  font-size: 1rem;
   font-family: inherit;
-  background: var(--panel-solid);
+  background-color: var(--panel-solid);
   color: var(--text);
   outline: none;
   transition: box-shadow var(--duration-sm) var(--ease-out);
@@ -49,9 +49,9 @@ body.chat-open .input-panel {
   background: linear-gradient(135deg, var(--accent), var(--accent-strong));
   border: none;
   color: #f7f1ee;
-  font-size: 1.05rem;
-  padding: 0.85rem 0.95rem;
-  border-radius: 12px;
+  font-size: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: .75rem;
   cursor: pointer;
   flex-shrink: 0;
   transition: transform var(--duration-sm) var(--ease-out),

@@ -27,7 +27,7 @@ const App = () => {
   const [theme, setTheme] = useAtom(themeAtom);
   const [inputValue, setInputValue] = useState('');
   const [isChatOpen, setChatOpen] = useState(false);
-  const typingTimeoutRef = useRef<number>();
+  const typingTimeoutRef = useRef<number>(0);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -117,7 +117,7 @@ const App = () => {
           aria-hidden={isChatOpen}
           aria-labelledby="suggestions-heading"
         >
-          <h2 id="suggestions-heading" className="visually-hidden">
+          <h2 id="suggestions-heading" className="sr-only">
             Suggestions
           </h2>
           {suggestions.map((suggestion) => (

@@ -1,14 +1,14 @@
 .suggestion-card {
-  background: var(--input-bg);
+  background-color: var(--input-bg);
   border: 1px solid var(--panel-border);
   padding: 1rem;
-  border-radius: 12px;
+  border-radius: .75rem;
   cursor: pointer;
   text-align: left;
   font-size: 1.02rem;
   line-height: 1.6;
   transition: transform var(--duration-sm) var(--ease-out),
-    background var(--duration-sm) var(--ease-out);
+    background-color var(--duration-sm) var(--ease-out);
   color: var(--text);
   box-shadow: var(--shadow);
 }

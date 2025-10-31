@@ -44,7 +44,7 @@ const UserInput = ({ value, onChange, onSend }: UserInputProps) => {
       noValidate
     >
       <div className="input-panel__group">
-        <label htmlFor="inputText" className="visually-hidden">
+        <label htmlFor="inputText" className="sr-only">
           Enter your request
         </label>
         <textarea
@@ -60,7 +60,7 @@ const UserInput = ({ value, onChange, onSend }: UserInputProps) => {
           aria-label="Message input"
           autoFocus
         />
-        <div id="inputHint" className="visually-hidden">
+        <div id="inputHint" className="sr-only">
           Press Enter to send and Shift+Enter for newline
         </div>
       </div>
