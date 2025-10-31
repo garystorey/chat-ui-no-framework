@@ -40,6 +40,7 @@
 .chat-main__content--centered {
   justify-content: center;
   align-items: center;
+  margin-bottom:10rem;
 }
 
 .chat-main__inline-input {
