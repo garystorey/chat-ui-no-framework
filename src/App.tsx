@@ -62,13 +62,13 @@ const defaultChats: ChatSummary[] = [
         id: getId(),
         sender: 'user',
         content:
-          'Can you suggest a few pairings of engineers who have complementary skills for the payments pod?',
+          `Can you suggest a few pairings of engineers who have complementary skills for the payments pod?`,
       },
       {
         id: getId(),
         sender: 'bot',
         content:
-          'Here are three pairing ideas that balance mobile, API, and QA expertise for the payments pod.',
+          `Here are three pairing ideas that balance mobile, API, and QA expertise for the payments pod.`,
       },
     ],
   },
@@ -81,13 +81,13 @@ const defaultChats: ChatSummary[] = [
       {
         id: getId(),
         sender: 'user',
-        content: 'Can you recap the open roles we still need to fill in Atlanta?',
+        content: `Can you recap the open roles we still need to fill in Atlanta?`,
       },
       {
         id: getId(),
         sender: 'bot',
         content:
-          'We still have four roles open in Atlanta: two frontend, one backend, and a data analyst position.',
+          `We still have four roles open in Atlanta: two frontend, one backend, and a data analyst position.`,
       },
     ],
   },
@@ -100,12 +100,12 @@ const defaultChats: ChatSummary[] = [
       {
         id: getId(),
         sender: 'user',
-        content: 'Capture the next steps from our Nimbus kickoff.',
+        content: `Capture the next steps from our Nimbus kickoff.`,
       },
       {
         id: getId(),
         sender: 'bot',
-        content: 'The Nimbus onboarding next steps are documented and ready to share with the team.',
+        content: `The Nimbus onboarding next steps are documented and ready to share with the team.`,
       },
     ],
   },
