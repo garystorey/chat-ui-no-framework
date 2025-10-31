@@ -1,23 +1,81 @@
 .suggestion-card {
-  background-color: var(--input-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: color-mix(in oklab, var(--panel-solid) 86%, transparent);
   border: 1px solid var(--panel-border);
-  padding: 1rem;
-  border-radius: .75rem;
-  cursor: pointer;
-  text-align: left;
-  font-size: 1.02rem;
-  line-height: 1.6;
-  transition: transform var(--duration-sm) var(--ease-out),
-    background-color var(--duration-sm) var(--ease-out);
+  border-radius: 1.25rem;
+  padding: 1.4rem 1.5rem;
   color: var(--text);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-soft);
+  min-height: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
-.suggestion-card:hover {
+.suggestion-card::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(135deg, transparent 30%, color-mix(in oklab, var(--accent) 28%, transparent) 120%);
+  opacity: 0;
+  transition: opacity var(--duration-sm) var(--ease-out);
+}
+
+.suggestion-card:hover::after,
+.suggestion-card:focus-within::after {
+  opacity: 0.25;
+}
+
+.suggestion-card__icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.85rem;
+  display: grid;
+  place-items: center;
+  font-size: 1.35rem;
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+  color: var(--accent-contrast);
+}
+
+.suggestion-card__title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 0.2px;
+}
+
+.suggestion-card__description {
+  margin: 0;
+  font-size: 0.97rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.suggestion-card__cta {
+  align-self: flex-start;
+  margin-top: auto;
+  border: none;
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: var(--accent-button-text);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  transition: transform var(--duration-sm) var(--ease-out),
+    filter var(--duration-sm) var(--ease-out);
+}
+
+.suggestion-card__cta:hover {
+  filter: brightness(1.08);
   transform: translateY(-1px);
 }
 
-.suggestion-card:focus-visible {
+.suggestion-card__cta:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
 }

@@ -1,16 +1,16 @@
 .theme-toggle {
-  background-color: color-mix(in oklab, var(--panel) 70%, transparent);
-  border: 1px solid var(--panel-border);
+  background: color-mix(in oklab, var(--panel) 78%, transparent);
+  border: 1px solid color-mix(in oklab, var(--panel-border) 70%, transparent);
   font-size: 1.2rem;
   line-height: 1;
   cursor: pointer;
-  padding: 0.5rem 0.6rem;
-  border-radius: .75rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 1.2rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(6px);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(10px);
   transition: transform var(--duration-sm) var(--ease-out),
     background-color var(--duration-sm) var(--ease-out),
     border-color var(--duration-sm) var(--ease-out);
@@ -18,6 +18,7 @@
 
 .theme-toggle:hover {
   transform: translateY(-1px);
+  background: color-mix(in oklab, var(--panel) 85%, transparent);
 }
 
 .theme-toggle:active {

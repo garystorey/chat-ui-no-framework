@@ -2,20 +2,117 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 0.75rem;
-  background: color-mix(in oklab, var(--panel) 86%, transparent);
-  border: 1px solid var(--panel-border);
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: color-mix(in oklab, var(--panel-solid) 90%, transparent);
   border-radius: 1.75rem;
-  padding: 0.6rem 0.8rem;
-  backdrop-filter: saturate(120%) blur(8px);
-  box-shadow: var(--shadow);
+  border: 1px solid color-mix(in oklab, var(--panel-border) 70%, transparent);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(16px) saturate(140%);
 }
 
-.topbar__title {
-  margin: 0;
-  font-size: 1rem;
-  letter-spacing: 0.2px;
-  font-weight: 800;
-  color: var(--muted);
-  user-select: none;
+.topbar__group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.topbar__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 1.25rem;
+  border: 1px solid color-mix(in oklab, var(--panel-border) 65%, transparent);
+  padding: 0.55rem 1rem;
+  background: color-mix(in oklab, var(--panel) 82%, transparent);
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform var(--duration-sm) var(--ease-out),
+    background-color var(--duration-sm) var(--ease-out),
+    border-color var(--duration-sm) var(--ease-out);
+}
+
+.topbar__button:hover {
+  transform: translateY(-1px);
+  background: color-mix(in oklab, var(--panel) 88%, transparent);
+}
+
+.topbar__button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.topbar__button--primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: var(--accent-button-text);
+  border-color: color-mix(in oklab, var(--accent) 30%, transparent);
+}
+
+.topbar__button--primary:hover {
+  background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 90%, white 10%), var(--accent-strong));
+}
+
+.topbar__button-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--panel-solid) 84%, transparent);
+  color: inherit;
+}
+
+.topbar__button--primary .topbar__button-icon {
+  background: color-mix(in oklab, var(--accent-button-text) 10%, transparent);
+}
+
+.topbar__button-label {
+  white-space: nowrap;
+}
+
+.topbar__group--actions {
+  gap: 0.6rem;
+}
+
+.topbar__icon {
+  background: color-mix(in oklab, var(--panel) 78%, transparent);
+  border: 1px solid color-mix(in oklab, var(--panel-border) 70%, transparent);
+  border-radius: 1.2rem;
+  padding: 0.55rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  cursor: pointer;
+  transition: transform var(--duration-sm) var(--ease-out),
+    background-color var(--duration-sm) var(--ease-out);
+}
+
+.topbar__icon:hover {
+  transform: translateY(-1px);
+  background: color-mix(in oklab, var(--panel) 88%, transparent);
+}
+
+.topbar__icon:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+@media (max-width: 600px) {
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.85rem;
+  }
+
+  .topbar__group {
+    justify-content: space-between;
+  }
+
+  .topbar__group--actions {
+    justify-content: flex-end;
+  }
 }

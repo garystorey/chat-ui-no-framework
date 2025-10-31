@@ -1,15 +1,17 @@
 .input-panel {
-  background: var(--input-bg);
-  border: 1px solid var(--panel-border);
-  border-radius: .75rem;
-  padding: 0.75rem;
+  background: color-mix(in oklab, var(--panel-solid) 94%, transparent);
+  border: 1px solid color-mix(in oklab, var(--panel-border) 70%, transparent);
+  border-radius: 1.9rem;
+  padding: 0.9rem 0.95rem;
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 0.75rem;
-  box-shadow: var(--shadow);
+  gap: 0.9rem;
+  box-shadow: var(--shadow-soft);
   margin: 0;
-  backdrop-filter: blur(10px) saturate(120%);
+  backdrop-filter: blur(18px) saturate(150%);
+  position: sticky;
+  bottom: 0;
 }
 
 body.chat-open .input-panel {
@@ -24,42 +26,76 @@ body.chat-open .input-panel {
   width: 100%;
 }
 
+.input-panel__field {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: color-mix(in oklab, var(--panel) 84%, transparent);
+  border-radius: 1.6rem;
+  border: 1px solid color-mix(in oklab, var(--panel-border) 70%, transparent);
+  padding: 0.35rem 0.75rem;
+  position: relative;
+}
+
 .input-panel textarea {
   width: 100%;
   max-height: 11.5rem;
-  min-height: 3.6rem;
+  min-height: 3.3rem;
   overflow-y: hidden;
   resize: none;
   border: 0;
-  border-radius: .75rem;
-  padding: 1rem;
+  padding: 0.5rem 0;
   font-size: 1rem;
   font-family: inherit;
-  background-color: var(--panel-solid);
+  background-color: transparent;
   color: var(--text);
   outline: none;
-  transition: box-shadow var(--duration-sm) var(--ease-out);
+}
+
+.input-panel textarea::placeholder {
+  color: color-mix(in oklab, var(--muted) 78%, transparent);
 }
 
 .input-panel textarea:focus {
-  box-shadow: 0 0 0 2px var(--accent);
+  outline: none;
+}
+
+.input-panel__glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 1rem;
+  background: color-mix(in oklab, var(--panel-solid) 90%, transparent);
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.input-panel__glyph--trail {
+  color: var(--muted);
 }
 
 .input-panel__submit {
   background: linear-gradient(135deg, var(--accent), var(--accent-strong));
   border: none;
-  color: #f7f1ee;
+  color: var(--accent-button-text);
   font-size: 1rem;
-  padding: 0.85rem 1rem;
-  border-radius: .75rem;
+  padding: 0.95rem 1.1rem;
+  border-radius: 1.4rem;
   cursor: pointer;
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.15rem;
+  box-shadow: var(--shadow-soft);
   transition: transform var(--duration-sm) var(--ease-out),
     filter var(--duration-sm) var(--ease-out);
 }
 
 .input-panel__submit:hover {
-  filter: brightness(1.05);
+  filter: brightness(1.06);
   transform: translateY(-1px);
 }
 
@@ -70,4 +106,16 @@ body.chat-open .input-panel {
 .input-panel__submit:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
+}
+
+@media (max-width: 600px) {
+  .input-panel {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.85rem;
+  }
+
+  .input-panel__submit {
+    width: 100%;
+  }
 }
