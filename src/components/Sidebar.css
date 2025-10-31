@@ -1,6 +1,6 @@
 .sidebar {
   flex-shrink: 0;
-  width: 280px;
+  width: 300px;
   padding: 1.25rem;
   border-radius: clamp(1rem, 3vw, 1.6rem);
   border: 1px solid var(--panel-border);
@@ -200,7 +200,6 @@
 .sidebar__chat-preview {
   font-size: 0.8rem;
   color: var(--muted);
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
