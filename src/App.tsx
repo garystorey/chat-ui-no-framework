@@ -10,46 +10,36 @@ import './App.css';
 
 const suggestions = [
   {
-    id: 'campaign-health',
-    title: "How's my campaign?",
+    id: 'python-experts',
+    title: 'Top Python developers',
     description:
-      'Get a quick overview of your campaign performance, including reach, engagement, and ROI.',
+      'Find me the top 5 Python developers with 5+ years of experience that have worked on at least 2 Endava projects.',
     prompt:
-      'Review the campaign performance for my current marketing initiative. Highlight reach, engagement, and ROI trends.',
-    actionLabel: 'View Report',
-    icon: '🩺',
+      'Find me the top 5 Python developers with 5+ years of experience that have worked on at least 2 Endava projects.',
+    actionLabel: 'Use prompt',
+    icon: '🐍',
   },
   {
-    id: 'budget-audit',
-    title: 'Any spend issues?',
+    id: 'sow-matching',
+    title: 'Match candidates to a SOW',
     description:
-      'Identify sudden spikes or dips in ad spend and get suggestions on how to rebalance your budget.',
+      'Below is a statement of work. Give me the top 5 candidates for each position listed. Make sure they match the required skills and experience.',
     prompt:
-      'Audit the latest ad spend and flag any anomalies. Recommend adjustments to optimise the budget.',
-    actionLabel: 'Analyse Budget',
-    icon: '💸',
+      'Below is a statement of work. Give me the top 5 candidates for each position listed. Make sure they match the required skills and experience.',
+    actionLabel: 'Use prompt',
+    icon: '📝',
   },
   {
-    id: 'creative-insights',
-    title: 'Which ads work best?',
+    id: 'react-availability',
+    title: 'React availability check',
     description:
-      'See the top-performing ads based on clicks, conversions, and engagement to refine your creative.',
+      'Show me React developers available in the next two weeks with strong TypeScript and Tailwind CSS skills.',
     prompt:
-      'Summarise which of our current ads are performing best based on clicks, conversions, and engagement.',
-    actionLabel: 'View Insights',
-    icon: '✨',
+      'Show me React developers available in the next two weeks with strong TypeScript and Tailwind CSS skills.',
+    actionLabel: 'Use prompt',
+    icon: '⚛️',
   },
 ];
-
-const getGreeting = () => {
-  if (typeof window === 'undefined') {
-    return 'Hello';
-  }
-  const hour = new Date().getHours();
-  if (hour < 12) return 'Good Morning';
-  if (hour < 18) return 'Good Afternoon';
-  return 'Good Evening';
-};
 
 const getId = () => {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
@@ -64,7 +54,6 @@ const App = () => {
   const [theme, setTheme] = useAtom(themeAtom);
   const [inputValue, setInputValue] = useState('');
   const [isChatOpen, setChatOpen] = useState(false);
-  const [greeting, setGreeting] = useState(() => getGreeting());
   const typingTimeoutRef = useRef<number>(0);
 
   useEffect(() => {
@@ -79,16 +68,6 @@ const App = () => {
     media.addEventListener('change', handleChange);
     return () => media.removeEventListener('change', handleChange);
   }, [setTheme]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-    const timer = window.setInterval(() => {
-      setGreeting(getGreeting());
-    }, 1000 * 60 * 5);
-    return () => window.clearInterval(timer);
-  }, []);
 
   useEffect(() => {
     document.body.classList.remove('light', 'dark');
@@ -166,18 +145,6 @@ const App = () => {
       </a>
       <div className="chat-wrapper">
         <Header />
-        <section className={`hero ${isChatOpen ? 'hero--hidden' : ''}`} aria-hidden={isChatOpen}>
-          <div className="hero__icon" aria-hidden="true">
-            ✨
-          </div>
-          <div className="hero__content">
-            <p className="hero__eyebrow">Campaign assistant</p>
-            <h2 className="hero__title">
-              {greeting}, <span className="hero__highlight">Mohab</span>
-            </h2>
-            <p className="hero__subtitle">Hey there! What can I do for your campaigns today?</p>
-          </div>
-        </section>
         <section
           className={`suggestions ${isChatOpen ? 'suggestions--hidden' : ''}`}
           aria-hidden={isChatOpen}
