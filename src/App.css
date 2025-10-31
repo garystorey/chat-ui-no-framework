@@ -37,6 +37,11 @@
   min-height: 0;
 }
 
+.chat-main__content--centered {
+  justify-content: center;
+  align-items: center;
+}
+
 .chat-main__inline-input {
   max-width: var(--max-chat-width);
   margin: 0 auto;
