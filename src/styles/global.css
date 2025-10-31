@@ -106,26 +106,46 @@ body.light {
 body.light {
   background-image: radial-gradient(
       46rem 46rem at 0% -20%,
-      color-mix(in oklab, #c9ced8 30%, transparent) 0,
+      color-mix(
+        in oklab,
+        color-mix(in oklab, #c9ced8 82%, var(--accent) 18%) 30%,
+        transparent
+      ) 0,
       transparent 58%
     ),
     radial-gradient(
       32rem 32rem at 108% 0%,
-      color-mix(in oklab, #b7bdc9 24%, transparent) 0,
+      color-mix(
+        in oklab,
+        color-mix(in oklab, #b7bdc9 80%, var(--accent) 20%) 24%,
+        transparent
+      ) 0,
       transparent 64%
     ),
     linear-gradient(
       180deg,
       transparent 0,
       transparent 66%,
-      color-mix(in oklab, #aeb4bf 12%, transparent) 100%
+      color-mix(
+        in oklab,
+        color-mix(in oklab, #aeb4bf 84%, var(--accent) 16%) 12%,
+        transparent
+      ) 100%
     ),
     linear-gradient(
       120deg,
-      color-mix(in oklab, #d3d8e2 12%, transparent) 0%,
+      color-mix(
+        in oklab,
+        color-mix(in oklab, #d3d8e2 88%, var(--accent) 12%) 12%,
+        transparent
+      ) 0%,
       transparent 48%,
       transparent 52%,
-      color-mix(in oklab, #bcc2cf 10%, transparent) 100%
+      color-mix(
+        in oklab,
+        color-mix(in oklab, #bcc2cf 84%, var(--accent) 16%) 10%,
+        transparent
+      ) 100%
     );
 }
 
