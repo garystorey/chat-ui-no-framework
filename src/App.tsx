@@ -1,12 +1,13 @@
 import { useAtom } from 'jotai';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Message } from './atoms/chatAtoms';
-import { messagesAtom, themeAtom, typingAtom } from './atoms/chatAtoms';
+import { messagesAtom, typingAtom } from './atoms/chatAtoms';
 import ChatWindow from './components/ChatWindow';
 import UserInput from './components/UserInput';
 import Card from './components/Card';
 import Sidebar, { ChatSummary } from './components/Sidebar';
 import { buildEchoMessage } from './utils/markdown';
+import useTheme from './hooks/useTheme';
 import './App.css';
 
 const getId = () => {
@@ -177,7 +178,6 @@ const createChatRecordFromMessages = (messages: Message[]): ChatSummary => {
 const App = () => {
   const [messages, setMessages] = useAtom(messagesAtom);
   const [isTyping, setTyping] = useAtom(typingAtom);
-  const [theme, setTheme] = useAtom(themeAtom);
   const [inputValue, setInputValue] = useState('');
   const [isChatOpen, setChatOpen] = useState(false);
   const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -189,31 +189,7 @@ const App = () => {
   const autoCollapsedRef = useRef(false);
   const isFreshChat = messages.length === 0;
 
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-    const media = window.matchMedia('(prefers-color-scheme: dark)');
-    setTheme(media.matches ? 'dark' : 'light');
-    const handleChange = (event: MediaQueryListEvent) => {
-      setTheme(event.matches ? 'dark' : 'light');
-    };
-    media.addEventListener('change', handleChange);
-    return () => media.removeEventListener('change', handleChange);
-  }, [setTheme]);
-
-  useEffect(() => {
-    document.body.classList.remove('light', 'dark');
-    document.body.classList.add(theme);
-    const link = document.getElementById('hljs-theme');
-    if (link) {
-      const href =
-        theme === 'light'
-          ? 'https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css'
-          : 'https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css';
-      link.setAttribute('href', href);
-    }
-  }, [theme]);
+  useTheme();
 
   useEffect(() => {
     document.body.classList.toggle('chat-open', isChatOpen);
