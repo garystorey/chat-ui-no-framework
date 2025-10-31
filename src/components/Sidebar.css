@@ -65,10 +65,10 @@
 
 .sidebar__action {
   width: 100%;
-  background: color-mix(in oklab, var(--accent) 16%, var(--panel-solid) 84%);
-  border: 1px solid color-mix(in oklab, var(--accent) 26%, var(--panel-border) 74%);
+  background: var(--accent);
+  border: 1px solid color-mix(in oklab, var(--accent) 65%, #2d110a 35%);
   border-radius: 0.75rem;
-  color: var(--text);
+  color: var(--accent-button-text);
   padding: 0.65rem 0.85rem;
   display: flex;
   align-items: center;
@@ -82,9 +82,9 @@
 
 .sidebar__action:hover,
 .sidebar__action:focus-visible {
-  background: color-mix(in oklab, var(--accent) 36%, var(--panel-solid) 64%);
+  background: var(--accent-strong);
   transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
 }
 
 .sidebar__action-icon {
@@ -155,18 +155,16 @@
 
 
 .sidebar__chat-item {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
+  position: relative;
 }
 
 .sidebar__chat {
-  flex: 1;
+  width: 100%;
   text-align: left;
   background: transparent;
   border: 1px solid transparent;
   border-radius: 0.75rem;
-  padding: 0.65rem 0.75rem;
+  padding: 0.65rem 2.25rem 0.65rem 0.75rem;
   color: inherit;
   cursor: pointer;
   display: flex;
@@ -205,12 +203,15 @@
 }
 
 .sidebar__chat-remove {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.4rem;
   border: 1px solid color-mix(in oklab, var(--panel-border) 70%, transparent);
-  background: color-mix(in oklab, var(--panel-solid) 90%, transparent);
+  background: color-mix(in oklab, var(--panel-solid) 88%, transparent);
   color: var(--muted);
   border-radius: 0.5rem;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.35rem;
+  height: 1.35rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -223,7 +224,7 @@
 .sidebar__chat-remove:hover,
 .sidebar__chat-remove:focus-visible {
   color: var(--accent);
-  background: color-mix(in oklab, var(--panel-solid) 70%, transparent);
+  background: color-mix(in oklab, var(--panel-solid) 72%, transparent);
   transform: translateY(-1px);
   outline: none;
 }
