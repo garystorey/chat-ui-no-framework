@@ -1,7 +1,6 @@
 import { useAtom } from 'jotai';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { messagesAtom, themeAtom, typingAtom } from './atoms/chatAtoms';
-import Header from './components/Header';
 import ChatWindow from './components/ChatWindow';
 import UserInput from './components/UserInput';
 import Card from './components/Card';
@@ -276,7 +275,6 @@ const App = () => {
         onRemoveChat={handleRemoveChat}
       />
       <div className="chat-wrapper">
-        <Header />
         <div className="chat-main">
           <div className="chat-main__content">
             <section
