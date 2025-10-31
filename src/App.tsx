@@ -1,5 +1,6 @@
 import { useAtom } from 'jotai';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { Message } from './atoms/chatAtoms';
 import { messagesAtom, themeAtom, typingAtom } from './atoms/chatAtoms';
 import ChatWindow from './components/ChatWindow';
 import UserInput from './components/UserInput';
@@ -52,29 +53,88 @@ const defaultChats: ChatSummary[] = [
   {
     id: getId(),
     title: 'Team pairing ideas',
-    preview: 'Brainstorming specialists for the payments pod.',
+    preview: 'Here are three pairing ideas that balance mobile, API, and QA expertise for the payments pod.',
     updatedAt: Date.now() - 1000 * 60 * 15,
+    messages: [
+      {
+        id: getId(),
+        sender: 'user',
+        content:
+          'Can you suggest a few pairings of engineers who have complementary skills for the payments pod?',
+      },
+      {
+        id: getId(),
+        sender: 'bot',
+        content:
+          'Here are three pairing ideas that balance mobile, API, and QA expertise for the payments pod.',
+      },
+    ],
   },
   {
     id: getId(),
     title: 'Staffing follow-up',
-    preview: 'Summaries of open roles for the Atlanta office.',
+    preview: 'We still have four roles open in Atlanta: two frontend, one backend, and a data analyst position.',
     updatedAt: Date.now() - 1000 * 60 * 60,
+    messages: [
+      {
+        id: getId(),
+        sender: 'user',
+        content: 'Can you recap the open roles we still need to fill in Atlanta?',
+      },
+      {
+        id: getId(),
+        sender: 'bot',
+        content:
+          'We still have four roles open in Atlanta: two frontend, one backend, and a data analyst position.',
+      },
+    ],
   },
   {
     id: getId(),
     title: 'Client kickoff notes',
-    preview: 'Next steps for onboarding the Nimbus initiative.',
+    preview: 'The Nimbus onboarding next steps are documented and ready to share with the team.',
     updatedAt: Date.now() - 1000 * 60 * 90,
+    messages: [
+      {
+        id: getId(),
+        sender: 'user',
+        content: 'Capture the next steps from our Nimbus kickoff.',
+      },
+      {
+        id: getId(),
+        sender: 'bot',
+        content: 'The Nimbus onboarding next steps are documented and ready to share with the team.',
+      },
+    ],
   },
 ];
 
-const createNewChatSummary = (): ChatSummary => ({
-  id: getId(),
-  title: 'New chat',
-  preview: 'Start a conversation',
-  updatedAt: Date.now(),
-});
+const truncate = (value: string, maxLength: number) => {
+  if (!value) {
+    return '';
+  }
+  if (value.length <= maxLength) {
+    return value;
+  }
+  return `${value.slice(0, maxLength - 1).trimEnd()}…`;
+};
+
+const cloneMessages = (items: Message[]): Message[] => items.map((item) => ({ ...item }));
+
+const createChatRecordFromMessages = (messages: Message[]): ChatSummary => {
+  const firstUserMessage = messages.find((message) => message.sender === 'user');
+  const lastMessage = messages[messages.length - 1];
+  const titleSource = firstUserMessage?.content ?? 'Conversation';
+  const previewSource = lastMessage?.content ?? titleSource;
+
+  return {
+    id: getId(),
+    title: truncate(titleSource, 60) || 'Conversation',
+    preview: truncate(previewSource, 80) || 'Conversation',
+    updatedAt: Date.now(),
+    messages: cloneMessages(messages),
+  };
+};
 
 const App = () => {
   const [messages, setMessages] = useAtom(messagesAtom);
@@ -83,13 +143,10 @@ const App = () => {
   const [inputValue, setInputValue] = useState('');
   const [isChatOpen, setChatOpen] = useState(false);
   const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const initialActiveChatIdRef = useRef('');
-  const [chatHistory, setChatHistory] = useState<ChatSummary[]>(() => {
-    const freshChat = createNewChatSummary();
-    initialActiveChatIdRef.current = freshChat.id;
-    return [freshChat, ...defaultChats].sort((a, b) => b.updatedAt - a.updatedAt);
-  });
-  const [activeChatId, setActiveChatId] = useState(() => initialActiveChatIdRef.current);
+  const [chatHistory, setChatHistory] = useState<ChatSummary[]>(() =>
+    [...defaultChats].sort((a, b) => b.updatedAt - a.updatedAt)
+  );
+  const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const typingTimeoutRef = useRef<number>(0);
   const autoCollapsedRef = useRef(false);
 
@@ -134,6 +191,67 @@ const App = () => {
     };
   }, []);
 
+  const updateActiveChat = useCallback(
+    (nextMessages: Message[], previewSource: string) => {
+      if (!activeChatId) {
+        return;
+      }
+
+      setChatHistory((current) =>
+        current
+          .map((chat) =>
+            chat.id === activeChatId
+              ? {
+                  ...chat,
+                  preview:
+                    truncate(previewSource, 80) ||
+                    truncate(chat.preview, 80) ||
+                    'Conversation',
+                  updatedAt: Date.now(),
+                  messages: cloneMessages(nextMessages),
+                }
+              : chat
+          )
+          .sort((a, b) => b.updatedAt - a.updatedAt)
+      );
+    },
+    [activeChatId]
+  );
+
+  const archiveCurrentConversation = useCallback(() => {
+    if (messages.length === 0) {
+      return;
+    }
+
+    const lastMessage = messages[messages.length - 1];
+
+    if (activeChatId) {
+      setChatHistory((current) =>
+        current
+          .map((chat) =>
+            chat.id === activeChatId
+              ? {
+                  ...chat,
+                  preview:
+                    truncate(lastMessage?.content ?? chat.preview, 80) ||
+                    truncate(chat.preview, 80) ||
+                    'Conversation',
+                  updatedAt: Date.now(),
+                  messages: cloneMessages(messages),
+                }
+              : chat
+          )
+          .sort((a, b) => b.updatedAt - a.updatedAt)
+      );
+      return;
+    }
+
+    const newChat = createChatRecordFromMessages(messages);
+    setChatHistory((current) =>
+      [newChat, ...current].sort((a, b) => b.updatedAt - a.updatedAt)
+    );
+  }, [activeChatId, messages]);
+
   const handleSend = useCallback(
     (text: string) => {
       if (!text) {
@@ -147,40 +265,45 @@ const App = () => {
         setSidebarCollapsed(true);
         autoCollapsedRef.current = true;
       }
-      setMessages((current) => [
-        ...current,
-        { id: getId(), sender: 'user', content: text },
-      ]);
-      setInputValue('');
-      setChatHistory((current) => {
-        const preview = text.length > 80 ? `${text.slice(0, 77).trimEnd()}…` : text;
-        return current
-          .map((chat) =>
-            chat.id === activeChatId
-              ? {
-                  ...chat,
-                  title: chat.title === 'New chat' ? preview : chat.title,
-                  preview,
-                  updatedAt: Date.now(),
-                }
-              : chat
-          )
-          .sort((a, b) => b.updatedAt - a.updatedAt);
+
+      const userMessage: Message = { id: getId(), sender: 'user', content: text };
+
+      setMessages((current) => {
+        const next = [...current, userMessage];
+        updateActiveChat(next, userMessage.content);
+        return next;
       });
 
+      setInputValue('');
       setTyping(true);
       const delay = 350 + Math.min(1400, Math.max(250, text.length * 8));
       typingTimeoutRef.current = window.setTimeout(() => {
         setTyping(false);
-        setMessages((current) => [
-          ...current,
-          { id: getId(), sender: 'bot', content: buildEchoMessage(text), renderAsHtml: true },
-        ]);
+        const botMessage: Message = {
+          id: getId(),
+          sender: 'bot',
+          content: buildEchoMessage(text),
+          renderAsHtml: true,
+        };
+
+        setMessages((current) => {
+          const next = [...current, botMessage];
+          updateActiveChat(next, botMessage.content);
+          return next;
+        });
       }, delay);
 
       return true;
     },
-    [activeChatId, isChatOpen, setChatOpen, setInputValue, setMessages, setTyping]
+    [
+      isChatOpen,
+      setChatOpen,
+      setInputValue,
+      setMessages,
+      setTyping,
+      setSidebarCollapsed,
+      updateActiveChat,
+    ]
   );
 
   const handleSuggestionSelect = useCallback(
@@ -195,24 +318,71 @@ const App = () => {
   );
 
   const handleNewChat = useCallback(() => {
-    const freshChat = createNewChatSummary();
-    setChatHistory((current) => [freshChat, ...current].sort((a, b) => b.updatedAt - a.updatedAt));
-    setActiveChatId(freshChat.id);
+    if (typingTimeoutRef.current) {
+      window.clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = 0;
+    }
+    setTyping(false);
+
+    archiveCurrentConversation();
+
     setMessages([]);
+    setActiveChatId(null);
+    setInputValue('');
     setChatOpen(false);
     setSidebarCollapsed(false);
     autoCollapsedRef.current = false;
-  }, [setMessages]);
+  }, [
+    archiveCurrentConversation,
+    setChatOpen,
+    setInputValue,
+    setMessages,
+    setSidebarCollapsed,
+    setTyping,
+  ]);
 
-  const handleSelectChat = useCallback((chatId: string) => {
-    setActiveChatId(chatId);
-  }, []);
+  const handleSelectChat = useCallback(
+    (chatId: string) => {
+      const selectedChat = chatHistory.find((chat) => chat.id === chatId);
+      if (!selectedChat) {
+        return;
+      }
+
+      if (typingTimeoutRef.current) {
+        window.clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = 0;
+      }
+      setTyping(false);
+
+      archiveCurrentConversation();
+
+      setActiveChatId(chatId);
+      setMessages(cloneMessages(selectedChat.messages));
+      setInputValue('');
+      setChatOpen(true);
+
+      if (!autoCollapsedRef.current) {
+        setSidebarCollapsed(true);
+        autoCollapsedRef.current = true;
+      }
+    },
+    [
+      archiveCurrentConversation,
+      chatHistory,
+      setChatOpen,
+      setInputValue,
+      setMessages,
+      setSidebarCollapsed,
+      setTyping,
+    ]
+  );
 
   const handleRemoveChat = useCallback(
     (chatId: string) => {
-      let nextActiveId = activeChatId;
-      let shouldReset = false;
       let removalOccurred = false;
+      let nextActiveId: string | null = activeChatId;
+      let nextMessages: Message[] = [];
+      let shouldReset = false;
 
       setChatHistory((current) => {
         if (current.length === 0) {
@@ -228,15 +398,16 @@ const App = () => {
         removalOccurred = true;
 
         if (filtered.length === 0) {
-          const freshChat = createNewChatSummary();
-          nextActiveId = freshChat.id;
+          nextActiveId = null;
           shouldReset = true;
-          return [freshChat];
+          return filtered;
         }
 
         if (chatId === activeChatId) {
-          nextActiveId = filtered[0].id;
-          shouldReset = true;
+          const [nextChat] = filtered;
+          nextActiveId = nextChat?.id ?? null;
+          nextMessages = nextChat ? cloneMessages(nextChat.messages) : [];
+          shouldReset = !nextActiveId;
         }
 
         return filtered;
@@ -246,18 +417,30 @@ const App = () => {
         return;
       }
 
-      if (nextActiveId !== activeChatId) {
-        setActiveChatId(nextActiveId);
+      if (typingTimeoutRef.current) {
+        window.clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = 0;
       }
+      setTyping(false);
 
-      if (shouldReset) {
+      if (shouldReset || !nextActiveId) {
+        setActiveChatId(null);
         setMessages([]);
         setChatOpen(false);
         setSidebarCollapsed(false);
         autoCollapsedRef.current = false;
+        setInputValue('');
+        return;
+      }
+
+      if (chatId === activeChatId && nextActiveId) {
+        setActiveChatId(nextActiveId);
+        setMessages(nextMessages);
+        setChatOpen(true);
+        setInputValue('');
       }
     },
-    [activeChatId, setChatOpen, setMessages, setSidebarCollapsed]
+    [activeChatId, setChatOpen, setInputValue, setMessages, setSidebarCollapsed, setTyping]
   );
 
   return (

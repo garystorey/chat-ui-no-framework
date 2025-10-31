@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import type { Message } from '../atoms/chatAtoms';
 import ThemeToggle from './ThemeToggle';
 import './Sidebar.css';
 
@@ -7,12 +8,15 @@ export type ChatSummary = {
   title: string;
   preview: string;
   updatedAt: number;
+  // The full message history for a conversation is stored alongside the
+  // summary so the main app can restore it when revisiting a chat.
+  messages: Message[];
 };
 
 type SidebarProps = {
   collapsed: boolean;
   chats: ChatSummary[];
-  activeChatId: string;
+  activeChatId: string | null;
   onToggle: () => void;
   onNewChat: () => void;
   onSelectChat: (chatId: string) => void;
