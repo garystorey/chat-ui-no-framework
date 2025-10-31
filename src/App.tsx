@@ -9,45 +9,46 @@ import Sidebar, { ChatSummary } from './components/Sidebar';
 import { buildEchoMessage } from './utils/markdown';
 import './App.css';
 
-const suggestions = [
-  {
-    id: 'python-experts',
-    title: 'Top Python developers',
-    description:
-      'Find me the top 5 Python developers with 5+ years of experience that have worked on at least 2 Endava projects.',
-    prompt:
-      'Find me the top 5 Python developers with 5+ years of experience that have worked on at least 2 Endava projects.',
-    actionLabel: 'Use prompt',
-    icon: '🐍',
-  },
-  {
-    id: 'sow-matching',
-    title: 'Match candidates to a SOW',
-    description:
-      'Below is a statement of work. Give me the top 5 candidates for each position listed. Make sure they match the required skills and experience.',
-    prompt:
-      'Below is a statement of work. Give me the top 5 candidates for each position listed. Make sure they match the required skills and experience.',
-    actionLabel: 'Use prompt',
-    icon: '📝',
-  },
-  {
-    id: 'react-availability',
-    title: 'React availability check',
-    description:
-      'Show me React developers available in the next two weeks with strong TypeScript and Tailwind CSS skills.',
-    prompt:
-      'Show me React developers available in the next two weeks with strong TypeScript and Tailwind CSS skills.',
-    actionLabel: 'Use prompt',
-    icon: '⚛️',
-  },
-];
-
 const getId = () => {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
     return crypto.randomUUID();
   }
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 };
+
+
+const suggestions = [
+  {
+    id: getId(),
+    title: 'Top Python developers',
+    description:
+      'Find me the top 5 Python developers with 5+ years of experience that have worked on at least 2 Endava projects.',
+    prompt:
+      'Find me the top 5 Python developers with 5+ years of experience that have worked on at least 2 Endava projects.',
+    actionLabel: 'Start',
+    icon: '🐍',
+  },
+  {
+    id: getId(),
+    title: 'Match candidates to a SOW',
+    description:
+      'Below is a statement of work. Give me the top 5 candidates for each position listed. Make sure they match the required skills and experience.',
+    prompt:
+      'Below is a statement of work. Give me the top 5 candidates for each position listed. Make sure they match the required skills and experience.',
+    actionLabel: 'Start',
+    icon: '📝',
+  },
+  {
+    id: getId(),
+    title: 'React availability check',
+    description:
+      'Show me React developers available in the next two weeks with strong TypeScript and Tailwind CSS skills.',
+    prompt:
+      'Show me React developers available in the next two weeks with strong TypeScript and Tailwind CSS skills.',
+    actionLabel: 'Start',
+    icon: '⚛️',
+  },
+];
 
 const defaultChats: ChatSummary[] = [
   {
