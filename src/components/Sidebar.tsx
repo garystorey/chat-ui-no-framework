@@ -56,6 +56,7 @@ const Sidebar = ({
     <aside className={`sidebar ${collapsed ? 'sidebar--collapsed' : ''}`} aria-label="Chat navigation">
       <div className="sidebar__inner">
         <div className="sidebar__header">
+          <ThemeToggle />
           <button
             type="button"
             className="sidebar__toggle"
@@ -65,7 +66,6 @@ const Sidebar = ({
           >
             <span aria-hidden>{collapsed ? '›' : '‹'}</span>
           </button>
-          <ThemeToggle />
         </div>
         <div className="sidebar__actions">
           <button type="button" className="sidebar__action" onClick={onNewChat}>
