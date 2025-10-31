@@ -37,12 +37,6 @@
   min-height: 0;
 }
 
-.chat-wrapper > .topbar {
-  width: 100%;
-  max-width: var(--max-chat-width);
-  margin: 0 auto;
-}
-
 .suggestions {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

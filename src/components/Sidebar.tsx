@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import ThemeToggle from './ThemeToggle';
 import './Sidebar.css';
 
 export type ChatSummary = {
@@ -60,6 +61,7 @@ const Sidebar = ({
           >
             <span aria-hidden>{collapsed ? '›' : '‹'}</span>
           </button>
+          <ThemeToggle />
         </div>
         <div className="sidebar__actions">
           <button type="button" className="sidebar__action" onClick={onNewChat}>
