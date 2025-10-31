@@ -1,4 +1,5 @@
 import { useAtom } from 'jotai';
+import { memo, useCallback } from 'react';
 import { themeAtom } from '../atoms/chatAtoms';
 import './ThemeToggle.css';
 
@@ -6,9 +7,9 @@ const ThemeToggle = () => {
   const [theme, setTheme] = useAtom(themeAtom);
   const isLight = theme === 'light';
 
-  const handleToggle = () => {
+  const handleToggle = useCallback(() => {
     setTheme(isLight ? 'dark' : 'light');
-  };
+  }, [isLight, setTheme]);
 
   return (
     <button
@@ -25,4 +26,4 @@ const ThemeToggle = () => {
   );
 };
 
-export default ThemeToggle;
+export default memo(ThemeToggle);

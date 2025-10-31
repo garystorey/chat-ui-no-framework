@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import ThemeToggle from './ThemeToggle';
 import './Header.css';
 
@@ -10,4 +11,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default memo(Header);
