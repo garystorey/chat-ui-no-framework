@@ -18,9 +18,10 @@ const getId = () => {
 };
 
 
+
 const suggestions = [
   {
-    id: getId(),
+    id: 12312,
     title: 'Top Python developers',
     description:
       'Find me the top 5 Python developers with 5+ years of experience that have worked on at least 2 Endava projects.',
@@ -30,7 +31,7 @@ const suggestions = [
     icon: '🐍',
   },
   {
-    id: getId(),
+    id: 234242,
     title: 'Match candidates to a SOW',
     description:
       'Below is a statement of work. Give me the top 5 candidates for each position listed. Make sure they match the required skills and experience.',
@@ -40,7 +41,7 @@ const suggestions = [
     icon: '📝',
   },
   {
-    id: getId(),
+    id: 345345,
     title: 'React availability check',
     description:
       'Show me React developers available in the next two weeks with strong TypeScript and Tailwind CSS skills.',
@@ -53,59 +54,59 @@ const suggestions = [
 
 const defaultChats: ChatSummary[] = [
   {
-    id: getId(),
-    title: 'Team pairing ideas',
-    preview: 'Here are three pairing ideas that balance mobile, API, and QA expertise for the payments pod.',
+    id: '12321',
+    title: 'ClientX Team pairing ideas',
+    preview: 'Based on the requirements for ClientX, give me three pairing ideas that balance mobile, API, and QA expertise for the payments team.',
     updatedAt: Date.now() - 1000 * 60 * 15,
     messages: [
       {
-        id: getId(),
+        id: '4233423',
         sender: 'user',
         content:
-          `Can you suggest a few pairings of engineers who have complementary skills for the payments pod?`,
+          'Can you suggest a few pairings of engineers for ClientX who have complementary skills for the payments team?',
       },
       {
-        id: getId(),
+        id: '4345',
         sender: 'bot',
         content:
-          `Here are three pairing ideas that balance mobile, API, and QA expertise for the payments pod.`,
+          'Here are three pairing ideas that balance mobile, API, and QA expertise for the payments pod.',
       },
     ],
   },
   {
-    id: getId(),
-    title: 'Staffing follow-up',
-    preview: 'We still have four roles open in Atlanta: two frontend, one backend, and a data analyst position.',
+    id: '23439',
+    title: 'ATL Staffing follow-up',
+    preview: 'We still have four roles open in Atlanta for Cox: two frontend, one backend, and a data analyst position.',
     updatedAt: Date.now() - 1000 * 60 * 60,
     messages: [
       {
-        id: getId(),
+        id: '98767',
         sender: 'user',
-        content: `Can you recap the open roles we still need to fill in Atlanta?`,
+        content: 'Can you recap the open roles we still need to fill in Atlanta for Cox?',
       },
       {
-        id: getId(),
+        id: '67534',
         sender: 'bot',
         content:
-          `We still have four roles open in Atlanta: two frontend, one backend, and a data analyst position.`,
+          'We still have four roles open at Cox in Atlanta: two frontend, one backend, and a data analyst position. Would you like me to suggest candidates for any of these roles?',
       },
     ],
   },
   {
-    id: getId(),
-    title: 'Client kickoff notes',
-    preview: 'The Nimbus onboarding next steps are documented and ready to share with the team.',
+    id: '86634343',
+    title: 'Nimbus SOW notes',
+    preview: 'Next position for Nimbus onboarding',
     updatedAt: Date.now() - 1000 * 60 * 90,
     messages: [
       {
-        id: getId(),
+        id: '55333378',
         sender: 'user',
-        content: `Capture the next steps from our Nimbus kickoff.`,
+        content: 'Return the next position from the Nimbus statement of work and the top five candidates for that position.',
       },
       {
-        id: getId(),
+        id: '676656777',
         sender: 'bot',
-        content: `The Nimbus onboarding next steps are documented and ready to share with the team.`,
+        content: 'The next position for Nimbus onboarding is **Senior Frontend Engineer**. The requirements are: - React, - TypeScript, - AWS experience. Here are the top five candidates for this role...',
       },
     ],
   },
