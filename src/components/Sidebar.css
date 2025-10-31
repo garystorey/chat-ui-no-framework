@@ -210,8 +210,8 @@
   background: color-mix(in oklab, var(--panel-solid) 90%, transparent);
   color: var(--muted);
   border-radius: 0.5rem;
-  width: 2rem;
-  height: 2rem;
+  width: 1.5rem;
+  height: 1.5rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
