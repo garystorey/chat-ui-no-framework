@@ -1,6 +1,7 @@
 import { memo, useEffect, useMemo, useRef } from 'react';
 import type { Message } from '../atoms/chatAtoms';
 import ChatMessage from './ChatMessage';
+import ThinkingIndicator from './ThinkingIndicator';
 import './ChatWindow.css';
 
 type ChatWindowProps = {
@@ -44,14 +45,7 @@ const ChatWindow = ({ messages, isTyping, isOpen }: ChatWindowProps) => {
         {messages.map((message) => (
           <ChatMessage key={message.id} message={message} />
         ))}
-        {isTyping && (
-          <div className="typing" role="status" aria-live="polite">
-            <span className="typing__dot" aria-hidden="true" />
-            <span className="typing__dot" aria-hidden="true" />
-            <span className="typing__dot" aria-hidden="true" />
-            <span className="typing__label">Assistant is typing</span>
-          </div>
-        )}
+        {isTyping && <ThinkingIndicator />}
       </div>
     </main>
   );
