@@ -11,6 +11,7 @@ import {
   DEFAULT_CHAT_MODEL,
   type ChatCompletionMessage,
   type ChatCompletionResponse,
+  type ChatCompletionStreamResponse,
   useChatCompletion,
 } from './hooks/useChatCompletion';
 import './App.css';
@@ -331,10 +332,13 @@ const App = () => {
       }
 
       const userMessage: Message = { id: getId(), sender: 'user', content: text };
+      const assistantMessageId = getId();
+      const assistantMessage: Message = { id: assistantMessageId, sender: 'bot', content: '' };
+      let assistantReply = '';
       const conversationForRequest = [...messages, userMessage];
 
       setMessages((current) => {
-        const next = [...current, userMessage];
+        const next = [...current, userMessage, assistantMessage];
         updateActiveChat(next, userMessage);
         return next;
       });
@@ -350,25 +354,68 @@ const App = () => {
           body: {
             model: DEFAULT_CHAT_MODEL,
             messages: toChatCompletionMessages(conversationForRequest),
+            stream: true,
           },
           signal: controller.signal,
-        },
-        {
-          onSuccess: (response: ChatCompletionResponse) => {
-            const assistantReply = extractAssistantReply(response);
-            if (!assistantReply) {
+          onChunk: (chunk: ChatCompletionStreamResponse) => {
+            const contentDelta = chunk?.choices?.reduce((acc, choice) => {
+              if (choice.delta?.content) {
+                return acc + choice.delta.content;
+              }
+              return acc;
+            }, '');
+
+            if (!contentDelta) {
               return;
             }
 
-            const botMessage: Message = {
-              id: getId(),
-              sender: 'bot',
-              content: assistantReply,
-            };
+            assistantReply += contentDelta;
 
             setMessages((current) => {
-              const next = [...current, botMessage];
-              updateActiveChat(next, botMessage);
+              let previewMessage: Message | undefined;
+              const next = current.map((message) => {
+                if (message.id === assistantMessageId) {
+                  const updated = { ...message, content: assistantReply };
+                  previewMessage = updated;
+                  return updated;
+                }
+                return message;
+              });
+
+              if (previewMessage) {
+                updateActiveChat(next, previewMessage);
+              }
+
+              return next;
+            });
+          },
+        },
+        {
+          onSuccess: (response: ChatCompletionResponse) => {
+            const finalAssistantReply = extractAssistantReply(response);
+            if (!finalAssistantReply) {
+              return;
+            }
+
+            setMessages((current) => {
+              let previewMessage: Message | undefined;
+              const next = current.map((message) => {
+                if (message.id === assistantMessageId) {
+                  if (message.content === finalAssistantReply) {
+                    previewMessage = message;
+                    return message;
+                  }
+                  const updated = { ...message, content: finalAssistantReply };
+                  previewMessage = updated;
+                  return updated;
+                }
+                return message;
+              });
+
+              if (previewMessage) {
+                updateActiveChat(next, previewMessage);
+              }
+
               return next;
             });
           },
@@ -379,15 +426,21 @@ const App = () => {
 
             console.error('Chat completion request failed', error);
 
-            const botMessage: Message = {
-              id: getId(),
-              sender: 'bot',
-              content: ASSISTANT_ERROR_MESSAGE,
-            };
-
             setMessages((current) => {
-              const next = [...current, botMessage];
-              updateActiveChat(next, botMessage);
+              let previewMessage: Message | undefined;
+              const next = current.map((message) => {
+                if (message.id === assistantMessageId) {
+                  const updated = { ...message, content: ASSISTANT_ERROR_MESSAGE };
+                  previewMessage = updated;
+                  return updated;
+                }
+                return message;
+              });
+
+              if (previewMessage) {
+                updateActiveChat(next, previewMessage);
+              }
+
               return next;
             });
           },
