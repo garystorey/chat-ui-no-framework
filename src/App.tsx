@@ -242,6 +242,10 @@ const App = () => {
 
   useEffect(() => cancelPendingResponse, [cancelPendingResponse]);
 
+  useEffect(() => {
+    setTyping(chatCompletionStatus === 'pending');
+  }, [chatCompletionStatus, setTyping]);
+
   const updateActiveChat = useCallback(
     (nextMessages: Message[], previewMessage?: Message) => {
       if (!activeChatId) {
