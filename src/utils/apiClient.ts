@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'http://localhost:1234';
+export const API_BASE_URL = 'http://192.168.86.24:1234';
 
 export type ApiRequestOptions = {
   path: string;
