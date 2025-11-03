@@ -216,6 +216,7 @@ const App = () => {
     status: chatCompletionStatus,
   } = chatCompletion;
   const pendingRequestRef = useRef<AbortController | null>(null);
+  const cancelPendingResponseRef = useRef<() => void>(() => {});
   const isFreshChat = messages.length === 0;
 
   useTheme();
@@ -240,7 +241,15 @@ const App = () => {
     setTyping(false);
   }, [chatCompletionStatus, resetChatCompletion, setTyping]);
 
-  useEffect(() => cancelPendingResponse, [cancelPendingResponse]);
+  useEffect(() => {
+    cancelPendingResponseRef.current = cancelPendingResponse;
+  }, [cancelPendingResponse]);
+
+  useEffect(() => {
+    return () => {
+      cancelPendingResponseRef.current();
+    };
+  }, []);
 
   useEffect(() => {
     setTyping(chatCompletionStatus === 'pending');
