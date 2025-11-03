@@ -12,17 +12,8 @@ marked.setOptions({
   breaks: true,
   gfm: true,
   langPrefix: 'hljs language-',
-});
+} as any);
 
 export function renderMarkdown(text: string): string {
-  return DOMPurify.sanitize(marked.parse(text));
-}
-
-export function buildEchoMessage(text: string): string {
-  const userHtml = renderMarkdown(text);
-  const combined = `
-    <p class="message-heading">You said:</p>
-    <blockquote class="message-quote">${userHtml}</blockquote>
-  `;
-  return DOMPurify.sanitize(combined.trim());
+  return DOMPurify.sanitize(marked.parse(text) as string);
 }

@@ -6,8 +6,13 @@ import ChatWindow from './components/ChatWindow';
 import UserInput from './components/UserInput';
 import Card from './components/Card';
 import Sidebar, { ChatSummary } from './components/Sidebar';
-import { buildEchoMessage } from './utils/markdown';
 import useTheme from './hooks/useTheme';
+import {
+  DEFAULT_CHAT_MODEL,
+  type ChatCompletionMessage,
+  type ChatCompletionResponse,
+  useChatCompletion,
+} from './hooks/useChatCompletion';
 import './App.css';
 
 const getId = () => {
@@ -153,6 +158,24 @@ const getMessagePlainText = (message?: Message) => {
   return normalizeWhitespace(message.content);
 };
 
+const toChatCompletionMessages = (messages: Message[]): ChatCompletionMessage[] =>
+  messages.map((message) => ({
+    role: message.sender === 'user' ? 'user' : 'assistant',
+    content: getMessagePlainText(message),
+  }));
+
+const extractAssistantReply = (response: ChatCompletionResponse) => {
+  if (!response?.choices?.length) {
+    return '';
+  }
+
+  const assistantChoice = response.choices.find((choice) => choice.message.role === 'assistant');
+  return assistantChoice?.message?.content?.trim() ?? '';
+};
+
+const ASSISTANT_ERROR_MESSAGE =
+  'Sorry, I had trouble reaching the assistant. Please try again.';
+
 const buildChatTitle = (message?: Message, fallback = 'Conversation') =>
   truncate(getMessagePlainText(message) || getPlainTextFromHtml(fallback) || 'Conversation', 60) ||
   'Conversation';
@@ -186,7 +209,13 @@ const App = () => {
     [...defaultChats].sort((a, b) => b.updatedAt - a.updatedAt)
   );
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
-  const typingTimeoutRef = useRef<number>(0);
+  const chatCompletion = useChatCompletion();
+  const {
+    mutate: sendChatCompletion,
+    reset: resetChatCompletion,
+    status: chatCompletionStatus,
+  } = chatCompletion;
+  const pendingRequestRef = useRef<AbortController | null>(null);
   const isFreshChat = messages.length === 0;
 
   useTheme();
@@ -198,13 +227,20 @@ const App = () => {
     };
   }, [isChatOpen]);
 
-  useEffect(() => {
-    return () => {
-      if (typingTimeoutRef.current) {
-        window.clearTimeout(typingTimeoutRef.current);
-      }
-    };
-  }, []);
+  const cancelPendingResponse = useCallback(() => {
+    if (pendingRequestRef.current) {
+      pendingRequestRef.current.abort();
+      pendingRequestRef.current = null;
+    }
+
+    if (chatCompletionStatus !== 'idle') {
+      resetChatCompletion();
+    }
+
+    setTyping(false);
+  }, [chatCompletionStatus, resetChatCompletion, setTyping]);
+
+  useEffect(() => cancelPendingResponse, [cancelPendingResponse]);
 
   const updateActiveChat = useCallback(
     (nextMessages: Message[], previewMessage?: Message) => {
@@ -269,10 +305,20 @@ const App = () => {
         return false;
       }
 
+      if (pendingRequestRef.current) {
+        return false;
+      }
+
+      if (chatCompletionStatus === 'error') {
+        resetChatCompletion();
+      }
+
       if (!isChatOpen) {
         setChatOpen(true);
       }
+
       const userMessage: Message = { id: getId(), sender: 'user', content: text };
+      const conversationForRequest = [...messages, userMessage];
 
       setMessages((current) => {
         const next = [...current, userMessage];
@@ -282,26 +328,79 @@ const App = () => {
 
       setInputValue('');
       setTyping(true);
-      const delay = 350 + Math.min(1400, Math.max(250, text.length * 8));
-      typingTimeoutRef.current = window.setTimeout(() => {
-        setTyping(false);
-        const botMessage: Message = {
-          id: getId(),
-          sender: 'bot',
-          content: buildEchoMessage(text),
-          renderAsHtml: true,
-        };
 
-        setMessages((current) => {
-          const next = [...current, botMessage];
-          updateActiveChat(next, botMessage);
-          return next;
-        });
-      }, delay);
+      const controller = new AbortController();
+      pendingRequestRef.current = controller;
+
+      sendChatCompletion(
+        {
+          body: {
+            model: DEFAULT_CHAT_MODEL,
+            messages: toChatCompletionMessages(conversationForRequest),
+          },
+          signal: controller.signal,
+        },
+        {
+          onSuccess: (response: ChatCompletionResponse) => {
+            const assistantReply = extractAssistantReply(response);
+            if (!assistantReply) {
+              return;
+            }
+
+            const botMessage: Message = {
+              id: getId(),
+              sender: 'bot',
+              content: assistantReply,
+            };
+
+            setMessages((current) => {
+              const next = [...current, botMessage];
+              updateActiveChat(next, botMessage);
+              return next;
+            });
+          },
+          onError: (error: unknown) => {
+            if (error instanceof DOMException && error.name === 'AbortError') {
+              return;
+            }
+
+            console.error('Chat completion request failed', error);
+
+            const botMessage: Message = {
+              id: getId(),
+              sender: 'bot',
+              content: ASSISTANT_ERROR_MESSAGE,
+            };
+
+            setMessages((current) => {
+              const next = [...current, botMessage];
+              updateActiveChat(next, botMessage);
+              return next;
+            });
+          },
+          onSettled: () => {
+            if (pendingRequestRef.current === controller) {
+              pendingRequestRef.current = null;
+            }
+            setTyping(false);
+          },
+        }
+      );
 
       return true;
     },
-    [isChatOpen, setChatOpen, setInputValue, setMessages, setTyping, updateActiveChat]
+    [
+      chatCompletionStatus,
+      isChatOpen,
+      messages,
+      resetChatCompletion,
+      sendChatCompletion,
+      setChatOpen,
+      setInputValue,
+      setMessages,
+      setTyping,
+      updateActiveChat,
+    ]
   );
 
   const handleSuggestionSelect = useCallback(
@@ -316,11 +415,7 @@ const App = () => {
   );
 
   const handleNewChat = useCallback(() => {
-    if (typingTimeoutRef.current) {
-      window.clearTimeout(typingTimeoutRef.current);
-      typingTimeoutRef.current = 0;
-    }
-    setTyping(false);
+    cancelPendingResponse();
 
     archiveCurrentConversation();
 
@@ -331,11 +426,11 @@ const App = () => {
     setSidebarCollapsed(false);
   }, [
     archiveCurrentConversation,
+    cancelPendingResponse,
     setChatOpen,
     setInputValue,
     setMessages,
     setSidebarCollapsed,
-    setTyping,
   ]);
 
   const handleSelectChat = useCallback(
@@ -345,11 +440,7 @@ const App = () => {
         return;
       }
 
-      if (typingTimeoutRef.current) {
-        window.clearTimeout(typingTimeoutRef.current);
-        typingTimeoutRef.current = 0;
-      }
-      setTyping(false);
+      cancelPendingResponse();
 
       archiveCurrentConversation();
 
@@ -358,7 +449,14 @@ const App = () => {
       setInputValue('');
       setChatOpen(true);
     },
-    [archiveCurrentConversation, chatHistory, setChatOpen, setInputValue, setMessages, setTyping]
+    [
+      archiveCurrentConversation,
+      cancelPendingResponse,
+      chatHistory,
+      setChatOpen,
+      setInputValue,
+      setMessages,
+    ]
   );
 
   const handleRemoveChat = useCallback(
@@ -401,11 +499,7 @@ const App = () => {
         return;
       }
 
-      if (typingTimeoutRef.current) {
-        window.clearTimeout(typingTimeoutRef.current);
-        typingTimeoutRef.current = 0;
-      }
-      setTyping(false);
+      cancelPendingResponse();
 
       if (shouldReset || !nextActiveId) {
         setActiveChatId(null);
@@ -423,7 +517,14 @@ const App = () => {
         setInputValue('');
       }
     },
-    [activeChatId, setChatOpen, setInputValue, setMessages, setSidebarCollapsed, setTyping]
+    [
+      activeChatId,
+      cancelPendingResponse,
+      setChatOpen,
+      setInputValue,
+      setMessages,
+      setSidebarCollapsed,
+    ]
   );
 
   const suggestionsClasses = ['suggestions'];
