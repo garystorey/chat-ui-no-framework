@@ -7,7 +7,7 @@
   --brand-orange: #ff5640;
   --accent: var(--brand-orange);
   --accent-strong: color-mix(in oklab, var(--brand-orange) 70%, black 30%);
-  --accent-button-text: #fef9f8;
+  --accent-button-text: #2d130c;
   --accent-contrast: color-mix(in oklab, var(--accent) 75%, #1c1f24 25%);
 
   --user-msg-bg-dark: #141a22;
@@ -110,13 +110,13 @@ body.light {
   --panel-border: rgba(47, 60, 86, 0.24);
   --input-bg: rgba(219, 224, 235, 0.95);
   --text: #151d29;
-  --muted: #3f4a5d;
+  --muted: #343f50;
   --user-msg-bg: color-mix(in oklab, #dde2ef 46%, var(--accent) 54%);
   --user-msg-text: var(--user-msg-text-light);
   --shadow: 0 18px 48px rgba(29, 39, 61, 0.2);
   --shadow-soft: 0 16px 36px rgba(29, 41, 64, 0.22);
   --shadow-strong: 0 30px 80px rgba(24, 33, 53, 0.3);
-  --accent-button-text: #fff8f6;
+  --accent-button-text: #2d130c;
   --accent-contrast: color-mix(in oklab, var(--accent) 78%, #26130e 22%);
   --divider: rgba(28, 36, 52, 0.16);
   --grid-line: rgba(28, 36, 52, 0.1);
@@ -163,7 +163,7 @@ body.dark {
   --shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
   --shadow-soft: 0 20px 42px rgba(2, 4, 8, 0.45);
   --shadow-strong: 0 40px 90px rgba(2, 4, 8, 0.6);
-  --accent-button-text: #fff6f4;
+  --accent-button-text: #2d130c;
   --accent-contrast: color-mix(in oklab, var(--accent) 65%, #fdf2ee 35%);
   --divider: rgba(255, 255, 255, 0.08);
   --grid-line: rgba(255, 255, 255, 0.05);
