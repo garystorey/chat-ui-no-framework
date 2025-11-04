@@ -469,15 +469,14 @@ const App = () => {
     ]
   );
 
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
+
   const handleSuggestionSelect = useCallback(
     (value: string) => {
       setInputValue(value);
-      const container = document.getElementById('inputText');
-      if (container instanceof HTMLTextAreaElement) {
-        container.focus();
-      }
+      inputRef.current?.focus();
     },
-    [setInputValue]
+    [inputRef, setInputValue]
   );
 
   const handleNewChat = useCallback(() => {
@@ -643,7 +642,12 @@ const App = () => {
             {isFreshChat ? (
               <>
                 <div className="chat-main__inline-input">
-                  <UserInput value={inputValue} onChange={setInputValue} onSend={handleSend} />
+                  <UserInput
+                    ref={inputRef}
+                    value={inputValue}
+                    onChange={setInputValue}
+                    onSend={handleSend}
+                  />
                 </div>
                 {suggestionsSection}
               </>
@@ -654,7 +658,12 @@ const App = () => {
           </div>
         </div>
         {!isFreshChat ? (
-          <UserInput value={inputValue} onChange={setInputValue} onSend={handleSend} />
+          <UserInput
+            ref={inputRef}
+            value={inputValue}
+            onChange={setInputValue}
+            onSend={handleSend}
+          />
         ) : null}
       </div>
     </div>
