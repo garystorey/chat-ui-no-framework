@@ -7,6 +7,9 @@
   --brand-orange: #ff5640;
   --accent: var(--brand-orange);
   --accent-strong: color-mix(in oklab, var(--brand-orange) 70%, black 30%);
+  --accent-cta-start: #ff947d;
+  --accent-cta-end: #ff6f52;
+  --accent-cta-text: #1b0600;
   --accent-button-text: #2d130c;
   --accent-contrast: color-mix(in oklab, var(--accent) 75%, #1c1f24 25%);
 
@@ -110,7 +113,7 @@ body.light {
   --panel-border: rgba(47, 60, 86, 0.24);
   --input-bg: rgba(219, 224, 235, 0.95);
   --text: #151d29;
-  --muted: #343f50;
+  --muted: #3c4656;
   --user-msg-bg: color-mix(in oklab, #dde2ef 46%, var(--accent) 54%);
   --user-msg-text: var(--user-msg-text-light);
   --shadow: 0 18px 48px rgba(29, 39, 61, 0.2);
