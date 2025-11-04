@@ -102,7 +102,6 @@ const UserInput = ({ value, onChange, onSend }: UserInputProps) => {
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             aria-describedby="inputHint"
-            aria-label="Message input"
             autoFocus
           />
           <span className="input-panel__glyph input-panel__glyph--trail" aria-hidden="true">
