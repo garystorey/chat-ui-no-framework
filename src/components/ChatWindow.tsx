@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useRef } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import type { Message } from '../atoms/chatAtoms';
 import ChatMessage from './ChatMessage';
 import ThinkingIndicator from './ThinkingIndicator';
@@ -12,12 +12,25 @@ type ChatWindowProps = {
 
 const ChatWindow = ({ messages, isTyping, isOpen }: ChatWindowProps) => {
   const messagesRef = useRef<HTMLDivElement>(null);
-  const reduceMotion = useMemo(
-    () =>
-      typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-    []
-  );
+  const [reduceMotion, setReduceMotion] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handleChange = (event: MediaQueryListEvent) => {
+      setReduceMotion(event.matches);
+    };
+
+    setReduceMotion(mediaQuery.matches);
+    mediaQuery.addEventListener('change', handleChange);
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+    };
+  }, []);
 
   useEffect(() => {
     const container = messagesRef.current;
@@ -41,6 +54,7 @@ const ChatWindow = ({ messages, isTyping, isOpen }: ChatWindowProps) => {
         aria-live="polite"
         aria-relevant="additions"
         id="messages"
+        tabIndex={-1}
       >
         {messages.map((message) => (
           <ChatMessage key={message.id} message={message} />
