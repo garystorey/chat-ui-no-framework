@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react';
 import type { Message } from './atoms/chatAtoms';
 import { messagesAtom, typingAtom } from './atoms/chatAtoms';
 import ChatWindow from './components/ChatWindow';
@@ -598,6 +598,17 @@ const App = () => {
     suggestionsClasses.push('suggestions--hidden');
   }
 
+  const handleSkipToMessages = useCallback(
+    (event: MouseEvent<HTMLAnchorElement>) => {
+      event.preventDefault();
+      const target = document.getElementById('messages');
+      if (target instanceof HTMLElement) {
+        target.focus();
+      }
+    },
+    []
+  );
+
   const suggestionsSection = (
     <section
       className={suggestionsClasses.join(' ')}
@@ -622,7 +633,7 @@ const App = () => {
 
   return (
     <div className="app">
-      <a href="#messages" className="skip-link">
+      <a href="#messages" className="skip-link" onClick={handleSkipToMessages}>
         Skip to messages
       </a>
       <Sidebar
