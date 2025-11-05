@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { AttachmentIcon, MicIcon, SendIcon, SparkIcon } from './icons';
+import { AttachmentIcon, MicIcon, SendIcon } from './icons';
 import './UserInput.css';
 
 export type UserInputSendPayload = {
@@ -193,14 +193,6 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
                 title="Add attachment"
               >
                 <AttachmentIcon />
-              </button>
-              <button
-                type="button"
-                className="input-panel__icon-button input-panel__icon-button--accent"
-                aria-label="Insert spark"
-                title="Insert spark"
-              >
-                <SparkIcon />
               </button>
               <button
                 type="button"
