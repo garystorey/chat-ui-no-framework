@@ -1,6 +1,6 @@
 import { useAtom } from 'jotai';
 import { useCallback, useEffect, useMemo } from 'react';
-import { themeAtom } from '../atoms/chatAtoms';
+import { themeAtom } from '../atoms/chat';
 
 type Theme = 'light' | 'dark';
 

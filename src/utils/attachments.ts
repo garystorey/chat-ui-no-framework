@@ -1,5 +1,5 @@
 import { getId } from './id';
-import type { MessageAttachment } from '../atoms/chatAtoms';
+import type { MessageAttachment } from '../atoms/chat';
 
 export type AttachmentRequest = MessageAttachment & { data: string };
 

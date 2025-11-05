@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react';
-import type { Message } from '../atoms/chatAtoms';
+import type { Message } from '../types'
 import {
   formatFileSize,
   getAttachmentDisplayType,

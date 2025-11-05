@@ -1,6 +1,6 @@
-import type { Message } from '../atoms/chatAtoms';
+import type { Message } from '../atoms/chat';
 import type { ChatCompletionMessage, ChatCompletionResponse } from '../hooks';
-import type { ChatSummary } from '../types/chat';
+import type { ChatSummary } from '../types';
 import { getId } from './id';
 import { getPlainTextFromHtml, normalizeWhitespace, truncate } from './text';
 

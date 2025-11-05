@@ -1,4 +1,3 @@
-import { atom } from 'jotai';
 
 export type MessageAttachment = {
   id: string;
@@ -15,6 +14,10 @@ export type Message = {
   attachments?: MessageAttachment[];
 };
 
-export const messagesAtom = atom<Message[]>([]);
-export const typingAtom = atom<boolean>(false);
-export const themeAtom = atom<'light' | 'dark'>('dark');
+export type ChatSummary = {
+  id: string;
+  title: string;
+  preview: string;
+  updatedAt: number;
+  messages: Message[];
+};

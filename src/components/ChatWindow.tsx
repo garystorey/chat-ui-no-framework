@@ -1,5 +1,5 @@
 import { memo, useEffect, useRef, useState } from 'react';
-import type { Message } from '../atoms/chatAtoms';
+import type { Message } from '../types';
 import ChatMessage from './ChatMessage';
 import ThinkingIndicator from './ThinkingIndicator';
 import './ChatWindow.css';

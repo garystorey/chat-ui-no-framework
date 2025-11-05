@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import ThemeToggle from './ThemeToggle';
 import './Sidebar.css';
-import type { ChatSummary } from '../types/chat';
+import type { ChatSummary } from '../types';
 
 type SidebarProps = {
   collapsed: boolean;
@@ -54,13 +54,13 @@ const Sidebar = ({
             aria-expanded={!collapsed}
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            <span aria-hidden="true">{collapsed ? '›' : '‹'}</span>
+            <span aria-hidden="true">{collapsed ? '<' : '>'}</span>
           </button>
         </div>
         <div className="sidebar__actions">
           <button type="button" className="sidebar__action" onClick={onNewChat}>
             <span className="sidebar__action-icon" aria-hidden="true">
-              ＋
+              +
             </span>
             <span className="sidebar__action-label">New Chat</span>
           </button>
