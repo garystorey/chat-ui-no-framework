@@ -1,44 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { ApiError, apiStreamRequest } from '../utils';
-
-export type ChatCompletionRole = 'system' | 'user' | 'assistant';
-
-export type ChatCompletionMessage = {
-  role: ChatCompletionRole;
-  content: string;
-};
-
-export type ChatCompletionRequest = {
-  model: string;
-  messages: ChatCompletionMessage[];
-  stream?: boolean;
-  [key: string]: unknown;
-};
-
-export type ChatCompletionChoice = {
-  index: number;
-  message: ChatCompletionMessage;
-  finish_reason?: string | null;
-};
-
-export type ChatCompletionResponse = {
-  id?: string;
-  choices: ChatCompletionChoice[];
-};
-
-export type ChatCompletionStreamChoice = {
-  index: number;
-  delta?: Partial<ChatCompletionMessage>;
-  finish_reason?: string | null;
-};
-
-export type ChatCompletionStreamResponse = {
-  id?: string;
-  choices: ChatCompletionStreamChoice[];
-};
+import { ChatCompletionRequest, ChatCompletionStreamResponse, ChatCompletionResponse, ChatCompletionChoice } from '../types';
 
 export const CHAT_COMPLETION_PATH = '/v1/chat/completions';
-
 export const DEFAULT_CHAT_MODEL = 'gpt-4o-mini';
 
 type ChatCompletionMutationVariables = {

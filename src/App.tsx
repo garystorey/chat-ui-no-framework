@@ -1,4 +1,4 @@
-import { useAtom } from 'jotai';
+import { useAtom } from "jotai";
 import {
   useCallback,
   useEffect,
@@ -6,19 +6,21 @@ import {
   useRef,
   useState,
   type MouseEvent,
-} from 'react';
-import { messagesAtom, typingAtom } from './atoms/chat';
-import { Card, ChatWindow, Sidebar, UserInput } from './components';
-import type { UserInputSendPayload } from './components';
-import type { ChatSummary, Message, MessageAttachment } from './types';
-import {
-  useTheme,
-  useChatCompletion,
-  DEFAULT_CHAT_MODEL,
-  type ChatCompletionResponse,
-  type ChatCompletionStreamResponse,
-} from './hooks';
-import './App.css';
+} from "react";
+import { messagesAtom, typingAtom } from "./atoms/chat";
+import { Card, ChatWindow, Show, Sidebar, UserInput } from "./components";
+import type {} from "./components";
+import type {
+  UserInputSendPayload,
+  ChatSummary,
+  Message,
+  MessageAttachment,
+  ChatCompletionResponse,
+  ChatCompletionStreamResponse,
+  AttachmentRequest,
+} from "./types";
+import { useTheme, useChatCompletion, DEFAULT_CHAT_MODEL } from "./hooks";
+import "./App.css";
 import {
   buildAttachmentRequestPayload,
   buildChatPreview,
@@ -28,18 +30,18 @@ import {
   extractAssistantReply,
   getId,
   toChatCompletionMessages,
-} from './utils';
-import type { AttachmentRequest } from './utils';
-import { defaultChats, suggestions } from './App.data';
+} from "./utils";
 
+import { defaultChats, suggestions } from "./App.data";
+import Suggestions from "./components/Suggestions";
 
 const ASSISTANT_ERROR_MESSAGE =
-  'Sorry, I had trouble reaching the assistant. Please try again.';
+  "Sorry, I had trouble reaching the assistant. Please try again.";
 
 const App = () => {
   const [messages, setMessages] = useAtom(messagesAtom);
   const [isTyping, setTyping] = useAtom(typingAtom);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [isChatOpen, setChatOpen] = useState(false);
   const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [chatHistory, setChatHistory] = useState<ChatSummary[]>(() =>
@@ -59,9 +61,9 @@ const App = () => {
   useTheme();
 
   useEffect(() => {
-    document.body.classList.toggle('chat-open', isChatOpen);
+    document.body.classList.toggle("chat-open", isChatOpen);
     return () => {
-      document.body.classList.remove('chat-open');
+      document.body.classList.remove("chat-open");
     };
   }, [isChatOpen]);
 
@@ -71,7 +73,7 @@ const App = () => {
       pendingRequestRef.current = null;
     }
 
-    if (chatCompletionStatus !== 'idle') {
+    if (chatCompletionStatus !== "idle") {
       resetChatCompletion();
     }
 
@@ -89,7 +91,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    setTyping(chatCompletionStatus === 'pending');
+    setTyping(chatCompletionStatus === "pending");
   }, [chatCompletionStatus, setTyping]);
 
   const updateActiveChat = useCallback(
@@ -98,7 +100,8 @@ const App = () => {
         return;
       }
 
-      const previewCandidate = previewMessage ?? nextMessages[nextMessages.length - 1];
+      const previewCandidate =
+        previewMessage ?? nextMessages[nextMessages.length - 1];
 
       setChatHistory((current) =>
         current
@@ -159,7 +162,7 @@ const App = () => {
         return false;
       }
 
-      if (chatCompletionStatus === 'error') {
+      if (chatCompletionStatus === "error") {
         resetChatCompletion();
       }
 
@@ -179,20 +182,26 @@ const App = () => {
             messageAttachments
           );
         } catch (error) {
-          console.error('Unable to read attachments', error);
+          console.error("Unable to read attachments", error);
           return false;
         }
       }
 
       const userMessage: Message = {
         id: getId(),
-        sender: 'user',
+        sender: "user",
         content: text,
-        ...(messageAttachments.length ? { attachments: messageAttachments } : {}),
+        ...(messageAttachments.length
+          ? { attachments: messageAttachments }
+          : {}),
       };
       const assistantMessageId = getId();
-      const assistantMessage: Message = { id: assistantMessageId, sender: 'bot', content: '' };
-      let assistantReply = '';
+      const assistantMessage: Message = {
+        id: assistantMessageId,
+        sender: "bot",
+        content: "",
+      };
+      let assistantReply = "";
       const conversationForRequest = [...messages, userMessage];
 
       setMessages((current) => {
@@ -201,7 +210,7 @@ const App = () => {
         return next;
       });
 
-      setInputValue('');
+      setInputValue("");
       setTyping(true);
 
       const controller = new AbortController();
@@ -213,7 +222,9 @@ const App = () => {
             model: DEFAULT_CHAT_MODEL,
             messages: toChatCompletionMessages(conversationForRequest),
             stream: true,
-            ...(requestAttachments.length ? { attachments: requestAttachments } : {}),
+            ...(requestAttachments.length
+              ? { attachments: requestAttachments }
+              : {}),
           },
           signal: controller.signal,
           onChunk: (chunk: ChatCompletionStreamResponse) => {
@@ -222,7 +233,7 @@ const App = () => {
                 return acc + choice.delta.content;
               }
               return acc;
-            }, '');
+            }, "");
 
             if (!contentDelta) {
               return;
@@ -279,17 +290,20 @@ const App = () => {
             });
           },
           onError: (error: unknown) => {
-            if (error instanceof DOMException && error.name === 'AbortError') {
+            if (error instanceof DOMException && error.name === "AbortError") {
               return;
             }
 
-            console.error('Chat completion request failed', error);
+            console.error("Chat completion request failed", error);
 
             setMessages((current) => {
               let previewMessage: Message | undefined;
               const next = current.map((message) => {
                 if (message.id === assistantMessageId) {
-                  const updated = { ...message, content: ASSISTANT_ERROR_MESSAGE };
+                  const updated = {
+                    ...message,
+                    content: ASSISTANT_ERROR_MESSAGE,
+                  };
                   previewMessage = updated;
                   return updated;
                 }
@@ -349,12 +363,10 @@ const App = () => {
 
   const handleNewChat = useCallback(() => {
     cancelPendingResponse();
-
     archiveCurrentConversation();
-
     setMessages([]);
     setActiveChatId(null);
-    setInputValue('');
+    setInputValue("");
     setChatOpen(false);
     setSidebarCollapsed(false);
   }, [
@@ -374,12 +386,10 @@ const App = () => {
       }
 
       cancelPendingResponse();
-
       archiveCurrentConversation();
-
       setActiveChatId(chatId);
       setMessages(cloneMessages(selectedChat.messages));
-      setInputValue('');
+      setInputValue("");
       setChatOpen(true);
     },
     [
@@ -439,7 +449,7 @@ const App = () => {
         setMessages([]);
         setChatOpen(false);
         setSidebarCollapsed(false);
-        setInputValue('');
+        setInputValue("");
         return;
       }
 
@@ -447,7 +457,7 @@ const App = () => {
         setActiveChatId(nextActiveId);
         setMessages(nextMessages);
         setChatOpen(true);
-        setInputValue('');
+        setInputValue("");
       }
     },
     [
@@ -460,16 +470,16 @@ const App = () => {
     ]
   );
 
-  const suggestionsClasses = ['suggestions'];
+  const suggestionsClasses = ["suggestions"];
 
   if (isChatOpen) {
-    suggestionsClasses.push('suggestions--hidden');
+    suggestionsClasses.push("suggestions--hidden");
   }
 
   const handleSkipToMessages = useCallback(
     (event: MouseEvent<HTMLAnchorElement>) => {
       event.preventDefault();
-      const target = document.getElementById('messages');
+      const target = document.getElementById("messages");
       if (target instanceof HTMLElement) {
         target.focus();
       }
@@ -480,31 +490,6 @@ const App = () => {
   const handleToggleSidebar = useCallback(() => {
     setSidebarCollapsed((previous) => !previous);
   }, [setSidebarCollapsed]);
-
-  const suggestionsSection = (
-    <section
-      className={suggestionsClasses.join(' ')}
-      aria-hidden={isChatOpen}
-      aria-labelledby="suggestions-heading"
-    >
-      <h2 id="suggestions-heading" className="sr-only">
-        Suggested prompts
-      </h2>
-      <ul className="suggestions__list">
-        {suggestionItems.map((suggestion) => (
-          <li key={suggestion.id} className="suggestions__item">
-            <Card
-              title={suggestion.title}
-              description={suggestion.description}
-              actionLabel={suggestion.actionLabel}
-              icon={suggestion.icon}
-              onSelect={suggestion.handleSelect}
-            />
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
 
   return (
     <div className="app">
@@ -523,34 +508,47 @@ const App = () => {
       <main className="chat-wrapper" aria-label="Chat interface">
         <div className="chat-main">
           <div
-            className={`chat-main__content ${isFreshChat ? 'chat-main__content--centered' : ''}`}
+            className={`chat-main__content ${
+              isFreshChat ? "chat-main__content--centered" : ""
+            }`}
           >
-            {isFreshChat ? (
-              <>
-                <div className="chat-main__inline-input">
-                  <UserInput
-                    ref={inputRef}
-                    value={inputValue}
-                    onChange={setInputValue}
-                    onSend={handleSend}
-                  />
-                </div>
-                {suggestionsSection}
-              </>
-            ) : (
-              suggestionsSection
-            )}
-            <ChatWindow messages={messages} isTyping={isTyping} isOpen={isChatOpen} />
+            <Show when={isFreshChat}>
+              <div className="chat-main__inline-input">
+                <UserInput
+                  ref={inputRef}
+                  value={inputValue}
+                  onChange={setInputValue}
+                  onSend={handleSend}
+                />
+              </div>
+              <Suggestions
+                suggestions={suggestionItems}
+                classes={suggestionsClasses}
+                isVisible={isChatOpen}
+              />
+            </Show>
+            <Show when={!isFreshChat}>
+              <Suggestions
+                suggestions={suggestionItems}
+                classes={suggestionsClasses}
+                isVisible={isChatOpen}
+              />
+            </Show>
+            <ChatWindow
+              messages={messages}
+              isTyping={isTyping}
+              isOpen={isChatOpen}
+            />
           </div>
         </div>
-        {!isFreshChat ? (
+        <Show when={!isFreshChat}>
           <UserInput
             ref={inputRef}
             value={inputValue}
             onChange={setInputValue}
             onSend={handleSend}
           />
-        ) : null}
+        </Show>
       </main>
     </div>
   );

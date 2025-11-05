@@ -5,5 +5,7 @@ export { default as Sidebar } from './Sidebar';
 export { default as ThemeToggle } from './ThemeToggle';
 export { default as ThinkingIndicator } from './ThinkingIndicator';
 export { default as UserInput } from './UserInput';
-
-export type { UserInputSendPayload } from './UserInput';
+export { default as Show } from './Show';
+export { default as Suggestions } from './Suggestions';
+export { default as List } from './List';
+export { default as AttachmentView } from './AttachmentView';

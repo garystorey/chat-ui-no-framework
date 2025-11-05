@@ -1,6 +1,4 @@
-import type { Message } from '../atoms/chat';
-import type { ChatCompletionMessage, ChatCompletionResponse } from '../hooks';
-import type { ChatSummary } from '../types';
+import type { ChatSummary, Message, ChatCompletionMessage, ChatCompletionResponse, ChatCompletionChoice } from '../types';
 import { getId } from './id';
 import { getPlainTextFromHtml, normalizeWhitespace, truncate } from './text';
 
@@ -33,7 +31,7 @@ export const extractAssistantReply = (response: ChatCompletionResponse) => {
   }
 
   const assistantChoice = response.choices.find(
-    (choice) => choice.message.role === 'assistant'
+    (choice: ChatCompletionChoice) => choice.message.role === 'assistant'
   );
   return assistantChoice?.message?.content?.trim() ?? '';
 };

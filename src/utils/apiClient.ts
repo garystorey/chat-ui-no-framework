@@ -1,23 +1,6 @@
+import { ApiRequestOptions, ApiStreamRequestOptions } from "../types";
+
 export const API_BASE_URL = 'http://192.168.86.24:1234';
-
-export type ApiRequestOptions = {
-  path: string;
-  method?: string;
-  body?: unknown;
-  headers?: Record<string, string>;
-  signal?: AbortSignal;
-};
-
-export type ApiStreamRequestOptions<TMessage, TResponse> = {
-  path: string;
-  method?: string;
-  body?: unknown;
-  headers?: Record<string, string>;
-  signal?: AbortSignal;
-  onMessage?: (message: TMessage) => void;
-  parseMessage?: (data: string) => TMessage;
-  buildResponse: (messages: TMessage[]) => TResponse;
-};
 
 const isJsonLike = (value: unknown): value is Record<string, unknown> | unknown[] => {
   if (!value) {

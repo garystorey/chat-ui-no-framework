@@ -1,7 +1,6 @@
 import { getId } from './id';
-import type { MessageAttachment } from '../atoms/chat';
+import type { AttachmentRequest, MessageAttachment } from '../types';
 
-export type AttachmentRequest = MessageAttachment & { data: string };
 
 const BASE64_CHUNK_SIZE = 0x8000;
 

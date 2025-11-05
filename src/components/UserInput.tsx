@@ -11,12 +11,8 @@ import {
 } from 'react';
 import { AttachmentIcon, MicIcon, SendIcon } from './icons';
 import { getId } from '../utils';
+import { UserInputSendPayload } from '../types';
 import './UserInput.css';
-
-export type UserInputSendPayload = {
-  text: string;
-  attachments: File[];
-};
 
 type SelectedAttachment = {
   id: string;
@@ -155,7 +151,7 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
                     onClick={() => handleRemoveAttachment(id)}
                     aria-label={`Remove ${file.name}`}
                   >
-                    Remove
+                    X <span className='sr-only'>Remove</span>
                   </button>
                 </li>
               ))}

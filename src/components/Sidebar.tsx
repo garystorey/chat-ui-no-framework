@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import ThemeToggle from './ThemeToggle';
-import './Sidebar.css';
 import type { ChatSummary } from '../types';
+import './Sidebar.css';
 
 type SidebarProps = {
   collapsed: boolean;
