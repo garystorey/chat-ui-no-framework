@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react';
 import type { Message } from '../atoms/chatAtoms';
-import { renderMarkdown } from '../utils/markdown';
+import { formatFileSize, getAttachmentDisplayType, renderMarkdown } from '../utils';
 import './ChatMessage.css';
 
 type ChatMessageProps = {
@@ -16,13 +16,36 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
   }, [message.content, message.renderAsHtml]);
 
   const ariaLabel = message.sender === 'user' ? 'User message' : 'Assistant message';
+  const attachments = message.attachments ?? [];
 
   return (
-    <article
-      className={`message message--${message.sender}`}
-      aria-label={ariaLabel}
-      dangerouslySetInnerHTML={{ __html: content }}
-    />
+    <article className={`message message--${message.sender}`} aria-label={ariaLabel}>
+      <div className="message__body" dangerouslySetInnerHTML={{ __html: content }} />
+      {attachments.length > 0 && (
+        <ul className="message__attachments" aria-label="Message attachments">
+          {attachments.map((attachment) => {
+            const typeLabel = getAttachmentDisplayType(attachment);
+            const sizeLabel = formatFileSize(attachment.size);
+
+            return (
+              <li key={attachment.id} className="message__attachment">
+                <span className="message__attachment-icon" aria-hidden="true">
+                  📎
+                </span>
+                <div className="message__attachment-details">
+                  <span className="message__attachment-name" title={attachment.name}>
+                    {attachment.name}
+                  </span>
+                  <span className="message__attachment-meta">
+                    {typeLabel ? `${typeLabel} • ${sizeLabel}` : sizeLabel}
+                  </span>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </article>
   );
 };
 

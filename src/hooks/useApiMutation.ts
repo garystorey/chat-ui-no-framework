@@ -1,5 +1,5 @@
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
-import { ApiError, apiRequest, ApiRequestOptions } from '../utils/apiClient';
+import { ApiError, apiRequest, ApiRequestOptions } from '../utils';
 
 export type ApiMutationVariables = Omit<ApiRequestOptions, 'path' | 'method'> & {
   path?: string;

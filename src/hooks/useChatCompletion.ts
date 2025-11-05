@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { ApiError, apiStreamRequest } from '../utils/apiClient';
+import { ApiError, apiStreamRequest } from '../utils';
 
 export type ChatCompletionRole = 'system' | 'user' | 'assistant';
 

@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import useTheme from '../hooks/useTheme';
+import { useTheme } from '../hooks';
 import './ThemeToggle.css';
 
 const ThemeToggle = () => {

@@ -1,17 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { Message } from '../atoms/chatAtoms';
 import ThemeToggle from './ThemeToggle';
 import './Sidebar.css';
-
-export type ChatSummary = {
-  id: string;
-  title: string;
-  preview: string;
-  updatedAt: number;
-  // The full message history for a conversation is stored alongside the
-  // summary so the main app can restore it when revisiting a chat.
-  messages: Message[];
-};
+import type { ChatSummary } from '../types/chat';
 
 type SidebarProps = {
   collapsed: boolean;
