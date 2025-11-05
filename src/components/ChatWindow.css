@@ -51,6 +51,16 @@
     black calc(100% - 24px),
     transparent 100%
   );
+  list-style: none;
+}
+
+.chat-window__message {
+  margin: 0;
+}
+
+.chat-window__message--status {
+  display: flex;
+  justify-content: center;
 }
 
 .chat-window__messages::before,

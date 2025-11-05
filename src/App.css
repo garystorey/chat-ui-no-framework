@@ -51,12 +51,22 @@
 }
 
 .suggestions {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.25rem;
   width: 100%;
   max-width: var(--max-chat-width);
   margin: 0 auto;
+}
+
+.suggestions__list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.suggestions__item {
+  min-height: 100%;
 }
 
 .suggestions--hidden {
@@ -73,7 +83,7 @@
     border-radius: 1.25rem;
   }
 
-  .suggestions {
+  .suggestions__list {
     grid-template-columns: 1fr;
   }
 }

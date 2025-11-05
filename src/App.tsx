@@ -1,5 +1,12 @@
 import { useAtom } from 'jotai';
-import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEvent,
+} from 'react';
 import type { Message } from './atoms/chatAtoms';
 import { messagesAtom, typingAtom } from './atoms/chatAtoms';
 import ChatWindow from './components/ChatWindow';
@@ -479,6 +486,15 @@ const App = () => {
     [inputRef, setInputValue]
   );
 
+  const suggestionItems = useMemo(
+    () =>
+      suggestions.map((suggestion) => ({
+        ...suggestion,
+        handleSelect: () => handleSuggestionSelect(suggestion.prompt),
+      })),
+    [handleSuggestionSelect]
+  );
+
   const handleNewChat = useCallback(() => {
     cancelPendingResponse();
 
@@ -609,6 +625,10 @@ const App = () => {
     []
   );
 
+  const handleToggleSidebar = useCallback(() => {
+    setSidebarCollapsed((previous) => !previous);
+  }, [setSidebarCollapsed]);
+
   const suggestionsSection = (
     <section
       className={suggestionsClasses.join(' ')}
@@ -618,34 +638,37 @@ const App = () => {
       <h2 id="suggestions-heading" className="sr-only">
         Suggested prompts
       </h2>
-      {suggestions.map((suggestion) => (
-        <Card
-          key={suggestion.id}
-          title={suggestion.title}
-          description={suggestion.description}
-          actionLabel={suggestion.actionLabel}
-          icon={suggestion.icon}
-          onSelect={() => handleSuggestionSelect(suggestion.prompt)}
-        />
-      ))}
+      <ul className="suggestions__list">
+        {suggestionItems.map((suggestion) => (
+          <li key={suggestion.id} className="suggestions__item">
+            <Card
+              title={suggestion.title}
+              description={suggestion.description}
+              actionLabel={suggestion.actionLabel}
+              icon={suggestion.icon}
+              onSelect={suggestion.handleSelect}
+            />
+          </li>
+        ))}
+      </ul>
     </section>
   );
 
   return (
     <div className="app">
       <a href="#messages" className="skip-link" onClick={handleSkipToMessages}>
-        Skip to messages
+        Skip to conversation
       </a>
       <Sidebar
         collapsed={isSidebarCollapsed}
-        onToggle={() => setSidebarCollapsed((prev: boolean) => !prev)}
+        onToggle={handleToggleSidebar}
         chats={chatHistory}
         activeChatId={activeChatId}
         onSelectChat={handleSelectChat}
         onNewChat={handleNewChat}
         onRemoveChat={handleRemoveChat}
       />
-      <div className="chat-wrapper">
+      <main className="chat-wrapper" aria-label="Chat interface">
         <div className="chat-main">
           <div
             className={`chat-main__content ${isFreshChat ? 'chat-main__content--centered' : ''}`}
@@ -676,7 +699,7 @@ const App = () => {
             onSend={handleSend}
           />
         ) : null}
-      </div>
+      </main>
     </div>
   );
 };

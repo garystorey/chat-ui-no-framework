@@ -11,7 +11,7 @@ type ChatWindowProps = {
 };
 
 const ChatWindow = ({ messages, isTyping, isOpen }: ChatWindowProps) => {
-  const messagesRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef<HTMLOListElement>(null);
   const [reduceMotion, setReduceMotion] = useState(false);
 
   useEffect(() => {
@@ -42,12 +42,15 @@ const ChatWindow = ({ messages, isTyping, isOpen }: ChatWindowProps) => {
   }, [messages, isTyping, reduceMotion]);
 
   return (
-    <main
+    <section
       className={`chat-window ${isOpen ? 'chat-window--open' : ''}`}
-      role="main"
       aria-hidden={!isOpen}
+      aria-labelledby="messages-heading"
     >
-      <div
+      <h2 id="messages-heading" className="sr-only">
+        Conversation
+      </h2>
+      <ol
         ref={messagesRef}
         className="chat-window__messages"
         role="log"
@@ -57,11 +60,17 @@ const ChatWindow = ({ messages, isTyping, isOpen }: ChatWindowProps) => {
         tabIndex={-1}
       >
         {messages.map((message) => (
-          <ChatMessage key={message.id} message={message} />
+          <li key={message.id} className="chat-window__message">
+            <ChatMessage message={message} />
+          </li>
         ))}
-        {isTyping && <ThinkingIndicator />}
-      </div>
-    </main>
+        {isTyping && (
+          <li className="chat-window__message chat-window__message--status">
+            <ThinkingIndicator />
+          </li>
+        )}
+      </ol>
+    </section>
   );
 };
 

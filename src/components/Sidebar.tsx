@@ -64,19 +64,19 @@ const Sidebar = ({
             aria-expanded={!collapsed}
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            <span aria-hidden>{collapsed ? '›' : '‹'}</span>
+            <span aria-hidden="true">{collapsed ? '›' : '‹'}</span>
           </button>
         </div>
         <div className="sidebar__actions">
           <button type="button" className="sidebar__action" onClick={onNewChat}>
-            <span className="sidebar__action-icon" aria-hidden>
+            <span className="sidebar__action-icon" aria-hidden="true">
               ＋
             </span>
             <span className="sidebar__action-label">New Chat</span>
           </button>
           {!collapsed && (
             <label className="sidebar__search">
-              <span className="sidebar__search-icon" aria-hidden>
+              <span className="sidebar__search-icon" aria-hidden="true">
                 🔍
               </span>
               <span className="sr-only">Search chats</span>
