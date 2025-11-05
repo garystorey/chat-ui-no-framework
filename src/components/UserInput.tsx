@@ -10,11 +10,17 @@ import {
   useState,
 } from 'react';
 import { AttachmentIcon, MicIcon, SendIcon } from './icons';
+import { getId } from '../utils/id';
 import './UserInput.css';
 
 export type UserInputSendPayload = {
   text: string;
   attachments: File[];
+};
+
+type SelectedAttachment = {
+  id: string;
+  file: File;
 };
 
 type UserInputProps = {
@@ -27,7 +33,7 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
   ({ value, onChange, onSend }, forwardedRef) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [attachments, setAttachments] = useState<File[]>([]);
+    const [attachments, setAttachments] = useState<SelectedAttachment[]>([]);
 
     useImperativeHandle(forwardedRef, () => textareaRef.current!);
 
@@ -47,7 +53,7 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
       const sent = await Promise.resolve(
         onSend({
           text: trimmed,
-          attachments,
+          attachments: attachments.map(({ file }) => file),
         })
       );
 
@@ -94,38 +100,19 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
           return;
         }
 
-        setAttachments((current) => {
-          const next = [...current];
-          Array.from(files).forEach((file) => {
-            const exists = next.some(
-              (existing) =>
-                existing.name === file.name &&
-                existing.size === file.size &&
-                existing.lastModified === file.lastModified
-            );
-
-            if (!exists) {
-              next.push(file);
-            }
-          });
-          return next;
-        });
+        setAttachments((current) => [
+          ...current,
+          ...Array.from(files, (file) => ({ id: getId(), file })),
+        ]);
 
         event.target.value = '';
       },
       []
     );
 
-    const handleRemoveAttachment = useCallback((target: File) => {
+    const handleRemoveAttachment = useCallback((targetId: string) => {
       setAttachments((current) =>
-        current.filter(
-          (file) =>
-            !(
-              file.name === target.name &&
-              file.size === target.size &&
-              file.lastModified === target.lastModified
-            )
-        )
+        current.filter((attachment) => attachment.id !== targetId)
       );
     }, []);
 
@@ -156,16 +143,16 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
           </div>
           {attachments.length > 0 ? (
             <ul className="input-panel__attachment-list">
-              {attachments.map((file) => (
+              {attachments.map(({ id, file }) => (
                 <li
-                  key={`${file.name}-${file.lastModified}`}
+                  key={id}
                   className="input-panel__attachment-item"
                 >
                   <span className="input-panel__attachment-name">{file.name}</span>
                   <button
                     type="button"
                     className="input-panel__attachment-remove"
-                    onClick={() => handleRemoveAttachment(file)}
+                    onClick={() => handleRemoveAttachment(id)}
                     aria-label={`Remove ${file.name}`}
                   >
                     Remove
