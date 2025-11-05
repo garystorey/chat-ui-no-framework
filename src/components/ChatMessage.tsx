@@ -1,6 +1,11 @@
 import { memo, useMemo } from 'react';
 import type { Message } from '../atoms/chatAtoms';
-import { formatFileSize, getAttachmentDisplayType, renderMarkdown } from '../utils';
+import {
+  formatFileSize,
+  getAttachmentDisplayType,
+  normalizeMessageAttachments,
+  renderMarkdown,
+} from '../utils';
 import './ChatMessage.css';
 
 type ChatMessageProps = {
@@ -16,19 +21,23 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
   }, [message.content, message.renderAsHtml]);
 
   const ariaLabel = message.sender === 'user' ? 'User message' : 'Assistant message';
-  const attachments = message.attachments ?? [];
+  const attachments = useMemo(
+    () => normalizeMessageAttachments(message.attachments, message.id),
+    [message.attachments, message.id]
+  );
 
   return (
     <article className={`message message--${message.sender}`} aria-label={ariaLabel}>
       <div className="message__body" dangerouslySetInnerHTML={{ __html: content }} />
       {attachments.length > 0 && (
         <ul className="message__attachments" aria-label="Message attachments">
-          {attachments.map((attachment) => {
+          {attachments.map((attachment, index) => {
             const typeLabel = getAttachmentDisplayType(attachment);
             const sizeLabel = formatFileSize(attachment.size);
+            const attachmentKey = `${attachment.id}-${index}`;
 
             return (
-              <li key={attachment.id} className="message__attachment">
+              <li key={attachmentKey} className="message__attachment">
                 <span className="message__attachment-icon" aria-hidden="true">
                   📎
                 </span>

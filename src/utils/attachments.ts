@@ -34,6 +34,35 @@ export const buildMessageAttachments = (files: File[]): MessageAttachment[] =>
     type: file.type,
   }));
 
+export const normalizeMessageAttachments = (
+  attachments: unknown,
+  fallbackPrefix = 'attachment'
+): MessageAttachment[] => {
+  if (!attachments) {
+    return [];
+  }
+
+  const list: Partial<MessageAttachment>[] = Array.isArray(attachments)
+    ? (attachments as Partial<MessageAttachment>[])
+    : typeof attachments === 'object'
+      ? Object.values(
+          attachments as Record<string, Partial<MessageAttachment>>
+        )
+      : [];
+
+  return list.map((item, index) => {
+    const numericSize = Number(item.size);
+    const safeSize = Number.isFinite(numericSize) && numericSize >= 0 ? numericSize : 0;
+
+    return {
+      id: (item.id as string) ?? `${fallbackPrefix}-${index}`,
+      name: item.name ?? `Attachment ${index + 1}`,
+      size: safeSize,
+      type: item.type ?? '',
+    };
+  });
+};
+
 export const buildAttachmentRequestPayload = async (
   files: File[],
   metadata: MessageAttachment[]
