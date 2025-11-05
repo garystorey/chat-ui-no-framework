@@ -1,0 +1,88 @@
+.suggestion-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: color-mix(in oklab, var(--panel-solid) 92%, var(--brand-shell) 8%);
+  border: 1px solid color-mix(in oklab, var(--panel-border) 80%, transparent);
+  border-radius: 1rem;
+  padding: 1.5rem 1.6rem;
+  color: var(--text);
+  box-shadow: var(--shadow-soft);
+  min-height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.suggestion-card::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 16%, transparent) 0%, transparent 60%, color-mix(in oklab, var(--accent) 24%, transparent) 100%);
+  opacity: 0.08;
+  transition: opacity var(--duration-sm) var(--ease-out);
+}
+
+.suggestion-card:hover::after,
+.suggestion-card:focus-within::after {
+  opacity: 0.3;
+}
+
+.suggestion-card__icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  display: grid;
+  place-items: center;
+  font-size: 1.35rem;
+  background-color: color-mix(in oklab, #000 20%, transparent 80%);
+  color: var(--accent-contrast);
+}
+
+.suggestion-card__title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 0.2px;
+}
+
+.suggestion-card__description {
+  margin: 0;
+  font-size: 0.97rem;
+  line-height: 1.6;
+  color: color-mix(in oklab, var(--muted) 85%, var(--text) 15%);
+}
+
+.suggestion-card__cta {
+  align-self: flex-end;
+  margin-top: auto;
+  margin-left: auto;
+  border: none;
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--accent-cta-start) 85%, white 15%),
+    var(--accent-cta-end)
+  );
+  color: var(--accent-cta-text);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.85rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  transition: transform var(--duration-sm) var(--ease-out),
+    filter var(--duration-sm) var(--ease-out),
+    box-shadow var(--duration-sm) var(--ease-out);
+}
+
+.suggestion-card__cta:hover {
+  filter: brightness(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(241, 90, 34, 0.22);
+}
+
+.suggestion-card__cta:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
