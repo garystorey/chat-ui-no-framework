@@ -7,38 +7,27 @@ import {
   useEffect,
   useImperativeHandle,
   useRef,
+  useState,
 } from 'react';
+import { AttachmentIcon, MicIcon, SendIcon, SparkIcon } from './icons';
 import './UserInput.css';
+
+export type UserInputSendPayload = {
+  text: string;
+  attachments: File[];
+};
 
 type UserInputProps = {
   value: string;
   onChange: (value: string) => void;
-  onSend: (text: string) => boolean;
+  onSend: (payload: UserInputSendPayload) => Promise<boolean> | boolean;
 };
-
-const SparkIcon = () => (
-  <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none">
-    <path
-      d="M9 2.25 9.75 6a1 1 0 0 0 .75.75L14 7.5l-3.5 1a1 1 0 0 0-.7.7l-1.05 3.5-1-3.5a1 1 0 0 0-.7-.7L3.5 7.5l3.5-.75a1 1 0 0 0 .75-.75L9 2.25ZM4.25 12.75l.375 1.5a.75.75 0 0 0 .525.525l1.5.375-1.5.375a.75.75 0 0 0-.525.525l-.375 1.5-.375-1.5a.75.75 0 0 0-.525-.525l-1.5-.375 1.5-.375a.75.75 0 0 0 .525-.525l.375-1.5Zm9-2.25.45 1.8a.9.9 0 0 0 .63.63l1.8.45-1.8.45a.9.9 0 0 0-.63.63l-.45 1.8-.45-1.8a.9.9 0 0 0-.63-.63l-1.8-.45 1.8-.45a.9.9 0 0 0 .63-.63l.45-1.8Z"
-      fill="currentColor"
-      fillRule="evenodd"
-      clipRule="evenodd"
-    />
-  </svg>
-);
-
-const MicIcon = () => (
-  <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <path
-      d="M8 1.5a2 2 0 0 0-2 2v3a2 2 0 1 0 4 0v-3a2 2 0 0 0-2-2Zm4.5 5a.5.5 0 0 0-1 0A3.5 3.5 0 0 1 8 10a3.5 3.5 0 0 1-3.5-3.5.5.5 0 0 0-1 0A4.5 4.5 0 0 0 7.5 10.45V12H5.75a.75.75 0 1 0 0 1.5h4.5a.75.75 0 1 0 0-1.5H8.5v-1.55A4.5 4.5 0 0 0 12.5 6.5Z"
-      fill="currentColor"
-    />
-  </svg>
-);
 
 const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
   ({ value, onChange, onSend }, forwardedRef) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [attachments, setAttachments] = useState<File[]>([]);
 
     useImperativeHandle(forwardedRef, () => textareaRef.current!);
 
@@ -49,36 +38,42 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
       textarea.style.height = `${textarea.scrollHeight}px`;
     }, [value]);
 
+    const sendMessage = useCallback(async () => {
+      const trimmed = value.trim();
+      if (!trimmed) {
+        return false;
+      }
+
+      const sent = await Promise.resolve(
+        onSend({
+          text: trimmed,
+          attachments,
+        })
+      );
+
+      if (sent) {
+        setAttachments([]);
+      }
+
+      return sent;
+    }, [attachments, onSend, value]);
+
     const handleSubmit = useCallback(
       (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const trimmed = value.trim();
-        if (!trimmed) {
-          return;
-        }
-        const sent = onSend(trimmed);
-        if (!sent) {
-          return;
-        }
+        void sendMessage();
       },
-      [onSend, value]
+      [sendMessage]
     );
 
     const handleKeyDown = useCallback(
       (event: KeyboardEvent<HTMLTextAreaElement>) => {
         if (event.key === 'Enter' && !event.shiftKey) {
           event.preventDefault();
-          const trimmed = value.trim();
-          if (!trimmed) {
-            return;
-          }
-          const sent = onSend(trimmed);
-          if (!sent) {
-            return;
-          }
+          void sendMessage();
         }
       },
-      [onSend, value]
+      [sendMessage]
     );
 
     const handleChange = useCallback(
@@ -87,6 +82,52 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
       },
       [onChange]
     );
+
+    const handleAttachmentButtonClick = useCallback(() => {
+      fileInputRef.current?.click();
+    }, []);
+
+    const handleAttachmentChange = useCallback(
+      (event: ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files;
+        if (!files?.length) {
+          return;
+        }
+
+        setAttachments((current) => {
+          const next = [...current];
+          Array.from(files).forEach((file) => {
+            const exists = next.some(
+              (existing) =>
+                existing.name === file.name &&
+                existing.size === file.size &&
+                existing.lastModified === file.lastModified
+            );
+
+            if (!exists) {
+              next.push(file);
+            }
+          });
+          return next;
+        });
+
+        event.target.value = '';
+      },
+      []
+    );
+
+    const handleRemoveAttachment = useCallback((target: File) => {
+      setAttachments((current) =>
+        current.filter(
+          (file) =>
+            !(
+              file.name === target.name &&
+              file.size === target.size &&
+              file.lastModified === target.lastModified
+            )
+        )
+      );
+    }, []);
 
     return (
       <form
@@ -100,9 +141,6 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
             Enter your request
           </label>
           <div className="input-panel__field">
-            <span className="input-panel__glyph" aria-hidden="true">
-              <SparkIcon />
-            </span>
             <textarea
               id="inputText"
               ref={textareaRef}
@@ -115,21 +153,76 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
               aria-describedby="inputHint"
               autoFocus
             />
-            <span className="input-panel__glyph input-panel__glyph--trail" aria-hidden="true">
-              <MicIcon />
-            </span>
+          </div>
+          {attachments.length > 0 ? (
+            <ul className="input-panel__attachment-list">
+              {attachments.map((file) => (
+                <li
+                  key={`${file.name}-${file.lastModified}`}
+                  className="input-panel__attachment-item"
+                >
+                  <span className="input-panel__attachment-name">{file.name}</span>
+                  <button
+                    type="button"
+                    className="input-panel__attachment-remove"
+                    onClick={() => handleRemoveAttachment(file)}
+                    aria-label={`Remove ${file.name}`}
+                  >
+                    Remove
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          <div className="input-panel__controls">
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="input-panel__file-input"
+              onChange={handleAttachmentChange}
+              multiple
+              tabIndex={-1}
+              aria-hidden="true"
+            />
+            <div className="input-panel__actions">
+              <button
+                type="button"
+                className="input-panel__icon-button input-panel__icon-button--accent"
+                onClick={handleAttachmentButtonClick}
+                aria-label="Add attachment"
+                title="Add attachment"
+              >
+                <AttachmentIcon />
+              </button>
+              <button
+                type="button"
+                className="input-panel__icon-button input-panel__icon-button--accent"
+                aria-label="Insert spark"
+                title="Insert spark"
+              >
+                <SparkIcon />
+              </button>
+              <button
+                type="button"
+                className="input-panel__icon-button input-panel__icon-button--muted"
+                aria-label="Start voice input"
+                title="Start voice input"
+              >
+                <MicIcon />
+              </button>
+            </div>
+            <button
+              type="submit"
+              className="input-panel__submit"
+              aria-label="Send message"
+            >
+              <SendIcon />
+            </button>
           </div>
           <div id="inputHint" className="sr-only">
             Press Enter to send and Shift+Enter for newline
           </div>
         </div>
-        <button
-          type="submit"
-          className="input-panel__submit"
-          aria-label="Send message"
-        >
-          <span aria-hidden="true">➤</span>
-        </button>
       </form>
     );
   }

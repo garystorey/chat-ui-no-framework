@@ -7,10 +7,10 @@ import {
   useState,
   type MouseEvent,
 } from 'react';
-import type { Message } from './atoms/chatAtoms';
+import type { Message, MessageAttachment } from './atoms/chatAtoms';
 import { messagesAtom, typingAtom } from './atoms/chatAtoms';
 import ChatWindow from './components/ChatWindow';
-import UserInput from './components/UserInput';
+import UserInput, { UserInputSendPayload } from './components/UserInput';
 import Card from './components/Card';
 import Sidebar, { ChatSummary } from './components/Sidebar';
 import useTheme from './hooks/useTheme';
@@ -28,6 +28,55 @@ const getId = () => {
     return crypto.randomUUID();
   }
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+};
+
+
+type AttachmentRequest = MessageAttachment & { data: string };
+
+const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const chunkSize = 0x8000;
+
+  for (let index = 0; index < bytes.length; index += chunkSize) {
+    const chunk = bytes.subarray(index, index + chunkSize);
+    binary += String.fromCharCode(...chunk);
+  }
+
+  if (typeof globalThis.btoa === 'function') {
+    return globalThis.btoa(binary);
+  }
+
+  throw new Error('Base64 encoding is not supported in this environment.');
+};
+
+const encodeFileToBase64 = async (file: File) => {
+  const buffer = await file.arrayBuffer();
+  return arrayBufferToBase64(buffer);
+};
+
+const buildMessageAttachments = (files: File[]): MessageAttachment[] =>
+  files.map((file) => ({
+    id: getId(),
+    name: file.name,
+    size: file.size,
+    type: file.type,
+  }));
+
+const buildAttachmentRequestPayload = async (
+  files: File[],
+  metadata: MessageAttachment[]
+): Promise<AttachmentRequest[]> => {
+  if (!files.length) {
+    return [];
+  }
+
+  return Promise.all(
+    files.map(async (file, index) => ({
+      ...metadata[index],
+      data: await encodeFileToBase64(file),
+    }))
+  );
 };
 
 
@@ -321,7 +370,7 @@ const App = () => {
   }, [activeChatId, messages]);
 
   const handleSend = useCallback(
-    (text: string) => {
+    async ({ text, attachments }: UserInputSendPayload) => {
       if (!text) {
         return false;
       }
@@ -338,7 +387,29 @@ const App = () => {
         setChatOpen(true);
       }
 
-      const userMessage: Message = { id: getId(), sender: 'user', content: text };
+      let messageAttachments: MessageAttachment[] = [];
+      let requestAttachments: AttachmentRequest[] = [];
+
+      if (attachments.length) {
+        messageAttachments = buildMessageAttachments(attachments);
+
+        try {
+          requestAttachments = await buildAttachmentRequestPayload(
+            attachments,
+            messageAttachments
+          );
+        } catch (error) {
+          console.error('Unable to read attachments', error);
+          return false;
+        }
+      }
+
+      const userMessage: Message = {
+        id: getId(),
+        sender: 'user',
+        content: text,
+        ...(messageAttachments.length ? { attachments: messageAttachments } : {}),
+      };
       const assistantMessageId = getId();
       const assistantMessage: Message = { id: assistantMessageId, sender: 'bot', content: '' };
       let assistantReply = '';
@@ -362,6 +433,7 @@ const App = () => {
             model: DEFAULT_CHAT_MODEL,
             messages: toChatCompletionMessages(conversationForRequest),
             stream: true,
+            ...(requestAttachments.length ? { attachments: requestAttachments } : {}),
           },
           signal: controller.signal,
           onChunk: (chunk: ChatCompletionStreamResponse) => {

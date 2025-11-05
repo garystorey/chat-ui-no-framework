@@ -1,12 +1,13 @@
+
 .input-panel {
   background: color-mix(in oklab, var(--panel-solid) 94%, transparent);
   border: 1px solid color-mix(in oklab, var(--panel-border) 70%, transparent);
   border-radius: 1.15rem;
   padding: 0.9rem 0.95rem;
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.9rem;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.85rem;
   box-shadow: var(--shadow-soft);
   margin: 0;
   backdrop-filter: blur(18px) saturate(150%);
@@ -28,17 +29,14 @@ body.chat-open .input-panel {
   flex-direction: column;
   align-items: stretch;
   width: 100%;
+  gap: 0.75rem;
 }
 
 .input-panel__field {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
   background: color-mix(in oklab, var(--panel) 84%, transparent);
   border-radius: 0.85rem;
   border: 1px solid color-mix(in oklab, var(--panel-border) 70%, transparent);
-  padding: 0.35rem 0.75rem;
-  position: relative;
+  padding: 0.35rem 0.85rem;
 }
 
 .input-panel textarea {
@@ -56,28 +54,106 @@ body.chat-open .input-panel {
   outline: none;
 }
 
-.input-panel textarea::placeholder {
-  color: color-mix(in oklab, var(--muted) 78%, transparent);
-}
-
 .input-panel textarea:focus {
   outline: none;
 }
 
-.input-panel__glyph {
+.input-panel textarea::placeholder {
+  color: color-mix(in oklab, var(--muted) 78%, transparent);
+}
+
+.input-panel__attachment-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.input-panel__attachment-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.65rem;
+  background: color-mix(in oklab, var(--panel-solid) 90%, transparent);
+  color: color-mix(in oklab, var(--text) 90%, transparent);
+  font-size: 0.85rem;
+}
+
+.input-panel__attachment-name {
+  max-width: 16rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.input-panel__attachment-remove {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+}
+
+.input-panel__attachment-remove:hover {
+  text-decoration: underline;
+}
+
+.input-panel__controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.input-panel__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.input-panel__file-input {
+  display: none;
+}
+
+.input-panel__icon-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 0.6rem;
-  background: color-mix(in oklab, var(--panel-solid) 90%, transparent);
-  color: var(--accent);
-  flex-shrink: 0;
+  border: none;
+  background: color-mix(in oklab, var(--panel-solid) 92%, transparent);
+  color: color-mix(in oklab, var(--muted) 90%, transparent);
+  cursor: pointer;
+  transition: filter var(--duration-sm) var(--ease-out),
+    transform var(--duration-sm) var(--ease-out);
 }
 
-.input-panel__glyph--trail {
-  color: var(--muted);
+.input-panel__icon-button:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.input-panel__icon-button:active {
+  transform: translateY(0);
+}
+
+.input-panel__icon-button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.input-panel__icon-button--accent {
+  color: var(--accent);
+}
+
+.input-panel__icon-button--muted {
+  color: color-mix(in oklab, var(--muted) 95%, transparent);
 }
 
 .input-panel__submit {
@@ -120,12 +196,16 @@ body.chat-open .input-panel {
 
 @media (max-width: 600px) {
   .input-panel {
-    flex-direction: column;
-    gap: 0.75rem;
     padding: 0.85rem;
   }
 
-  .input-panel__submit {
-    width: 100%;
+  .input-panel__controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+  }
+
+  .input-panel__actions {
+    justify-content: flex-end;
   }
 }
