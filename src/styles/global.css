@@ -81,26 +81,8 @@ body {
   min-height: 100dvh;
   padding: 1.75rem 1.25rem;
   padding-bottom: calc(2rem + env(safe-area-inset-bottom));
-  font-size: 16px;
-  background-image: radial-gradient(
-      38rem 38rem at -10% -20%,
-      color-mix(in oklab, var(--accent) 22%, transparent) 0%,
-      transparent 68%
-    ),
-    radial-gradient(
-      26rem 26rem at 110% 10%,
-      color-mix(in oklab, var(--accent) 14%, transparent) 0%,
-      transparent 70%
-    ),
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--brand-shell) 70%, transparent) 0%,
-      transparent 45%,
-      transparent 55%,
-      color-mix(in oklab, var(--brand-shell) 80%, transparent) 100%
-    );
-  background-size: auto, auto, cover;
-  background-position: top left, top right, center;
+  font-size: 1rem;
+
 }
 
 #root {
