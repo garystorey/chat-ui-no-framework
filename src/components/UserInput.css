@@ -128,7 +128,7 @@ body.chat-open .input-panel {
   border-radius: 0.6rem;
   border: none;
   background: color-mix(in oklab, var(--panel-solid) 92%, transparent);
-  color: var(--accent-button-text);
+  color: var(--icon-strong);
   cursor: pointer;
   transition: filter var(--duration-sm) var(--ease-out),
     transform var(--duration-sm) var(--ease-out);
@@ -148,12 +148,12 @@ body.chat-open .input-panel {
   box-shadow: var(--focus-ring);
 }
 
-.input-panel__icon-button--accent,
-.input-panel__icon-button--muted {
-  color: var(--accent-button-text);
+.input-panel__icon-button svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: inherit;
 }
 
-.input-panel__icon-button svg,
 .input-panel__submit svg {
   width: 1.5rem;
   height: 1.5rem;

@@ -12,6 +12,7 @@
   --accent-cta-text: #000000;
   --accent-button-text: #000000;
   --accent-contrast: color-mix(in oklab, var(--accent) 75%, #1c1f24 25%);
+  --icon-strong: color-mix(in oklab, var(--text) 88%, white 12%);
 
   --user-msg-bg-dark: #141a22;
   --user-msg-bg-light: #eef1f6;
@@ -121,6 +122,7 @@ body.light {
   --shadow-strong: 0 30px 80px rgba(24, 33, 53, 0.3);
   --accent-button-text: #000000;
   --accent-contrast: #000000;
+  --icon-strong: color-mix(in oklab, var(--text) 80%, black 20%);
   --divider: rgba(28, 36, 52, 0.16);
   --grid-line: rgba(28, 36, 52, 0.1);
   --glow: 0 0 0px rgba(255, 255, 255, 0), 0 18px 42px rgba(255, 110, 82, 0.18);
@@ -170,6 +172,7 @@ body.dark {
   --accent-contrast: color-mix(in oklab, var(--accent) 65%, #fdf2ee 35%);
   --divider: rgba(255, 255, 255, 0.08);
   --grid-line: rgba(255, 255, 255, 0.05);
+  --icon-strong: color-mix(in oklab, var(--text) 92%, white 8%);
 }
 
 @media (prefers-reduced-motion: reduce) {
