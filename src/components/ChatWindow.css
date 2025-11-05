@@ -3,22 +3,38 @@
   width: 100%;
   max-width: var(--max-chat-width);
   margin: 0 auto;
-  border-radius: 1.1rem;
-  background: color-mix(in oklab, var(--panel-solid) 94%, transparent);
+  border-radius: 1.2rem;
+  background: var(--panel-solid);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  backdrop-filter: blur(20px) saturate(160%);
-  border: 0 solid color-mix(in oklab, var(--panel-border) 70%, transparent);
-  box-shadow: none;
+  border: 1px solid color-mix(in oklab, var(--panel-border) 85%, transparent);
+  box-shadow: var(--shadow-soft);
   padding: 0;
   pointer-events: none;
   opacity: 0;
   transform: translateY(12px);
   transition: opacity var(--duration-md) var(--ease-out),
-    transform var(--duration-md) var(--ease-out);
+    transform var(--duration-md) var(--ease-out),
+    box-shadow var(--duration-md) var(--ease-out);
   max-height: 0;
   flex: 0 0 auto;
+  position: relative;
+}
+
+.chat-window::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 16%, transparent) 0%, transparent 45%, transparent 100%);
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+.chat-window > * {
+  position: relative;
+  z-index: 1;
 }
 
 .chat-window--open {
@@ -36,11 +52,11 @@
 .chat-window__messages {
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
+  gap: 1.2rem;
   flex: 1 1 auto;
   min-height: 0;
   margin: 0;
-  padding: 0.5rem 0.75rem 0.75rem;
+  padding: 0.75rem 1rem 1rem;
   overflow-y: auto;
   scrollbar-width: thin;
   position: relative;

@@ -2,10 +2,10 @@
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.6rem 0.85rem;
-  border-radius: 0.9rem;
-  background: color-mix(in oklab, var(--panel) 82%, transparent);
-  border: 1px solid color-mix(in oklab, var(--panel-border) 70%, transparent);
+  padding: 0.65rem 0.95rem;
+  border-radius: 0.95rem;
+  background: color-mix(in oklab, var(--panel-solid) 92%, var(--brand-shell) 8%);
+  border: 1px solid color-mix(in oklab, var(--panel-border) 78%, transparent);
   box-shadow: var(--shadow-soft);
 }
 
@@ -13,7 +13,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  color: var(--accent);
+  color: color-mix(in oklab, var(--accent) 90%, white 10%);
 }
 
 .thinking-indicator__orb {
