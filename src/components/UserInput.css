@@ -161,7 +161,7 @@ body.chat-open .input-panel {
 }
 
 .input-panel__submit {
-  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  background: var(--accent);
   border: none;
   color: var(--accent-button-text);
   font-size: 1rem;
@@ -190,6 +190,7 @@ body.chat-open .input-panel {
 }
 
 .input-panel__submit:active {
+  filter: brightness(0.95);
   transform: translateY(0);
 }
 
