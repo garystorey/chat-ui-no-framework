@@ -56,11 +56,12 @@
   height: 1.5rem;
   border-radius: 0.6rem;
   background: color-mix(in oklab, var(--panel-solid) 84%, transparent);
-  color: inherit;
+  color: var(--icon-strong);
 }
 
 .topbar__button--primary .topbar__button-icon {
-  background: color-mix(in oklab, var(--accent-button-text) 10%, transparent);
+  background: color-mix(in oklab, var(--panel-solid) 65%, var(--accent) 35%);
+  color: var(--icon-strong);
 }
 
 .topbar__button-label {
