@@ -1,0 +1,102 @@
+
+.chat-window {
+  width: 100%;
+  max-width: var(--max-chat-width);
+  margin: 0 auto;
+  border-radius: 1.2rem;
+  background: var(--panel-solid);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklab, var(--panel-border) 85%, transparent);
+  box-shadow: var(--shadow-soft);
+  padding: 0;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity var(--duration-md) var(--ease-out),
+    transform var(--duration-md) var(--ease-out),
+    box-shadow var(--duration-md) var(--ease-out);
+  max-height: 0;
+  flex: 0 0 auto;
+  position: relative;
+}
+
+.chat-window::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 16%, transparent) 0%, transparent 45%, transparent 100%);
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+.chat-window > * {
+  position: relative;
+  z-index: 1;
+}
+
+.chat-window--open {
+  pointer-events: auto;
+  opacity: 1;
+  transform: none;
+  padding: 1.5rem;
+  border-width: 1px;
+  box-shadow: var(--shadow-soft);
+  max-height: none;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.chat-window__messages {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0.75rem 1rem 1rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  position: relative;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    black 24px,
+    black calc(100% - 24px),
+    transparent 100%
+  );
+  list-style: none;
+}
+
+.chat-window__message {
+  margin: 0;
+}
+
+.chat-window__message--status {
+  display: flex;
+  justify-content: center;
+}
+
+.chat-window__messages::before,
+.chat-window__messages::after {
+  content: '';
+  position: sticky;
+  display: block;
+  height: 18px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.chat-window__messages::before {
+  top: 0;
+  background: linear-gradient(180deg, var(--panel-solid), transparent);
+}
+
+.chat-window__messages::after {
+  bottom: 0;
+  background: linear-gradient(0deg, var(--panel-solid), transparent);
+}
+
+
