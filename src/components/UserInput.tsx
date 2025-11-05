@@ -10,7 +10,7 @@ import {
   useState,
 } from 'react';
 import { AttachmentIcon, MicIcon, SendIcon } from './icons';
-import { getId } from '../utils/id';
+import { getId } from '../utils';
 import './UserInput.css';
 
 export type UserInputSendPayload = {

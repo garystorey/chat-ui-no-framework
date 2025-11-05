@@ -9,69 +9,28 @@ import {
 } from 'react';
 import type { Message, MessageAttachment } from './atoms/chatAtoms';
 import { messagesAtom, typingAtom } from './atoms/chatAtoms';
-import ChatWindow from './components/ChatWindow';
-import UserInput, { UserInputSendPayload } from './components/UserInput';
-import Card from './components/Card';
-import Sidebar, { ChatSummary } from './components/Sidebar';
-import useTheme from './hooks/useTheme';
+import { Card, ChatWindow, Sidebar, UserInput } from './components';
+import type { UserInputSendPayload } from './components';
+import type { ChatSummary } from './types/chat';
 import {
+  useTheme,
+  useChatCompletion,
   DEFAULT_CHAT_MODEL,
-  type ChatCompletionMessage,
   type ChatCompletionResponse,
   type ChatCompletionStreamResponse,
-  useChatCompletion,
-} from './hooks/useChatCompletion';
+} from './hooks';
 import './App.css';
-import { getId } from './utils/id';
-
-
-type AttachmentRequest = MessageAttachment & { data: string };
-
-const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
-  let binary = '';
-  const bytes = new Uint8Array(buffer);
-  const chunkSize = 0x8000;
-
-  for (let index = 0; index < bytes.length; index += chunkSize) {
-    const chunk = bytes.subarray(index, index + chunkSize);
-    binary += String.fromCharCode(...chunk);
-  }
-
-  if (typeof globalThis.btoa === 'function') {
-    return globalThis.btoa(binary);
-  }
-
-  throw new Error('Base64 encoding is not supported in this environment.');
-};
-
-const encodeFileToBase64 = async (file: File) => {
-  const buffer = await file.arrayBuffer();
-  return arrayBufferToBase64(buffer);
-};
-
-const buildMessageAttachments = (files: File[]): MessageAttachment[] =>
-  files.map((file) => ({
-    id: getId(),
-    name: file.name,
-    size: file.size,
-    type: file.type,
-  }));
-
-const buildAttachmentRequestPayload = async (
-  files: File[],
-  metadata: MessageAttachment[]
-): Promise<AttachmentRequest[]> => {
-  if (!files.length) {
-    return [];
-  }
-
-  return Promise.all(
-    files.map(async (file, index) => ({
-      ...metadata[index],
-      data: await encodeFileToBase64(file),
-    }))
-  );
-};
+import {
+  buildAttachmentRequestPayload,
+  buildChatPreview,
+  buildMessageAttachments,
+  cloneMessages,
+  createChatRecordFromMessages,
+  extractAssistantReply,
+  getId,
+  toChatCompletionMessages,
+} from './utils';
+import type { AttachmentRequest } from './utils';
 
 
 
@@ -168,87 +127,8 @@ const defaultChats: ChatSummary[] = [
   },
 ];
 
-const truncate = (value: string, maxLength: number) => {
-  if (!value) {
-    return '';
-  }
-  if (value.length <= maxLength) {
-    return value;
-  }
-  return `${value.slice(0, maxLength - 1).trimEnd()}…`;
-};
-
-const cloneMessages = (items: Message[]): Message[] => items.map((item) => ({ ...item }));
-
-const normalizeWhitespace = (value: string) => value.replace(/\s+/g, ' ').trim();
-
-const getPlainTextFromHtml = (value: string) => {
-  if (!value) {
-    return '';
-  }
-
-  if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-    const container = document.createElement('div');
-    container.innerHTML = value;
-    const text = container.textContent ?? container.innerText ?? '';
-    return normalizeWhitespace(text);
-  }
-
-  return normalizeWhitespace(value.replace(/<[^>]*>/g, ' '));
-};
-
-const getMessagePlainText = (message?: Message) => {
-  if (!message) {
-    return '';
-  }
-
-  if (message.renderAsHtml) {
-    return getPlainTextFromHtml(message.content);
-  }
-
-  return normalizeWhitespace(message.content);
-};
-
-const toChatCompletionMessages = (messages: Message[]): ChatCompletionMessage[] =>
-  messages.map((message) => ({
-    role: message.sender === 'user' ? 'user' : 'assistant',
-    content: getMessagePlainText(message),
-  }));
-
-const extractAssistantReply = (response: ChatCompletionResponse) => {
-  if (!response?.choices?.length) {
-    return '';
-  }
-
-  const assistantChoice = response.choices.find((choice) => choice.message.role === 'assistant');
-  return assistantChoice?.message?.content?.trim() ?? '';
-};
-
 const ASSISTANT_ERROR_MESSAGE =
   'Sorry, I had trouble reaching the assistant. Please try again.';
-
-const buildChatTitle = (message?: Message, fallback = 'Conversation') =>
-  truncate(getMessagePlainText(message) || getPlainTextFromHtml(fallback) || 'Conversation', 60) ||
-  'Conversation';
-
-const buildChatPreview = (message?: Message, fallback = 'Conversation') =>
-  truncate(getMessagePlainText(message) || getPlainTextFromHtml(fallback) || 'Conversation', 80) ||
-  'Conversation';
-
-const createChatRecordFromMessages = (messages: Message[]): ChatSummary => {
-  const firstUserMessage = messages.find((message) => message.sender === 'user');
-  const lastMessage = messages[messages.length - 1];
-  const title = buildChatTitle(firstUserMessage);
-  const preview = buildChatPreview(lastMessage, title);
-
-  return {
-    id: getId(),
-    title,
-    preview,
-    updatedAt: Date.now(),
-    messages: cloneMessages(messages),
-  };
-};
 
 const App = () => {
   const [messages, setMessages] = useAtom(messagesAtom);
