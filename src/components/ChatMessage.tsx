@@ -15,11 +15,12 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
     return renderMarkdown(message.content);
   }, [message.content, message.renderAsHtml]);
 
+  const ariaLabel = message.sender === 'user' ? 'User message' : 'Assistant message';
+
   return (
     <article
       className={`message message--${message.sender}`}
-      role="article"
-      aria-label={message.sender === 'user' ? 'User message' : 'Bot message'}
+      aria-label={ariaLabel}
       dangerouslySetInnerHTML={{ __html: content }}
     />
   );
