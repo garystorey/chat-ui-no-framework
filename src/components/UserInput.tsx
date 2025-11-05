@@ -40,7 +40,7 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
   ({ value, onChange, onSend }, forwardedRef) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    useImperativeHandle(forwardedRef, () => textareaRef.current);
+    useImperativeHandle(forwardedRef, () => textareaRef.current!);
 
     useEffect(() => {
       const textarea = textareaRef.current;
