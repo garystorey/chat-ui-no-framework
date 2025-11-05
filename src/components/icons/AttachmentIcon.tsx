@@ -3,18 +3,19 @@ import type { SVGProps } from 'react';
 const AttachmentIcon = (props: SVGProps<SVGSVGElement>) => (
   <svg
     aria-hidden="true"
-    width="18"
-    height="18"
-    viewBox="0 0 18 18"
+    width="20"
+    height="20"
+    viewBox="0 0 20 20"
     fill="none"
     focusable="false"
     {...props}
   >
     <path
-      d="M12.75 5.25v6.375a3.75 3.75 0 0 1-7.5 0V4.875a2.625 2.625 0 0 1 5.25 0v6.188a1.5 1.5 0 0 1-3 0V6.375a.75.75 0 0 1 1.5 0v4.312a.75.75 0 1 0 1.5 0V4.875a3.75 3.75 0 1 0-7.5 0v6.75a5.25 5.25 0 1 0 10.5 0V5.25a.75.75 0 0 0-1.5 0Z"
-      fill="currentColor"
-      fillRule="evenodd"
-      clipRule="evenodd"
+      d="m13.75 6.25-6.97 6.97a2 2 0 1 1-2.83-2.83l6.87-6.87a3 3 0 1 1 4.24 4.24L8.45 14.21a1.25 1.25 0 0 1-1.77-1.77l5.6-5.6"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );
