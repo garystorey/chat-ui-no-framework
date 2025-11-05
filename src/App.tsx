@@ -22,13 +22,7 @@ import {
   useChatCompletion,
 } from './hooks/useChatCompletion';
 import './App.css';
-
-const getId = () => {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-    return crypto.randomUUID();
-  }
-  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-};
+import { getId } from './utils/id';
 
 
 type AttachmentRequest = MessageAttachment & { data: string };

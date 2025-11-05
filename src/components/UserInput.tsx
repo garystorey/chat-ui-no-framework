@@ -10,6 +10,7 @@ import {
   useState,
 } from 'react';
 import { AttachmentIcon, MicIcon, SendIcon } from './icons';
+import { getId } from '../utils/id';
 import './UserInput.css';
 
 export type UserInputSendPayload = {
@@ -20,14 +21,6 @@ export type UserInputSendPayload = {
 type SelectedAttachment = {
   id: string;
   file: File;
-};
-
-const createAttachmentId = () => {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-    return crypto.randomUUID();
-  }
-
-  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 };
 
 type UserInputProps = {
@@ -109,7 +102,7 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
 
         setAttachments((current) => [
           ...current,
-          ...Array.from(files, (file) => ({ id: createAttachmentId(), file })),
+          ...Array.from(files, (file) => ({ id: getId(), file })),
         ]);
 
         event.target.value = '';
