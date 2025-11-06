@@ -38,9 +38,8 @@ function AttachmentListItem({
         type="button"
         className="input-panel__attachment-remove"
         onClick={() => handleRemoveAttachment(attachment.id)}
-        aria-label={`Remove ${attachment.name}`}
       >
-        X <span className="sr-only">Remove</span>
+        &times; <span className="sr-only">Remove {attachment.name}</span>
       </button>
     </li>
   );
