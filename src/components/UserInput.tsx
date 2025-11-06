@@ -10,16 +10,11 @@ import {
   useState,
 } from "react";
 import { AttachmentIcon, MicIcon, SendIcon } from "./icons";
-import { getId } from "../utils";
-import { UserInputSendPayload } from "../types";
+import { buildAttachmentsFromFiles } from "../utils";
+import { Attachment, UserInputSendPayload } from "../types";
 import "./UserInput.css";
 import List from "./List";
 import Show from "./Show";
-
-type SelectedAttachment = {
-  id: string;
-  file: File;
-};
 
 type UserInputProps = {
   value: string;
@@ -28,7 +23,7 @@ type UserInputProps = {
 };
 
 type AttachmentListItemProps = {
-  attachment: SelectedAttachment;
+  attachment: Attachment;
   handleRemoveAttachment: (id: string) => void;
 };
 
@@ -38,14 +33,12 @@ function AttachmentListItem({
 }: AttachmentListItemProps) {
   return (
     <li key={attachment.id} className="input-panel__attachment-item">
-      <span className="input-panel__attachment-name">
-        {attachment.file.name}
-      </span>
+      <span className="input-panel__attachment-name">{attachment.name}</span>
       <button
         type="button"
         className="input-panel__attachment-remove"
         onClick={() => handleRemoveAttachment(attachment.id)}
-        aria-label={`Remove ${attachment.file.name}`}
+        aria-label={`Remove ${attachment.name}`}
       >
         X <span className="sr-only">Remove</span>
       </button>
@@ -57,7 +50,7 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
   ({ value, onChange, onSend }, forwardedRef) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [attachments, setAttachments] = useState<SelectedAttachment[]>([]);
+    const [attachments, setAttachments] = useState<Attachment[]>([]);
 
     useImperativeHandle(forwardedRef, () => textareaRef.current!);
 
@@ -70,16 +63,15 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
 
     const sendMessage = useCallback(async () => {
       const trimmed = value.trim();
-      const files = attachments.map(({ file }) => file);
 
-      if (!trimmed && files.length === 0) {
+      if (!trimmed && attachments.length === 0) {
         return false;
       }
 
       const sent = await Promise.resolve(
         onSend({
           text: trimmed,
-          attachments: files,
+          attachments,
         })
       );
 
@@ -130,7 +122,7 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
 
         setAttachments((current) => [
           ...current,
-          ...selectedFiles.map((file) => ({ id: getId(), file })),
+          ...buildAttachmentsFromFiles(selectedFiles),
         ]);
 
         event.target.value = "";
@@ -170,7 +162,7 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
             />
           </div>
           <Show when={attachments.length > 0}>
-            <List<SelectedAttachment>
+            <List<Attachment>
               className="input-panel__attachment-list"
               items={attachments}
               keyfield="id"

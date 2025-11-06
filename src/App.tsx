@@ -14,7 +14,7 @@ import type {
   UserInputSendPayload,
   ChatSummary,
   Message,
-  MessageAttachment,
+  Attachment,
   ChatCompletionResponse,
   ChatCompletionStreamResponse,
   AttachmentRequest,
@@ -24,7 +24,6 @@ import "./App.css";
 import {
   buildAttachmentRequestPayload,
   buildChatPreview,
-  buildMessageAttachments,
   cloneMessages,
   createChatRecordFromMessages,
   extractAssistantReply,
@@ -171,21 +170,20 @@ const App = () => {
         setChatOpen(true);
       }
 
-      let messageAttachments: MessageAttachment[] = [];
+      let messageAttachments: Attachment[] = [];
       let requestAttachments: AttachmentRequest[] = [];
 
       if (attachments.length) {
-        messageAttachments = buildMessageAttachments(attachments);
-
         try {
-          requestAttachments = await buildAttachmentRequestPayload(
-            attachments,
-            messageAttachments
-          );
+          requestAttachments = await buildAttachmentRequestPayload(attachments);
         } catch (error) {
           console.error("Unable to read attachments", error);
           return false;
         }
+
+        messageAttachments = attachments.map<Attachment>(({ file, ...metadata }) => ({
+          ...metadata,
+        }));
       }
 
       const userMessage: Message = {

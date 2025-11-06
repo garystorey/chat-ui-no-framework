@@ -1,9 +1,9 @@
 import { memo } from 'react';
-import type { MessageAttachment } from '../types';
+import type { Attachment } from '../types';
 import { getAttachmentDisplayType, formatFileSize } from '../utils';
 
 type AttachmentViewProps = {
-  attachment: MessageAttachment;
+  attachment: Attachment;
 };
 
 const AttachmentView = memo(({ attachment }: AttachmentViewProps) => {
