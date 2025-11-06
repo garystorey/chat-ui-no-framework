@@ -154,7 +154,7 @@ const App = () => {
 
   const handleSend = useCallback(
     async ({ text, attachments }: UserInputSendPayload) => {
-      if (!text) {
+      if (!text && attachments.length === 0) {
         return false;
       }
 
