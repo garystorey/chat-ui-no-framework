@@ -96,9 +96,11 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
           return;
         }
 
+        const selectedFiles = Array.from(files);
+
         setAttachments((current) => [
           ...current,
-          ...Array.from(files, (file) => ({ id: getId(), file })),
+          ...selectedFiles.map((file) => ({ id: getId(), file })),
         ]);
 
         event.target.value = '';
