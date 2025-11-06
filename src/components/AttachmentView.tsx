@@ -1,10 +1,15 @@
-import { memo } from "react";
-import { MessageAttachment } from "../types";
-import { getAttachmentDisplayType, formatFileSize } from "../utils";
+import { memo } from 'react';
+import type { MessageAttachment } from '../types';
+import { getAttachmentDisplayType, formatFileSize } from '../utils';
 
-const AttachmentView = memo(( attachment : MessageAttachment) => {
+type AttachmentViewProps = {
+  attachment: MessageAttachment;
+};
+
+const AttachmentView = memo(({ attachment }: AttachmentViewProps) => {
   const typeLabel = getAttachmentDisplayType(attachment);
   const sizeLabel = formatFileSize(attachment.size);
+
   return (
     <li className="message__attachment">
       <div className="message__attachment-details">
@@ -12,12 +17,13 @@ const AttachmentView = memo(( attachment : MessageAttachment) => {
           {attachment.name}
         </span>
         <span className="message__attachment-meta">
-          {typeLabel ? `${typeLabel} • ${sizeLabel}` : sizeLabel} 
+          {typeLabel ? `${typeLabel} • ${sizeLabel}` : sizeLabel}
         </span>
       </div>
     </li>
   );
 });
 
+AttachmentView.displayName = 'AttachmentView';
 
 export default AttachmentView;
