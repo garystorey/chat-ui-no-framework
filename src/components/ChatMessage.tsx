@@ -34,8 +34,8 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
         <ul className="message__attachments" aria-label="Message attachments">
           <List<MessageAttachment>
             items={attachments}
-            getKey={(attachment, index) => `${attachment.id}-${index}`}
-            renderItem={(attachment) => <AttachmentView attachment={attachment} />}
+            keyfield="id"
+            as={(attachment) => <AttachmentView attachment={attachment} />}
           />
         </ul>
       </Show>

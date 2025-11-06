@@ -13,7 +13,6 @@ import { AttachmentIcon, MicIcon, SendIcon } from "./icons";
 import { getId } from "../utils";
 import { UserInputSendPayload } from "../types";
 import "./UserInput.css";
-import AttachmentView from "./AttachmentView";
 import List from "./List";
 import Show from "./Show";
 
