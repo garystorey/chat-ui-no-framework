@@ -36,7 +36,6 @@ body.chat-open .input-panel {
   border-radius: 0.95rem;
   border: 1px solid color-mix(in oklab, var(--panel-border) 70%, transparent);
   padding: 0.45rem 0.95rem;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .input-panel textarea {
