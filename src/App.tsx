@@ -28,6 +28,7 @@ import {
   cloneMessages,
   createChatRecordFromMessages,
   extractAssistantReply,
+  getChatCompletionContentText,
   getId,
   toChatCompletionMessages,
 } from "./utils";
@@ -230,7 +231,10 @@ const App = () => {
           onChunk: (chunk: ChatCompletionStreamResponse) => {
             const contentDelta = chunk?.choices?.reduce((acc, choice) => {
               if (choice.delta?.content) {
-                return acc + choice.delta.content;
+                const deltaText = getChatCompletionContentText(choice.delta.content);
+                if (deltaText) {
+                  return acc + deltaText;
+                }
               }
               return acc;
             }, "");

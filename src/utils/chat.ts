@@ -29,32 +29,50 @@ export const toChatCompletionMessages = (
 ): ChatCompletionMessage[] =>
   messages.map((message) => {
     const text = getMessagePlainText(message);
+    const isUserMessage = message.sender === 'user';
     const hasAttachments =
-      message.sender === 'user' && Array.isArray(message.attachments) && message.attachments.length > 0;
+      isUserMessage && Array.isArray(message.attachments) && message.attachments.length > 0;
 
-    let content: ChatCompletionContentPart[];
+    const attachments = hasAttachments
+      ? message.attachments?.map((attachment) => ({ id: attachment.id })) ?? []
+      : undefined;
 
-    if (text || hasAttachments) {
-      content = [
-        {
-          type: 'text',
-          text: text ?? '',
-          ...(hasAttachments
-            ? {
-                attachments: message.attachments?.map((attachment) => ({ id: attachment.id })) ?? [],
-              }
-            : {}),
-        },
-      ];
-    } else {
-      content = [{ type: 'text', text: '' }];
-    }
+    const content: ChatCompletionContentPart[] = isUserMessage
+      ? [
+          {
+            type: 'input_text',
+            text: text ?? '',
+            ...(attachments && attachments.length > 0 ? { attachments } : {}),
+          },
+        ]
+      : [
+          {
+            type: 'text',
+            text: text ?? '',
+          },
+        ];
 
     return {
-      role: message.sender === 'user' ? 'user' : 'assistant',
+      role: isUserMessage ? 'user' : 'assistant',
       content,
     };
   });
+
+export const getChatCompletionContentText = (
+  content: ChatCompletionMessage['content'] | undefined
+) => {
+  if (!content) {
+    return '';
+  }
+
+  if (typeof content === 'string') {
+    return content;
+  }
+
+  return content
+    .map((part) => ('text' in part && typeof part.text === 'string' ? part.text : ''))
+    .join('');
+};
 
 export const extractAssistantReply = (response: ChatCompletionResponse) => {
   if (!response?.choices?.length) {
@@ -64,7 +82,8 @@ export const extractAssistantReply = (response: ChatCompletionResponse) => {
   const assistantChoice = response.choices.find(
     (choice: ChatCompletionChoice) => choice.message.role === 'assistant'
   );
-  return assistantChoice?.message?.content?.trim() ?? '';
+  const content = getChatCompletionContentText(assistantChoice?.message?.content);
+  return content.trim();
 };
 
 export const buildChatTitle = (
