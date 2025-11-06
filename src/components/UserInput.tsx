@@ -42,14 +42,16 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
 
     const sendMessage = useCallback(async () => {
       const trimmed = value.trim();
-      if (!trimmed) {
+      const files = attachments.map(({ file }) => file);
+
+      if (!trimmed && files.length === 0) {
         return false;
       }
 
       const sent = await Promise.resolve(
         onSend({
           text: trimmed,
-          attachments: attachments.map(({ file }) => file),
+          attachments: files,
         })
       );
 
