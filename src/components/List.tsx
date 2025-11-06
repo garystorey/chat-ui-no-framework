@@ -1,33 +1,29 @@
-import { Fragment, type ReactNode } from 'react';
 
-type ListProps<ListItem> = {
+type ListProps<ListItem> = React.ComponentPropsWithRef<"section"> & {
   items: ListItem[];
-  getKey?: (item: ListItem, index: number) => string;
+  keyfield: keyof ListItem | ((item: ListItem) => string);
   limit?: number;
-  renderItem: (item: ListItem, index: number) => ReactNode;
+  as: (item: ListItem) => React.ReactNode;
 };
 
-const List = <ListItem,>({
+export function List<ListItem>({
   items,
-  getKey,
+  keyfield,
   limit = -1,
-  renderItem,
-}: ListProps<ListItem>) => {
-  const shouldLimit = limit > -1;
-
+  as,
+  ...props
+}: ListProps<ListItem>) {
   return (
-    <>
+    <section {...props}>
       {items.map((item: ListItem, index: number) => {
-        if (shouldLimit && index >= limit) {
-          return null;
-        }
-
-        const key = getKey ? getKey(item, index) : `${index}`;
-
-        return <Fragment key={key}>{renderItem(item, index)}</Fragment>;
+        if (limit > -1 && index + 1 > limit) return null;
+        const key =
+          typeof keyfield === "function"
+            ? keyfield(item)
+            : (item[keyfield] as string);
+        return <div key={key}>{as(item)}</div>;
       })}
-    </>
+    </section>
   );
-};
-
+}
 export default List;

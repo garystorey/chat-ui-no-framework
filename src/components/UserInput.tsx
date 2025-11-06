@@ -8,11 +8,14 @@ import {
   useImperativeHandle,
   useRef,
   useState,
-} from 'react';
-import { AttachmentIcon, MicIcon, SendIcon } from './icons';
-import { getId } from '../utils';
-import { UserInputSendPayload } from '../types';
-import './UserInput.css';
+} from "react";
+import { AttachmentIcon, MicIcon, SendIcon } from "./icons";
+import { getId } from "../utils";
+import { UserInputSendPayload } from "../types";
+import "./UserInput.css";
+import AttachmentView from "./AttachmentView";
+import List from "./List";
+import Show from "./Show";
 
 type SelectedAttachment = {
   id: string;
@@ -25,6 +28,32 @@ type UserInputProps = {
   onSend: (payload: UserInputSendPayload) => Promise<boolean> | boolean;
 };
 
+type AttachmentListItemProps = {
+  attachment: SelectedAttachment;
+  handleRemoveAttachment: (id: string) => void;
+};
+
+function AttachmentListItem({
+  attachment,
+  handleRemoveAttachment,
+}: AttachmentListItemProps) {
+  return (
+    <li key={attachment.id} className="input-panel__attachment-item">
+      <span className="input-panel__attachment-name">
+        {attachment.file.name}
+      </span>
+      <button
+        type="button"
+        className="input-panel__attachment-remove"
+        onClick={() => handleRemoveAttachment(attachment.id)}
+        aria-label={`Remove ${attachment.file.name}`}
+      >
+        X <span className="sr-only">Remove</span>
+      </button>
+    </li>
+  );
+}
+
 const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
   ({ value, onChange, onSend }, forwardedRef) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -36,7 +65,7 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
     useEffect(() => {
       const textarea = textareaRef.current;
       if (!textarea) return;
-      textarea.style.height = 'auto';
+      textarea.style.height = "auto";
       textarea.style.height = `${textarea.scrollHeight}px`;
     }, [value]);
 
@@ -72,7 +101,7 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
 
     const handleKeyDown = useCallback(
       (event: KeyboardEvent<HTMLTextAreaElement>) => {
-        if (event.key === 'Enter' && !event.shiftKey) {
+        if (event.key === "Enter" && !event.shiftKey) {
           event.preventDefault();
           void sendMessage();
         }
@@ -105,7 +134,7 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
           ...selectedFiles.map((file) => ({ id: getId(), file })),
         ]);
 
-        event.target.value = '';
+        event.target.value = "";
       },
       []
     );
@@ -141,26 +170,19 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
               autoFocus
             />
           </div>
-          {attachments.length > 0 ? (
-            <ul className="input-panel__attachment-list">
-              {attachments.map(({ id, file }) => (
-                <li
-                  key={id}
-                  className="input-panel__attachment-item"
-                >
-                  <span className="input-panel__attachment-name">{file.name}</span>
-                  <button
-                    type="button"
-                    className="input-panel__attachment-remove"
-                    onClick={() => handleRemoveAttachment(id)}
-                    aria-label={`Remove ${file.name}`}
-                  >
-                    X <span className='sr-only'>Remove</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : null}
+          <Show when={attachments.length > 0}>
+            <List<SelectedAttachment>
+              className="input-panel__attachment-list"
+              items={attachments}
+              keyfield="id"
+              as={(a) => (
+                <AttachmentListItem
+                  attachment={a}
+                  handleRemoveAttachment={handleRemoveAttachment}
+                />
+              )}
+            />
+          </Show>
           <div className="input-panel__controls">
             <input
               ref={fileInputRef}
@@ -194,6 +216,7 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
               type="submit"
               className="input-panel__submit"
               aria-label="Send message"
+              title="Send message"
             >
               <SendIcon />
             </button>
@@ -207,6 +230,6 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
   }
 );
 
-UserInput.displayName = 'UserInput';
+UserInput.displayName = "UserInput";
 
 export default UserInput;
