@@ -72,7 +72,9 @@ export const buildAttachmentRequestPayload = async (
 
   return Promise.all(
     files.map(async (file, index) => ({
-      ...metadata[index],
+      id: metadata[index]?.id ?? getId(),
+      filename: metadata[index]?.name ?? file.name,
+      mime_type: metadata[index]?.type || file.type || 'application/octet-stream',
       data: await encodeFileToBase64(file),
     }))
   );

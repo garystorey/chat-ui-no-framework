@@ -3,7 +3,12 @@ import { ApiError } from '../utils';
 
 export type Theme = 'light' | 'dark';
 
-export type AttachmentRequest = MessageAttachment & { data: string };
+export type AttachmentRequest = {
+  id: string;
+  filename: string;
+  mime_type: string;
+  data: string;
+};
 
 export type MessageAttachment = {
   id: string;
@@ -68,15 +73,30 @@ export type ApiStreamRequestOptions<TMessage, TResponse> = {
 
 export type ChatCompletionRole = 'system' | 'user' | 'assistant';
 
+export type ChatCompletionAttachmentReference = { id: string };
+
+export type ChatCompletionContentPart =
+  | {
+      type: 'text';
+      text: string;
+      attachments?: ChatCompletionAttachmentReference[];
+    }
+  | {
+      type: 'input_text';
+      text: string;
+      attachments?: ChatCompletionAttachmentReference[];
+    };
+
 export type ChatCompletionMessage = {
   role: ChatCompletionRole;
-  content: string;
+  content: string | ChatCompletionContentPart[];
 };
 
 export type ChatCompletionRequest = {
   model: string;
   messages: ChatCompletionMessage[];
   stream?: boolean;
+  attachments?: AttachmentRequest[];
   [key: string]: unknown;
 };
 

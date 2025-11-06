@@ -1,4 +1,11 @@
-import type { ChatSummary, Message, ChatCompletionMessage, ChatCompletionResponse, ChatCompletionChoice } from '../types';
+import type {
+  ChatSummary,
+  Message,
+  ChatCompletionMessage,
+  ChatCompletionResponse,
+  ChatCompletionChoice,
+  ChatCompletionContentPart,
+} from '../types';
 import { getId } from './id';
 import { getPlainTextFromHtml, normalizeWhitespace, truncate } from './text';
 
@@ -20,10 +27,34 @@ export const getMessagePlainText = (message?: Message) => {
 export const toChatCompletionMessages = (
   messages: Message[]
 ): ChatCompletionMessage[] =>
-  messages.map((message) => ({
-    role: message.sender === 'user' ? 'user' : 'assistant',
-    content: getMessagePlainText(message),
-  }));
+  messages.map((message) => {
+    const text = getMessagePlainText(message);
+    const hasAttachments =
+      message.sender === 'user' && Array.isArray(message.attachments) && message.attachments.length > 0;
+
+    let content: ChatCompletionContentPart[];
+
+    if (text || hasAttachments) {
+      content = [
+        {
+          type: 'text',
+          text: text ?? '',
+          ...(hasAttachments
+            ? {
+                attachments: message.attachments?.map((attachment) => ({ id: attachment.id })) ?? [],
+              }
+            : {}),
+        },
+      ];
+    } else {
+      content = [{ type: 'text', text: '' }];
+    }
+
+    return {
+      role: message.sender === 'user' ? 'user' : 'assistant',
+      content,
+    };
+  });
 
 export const extractAssistantReply = (response: ChatCompletionResponse) => {
   if (!response?.choices?.length) {
