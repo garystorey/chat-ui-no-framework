@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react';
-import type { Message, MessageAttachment } from '../types';
+import type { Attachment, Message } from '../types';
 import {
   normalizeMessageAttachments,
   renderMarkdown,
@@ -32,7 +32,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
       <div className="message__body" dangerouslySetInnerHTML={{ __html: content }} />
       <Show when={attachments.length > 0}>
         <ul className="message__attachments" aria-label="Message attachments">
-          <List<MessageAttachment>
+          <List<Attachment>
             items={attachments}
             getKey={(attachment, index) => `${attachment.id}-${index}`}
             renderItem={(attachment) => <AttachmentView attachment={attachment} />}
