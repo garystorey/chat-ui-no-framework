@@ -10,7 +10,14 @@ import { getId } from './id';
 import { getPlainTextFromHtml, normalizeWhitespace, truncate } from './text';
 
 export const cloneMessages = (items: Message[]): Message[] =>
-  items.map((item) => ({ ...item }));
+  items.map((item) => ({
+    ...item,
+    ...(Array.isArray(item.attachments)
+      ? {
+          attachments: item.attachments.map((attachment) => ({ ...attachment })),
+        }
+      : {}),
+  }));
 
 export const getMessagePlainText = (message?: Message) => {
   if (!message) {

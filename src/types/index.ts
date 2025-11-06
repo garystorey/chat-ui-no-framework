@@ -10,11 +10,12 @@ export type AttachmentRequest = {
   data: string;
 };
 
-export type MessageAttachment = {
+export type Attachment = {
   id: string;
   name: string;
   size: number;
   type: string;
+  file?: File;
 };
 
 export type Message = {
@@ -22,7 +23,7 @@ export type Message = {
   sender: 'user' | 'bot';
   content: string;
   renderAsHtml?: boolean;
-  attachments?: MessageAttachment[];
+  attachments?: Attachment[];
 };
 
 export type ChatSummary = {
@@ -35,7 +36,7 @@ export type ChatSummary = {
 
 export type UserInputSendPayload = {
   text: string;
-  attachments: File[];
+  attachments: Attachment[];
 };
 
 export type ApiMutationVariables = Omit<ApiRequestOptions, 'path' | 'method'> & {
