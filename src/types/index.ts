@@ -77,9 +77,8 @@ export type ChatCompletionAttachmentReference = { id: string };
 
 export type ChatCompletionContentPart =
   | {
-      type: 'text';
+      type: 'text' | 'output_text';
       text: string;
-      attachments?: ChatCompletionAttachmentReference[];
     }
   | {
       type: 'input_text';

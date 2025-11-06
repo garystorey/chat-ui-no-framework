@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { ApiError, apiStreamRequest } from '../utils';
+import { ApiError, apiStreamRequest, getChatCompletionContentText } from '../utils';
 import { ChatCompletionRequest, ChatCompletionStreamResponse, ChatCompletionResponse, ChatCompletionChoice } from '../types';
 
 export const CHAT_COMPLETION_PATH = '/v1/chat/completions';
@@ -32,7 +32,10 @@ const buildChatCompletionResponse = (
         existing.message.role = choice.delta.role;
       }
       if (choice.delta?.content) {
-        existing.message.content = `${existing.message.content ?? ''}${choice.delta.content}`;
+        const deltaText = getChatCompletionContentText(choice.delta.content);
+        if (deltaText) {
+          existing.message.content = `${existing.message.content ?? ''}${deltaText}`;
+        }
       }
       if (choice.finish_reason !== undefined) {
         existing.finish_reason = choice.finish_reason;
