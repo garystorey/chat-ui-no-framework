@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
-import ThemeToggle from './ThemeToggle';
-import type { ChatSummary } from '../types';
-import './Sidebar.css';
+import { useEffect, useMemo, useState } from "react";
+import ThemeToggle from "./ThemeToggle";
+import type { ChatSummary } from "../types";
+import "./Sidebar.css";
+import Show from "./Show";
+import ChatList from "./ChatList";
 
 type SidebarProps = {
   collapsed: boolean;
@@ -22,11 +24,11 @@ const Sidebar = ({
   onSelectChat,
   onRemoveChat,
 }: SidebarProps) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     if (collapsed) {
-      setSearchTerm('');
+      setSearchTerm("");
     }
   }, [collapsed]);
 
@@ -43,18 +45,23 @@ const Sidebar = ({
   }, [chats, searchTerm]);
 
   return (
-    <aside className={`sidebar ${collapsed ? 'sidebar--collapsed' : ''}`} aria-label="Chat navigation">
+    <aside
+      className={`sidebar ${collapsed ? "sidebar--collapsed" : ""}`}
+      aria-label="Chat navigation"
+    >
       <div className="sidebar__inner">
         <div className="sidebar__header">
+
           <ThemeToggle />
+          
           <button
             type="button"
             className="sidebar__toggle"
             onClick={onToggle}
             aria-expanded={!collapsed}
-            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            <span aria-hidden="true">{collapsed ? '<' : '>'}</span>
+            <span aria-hidden="true">{collapsed ? "<" : ">"}</span>
           </button>
         </div>
         <div className="sidebar__actions">
@@ -64,7 +71,8 @@ const Sidebar = ({
             </span>
             <span className="sidebar__action-label">New Chat</span>
           </button>
-          {!collapsed && (
+
+          <Show when={!collapsed}>
             <label className="sidebar__search">
               <span className="sidebar__search-icon" aria-hidden="true">
                 🔍
@@ -77,43 +85,17 @@ const Sidebar = ({
                 placeholder="Search chats"
               />
             </label>
-          )}
+          </Show>
+
         </div>
-        {!collapsed && (
-          <nav className="sidebar__chats" aria-label="Previous chats">
-            <h2 className="sidebar__section-title">Chats</h2>
-            <ul className="sidebar__chat-list">
-              {filteredChats.map((chat) => (
-                <li key={chat.id} className="sidebar__chat-item">
-                  <button
-                    type="button"
-                    className={`sidebar__chat ${chat.id === activeChatId ? 'sidebar__chat--active' : ''}`}
-                    onClick={() => onSelectChat(chat.id)}
-                    title={chat.title}
-                  >
-                    <span className="sidebar__chat-title">{chat.title}</span>
-                    <span className="sidebar__chat-preview">{chat.preview}</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="sidebar__chat-remove"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      onRemoveChat(chat.id);
-                    }}
-                    aria-label={`Remove ${chat.title}`}
-                    title={`Remove ${chat.title}`}
-                  >
-                    ×
-                  </button>
-                </li>
-              ))}
-              {filteredChats.length === 0 && (
-                <li className="sidebar__empty">No chats found</li>
-              )}
-            </ul>
-          </nav>
-        )}
+        <Show when={!collapsed}>
+          <ChatList
+            chats={filteredChats}
+            activeChatId={activeChatId}
+            onSelectChat={onSelectChat}
+            onRemoveChat={onRemoveChat}
+          />
+        </Show>
       </div>
     </aside>
   );

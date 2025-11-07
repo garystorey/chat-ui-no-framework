@@ -8,7 +8,7 @@ import {
   type MouseEvent,
 } from "react";
 import { messagesAtom, typingAtom } from "./atoms/chat";
-import { Card, ChatWindow, Show, Sidebar, UserInput } from "./components";
+import { ChatWindow, Show, Sidebar, UserInput } from "./components";
 import type {} from "./components";
 import type {
   UserInputSendPayload,
@@ -60,13 +60,6 @@ const App = () => {
 
   useTheme();
 
-  useEffect(() => {
-    document.body.classList.toggle("chat-open", isChatOpen);
-    return () => {
-      document.body.classList.remove("chat-open");
-    };
-  }, [isChatOpen]);
-
   const cancelPendingResponse = useCallback(() => {
     if (pendingRequestRef.current) {
       pendingRequestRef.current.abort();
@@ -80,7 +73,15 @@ const App = () => {
     setTyping(false);
   }, [chatCompletionStatus, resetChatCompletion, setTyping]);
 
+
   useEffect(() => {
+    document.body.classList.toggle("chat-open", isChatOpen);
+    return () => {
+      document.body.classList.remove("chat-open");
+    };
+  }, [isChatOpen]);
+
+   useEffect(() => {
     cancelPendingResponseRef.current = cancelPendingResponse;
   }, [cancelPendingResponse]);
 
@@ -93,6 +94,8 @@ const App = () => {
   useEffect(() => {
     setTyping(chatCompletionStatus === "pending");
   }, [chatCompletionStatus, setTyping]);
+
+
 
   const updateActiveChat = useCallback(
     (nextMessages: Message[], previewMessage?: Message) => {
@@ -194,12 +197,14 @@ const App = () => {
           ? { attachments: messageAttachments }
           : {}),
       };
+
       const assistantMessageId = getId();
       const assistantMessage: Message = {
         id: assistantMessageId,
         sender: "bot",
         content: "",
       };
+      
       let assistantReply = "";
       const conversationForRequest = [...messages, userMessage];
 

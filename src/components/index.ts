@@ -9,3 +9,4 @@ export { default as Show } from './Show';
 export { default as Suggestions } from './Suggestions';
 export { default as List } from './List';
 export { default as AttachmentView } from './AttachmentView';
+export { default as ChatList } from './ChatList';

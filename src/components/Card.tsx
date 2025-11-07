@@ -9,7 +9,7 @@ type CardProps = {
   onSelect: () => void;
 };
 
-const Card = ({ title, description, actionLabel, icon, onSelect }: CardProps) => {
+function Card ({ title, description, actionLabel, icon, onSelect }: CardProps) {
   const titleId = useId();
   const descriptionId = useId();
 
