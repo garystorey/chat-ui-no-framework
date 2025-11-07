@@ -5,7 +5,7 @@ type UseScrollToBottomOptions = {
 };
 
 const useScrollToBottom = <T extends Element>(
-  ref: RefObject<T>,
+  ref: RefObject<T | null>,
   dependencies: DependencyList = [],
   { behavior = 'smooth' }: UseScrollToBottomOptions = {}
 ) => {
