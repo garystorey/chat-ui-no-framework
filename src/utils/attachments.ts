@@ -1,7 +1,6 @@
 import { getId } from './id';
-import type { MessageAttachment } from '../atoms/chat';
+import type { AttachmentRequest, Attachment } from '../types';
 
-export type AttachmentRequest = MessageAttachment & { data: string };
 
 const BASE64_CHUNK_SIZE = 0x8000;
 
@@ -26,27 +25,28 @@ export const encodeFileToBase64 = async (file: File) => {
   return arrayBufferToBase64(buffer);
 };
 
-export const buildMessageAttachments = (files: File[]): MessageAttachment[] =>
+export const buildAttachmentsFromFiles = (files: File[]): Attachment[] =>
   files.map((file) => ({
     id: getId(),
     name: file.name,
     size: file.size,
     type: file.type,
+    file,
   }));
 
 export const normalizeMessageAttachments = (
   attachments: unknown,
   fallbackPrefix = 'attachment'
-): MessageAttachment[] => {
+): Attachment[] => {
   if (!attachments) {
     return [];
   }
 
-  const list: Partial<MessageAttachment>[] = Array.isArray(attachments)
-    ? (attachments as Partial<MessageAttachment>[])
+  const list: Partial<Attachment>[] = Array.isArray(attachments)
+    ? (attachments as Partial<Attachment>[])
     : typeof attachments === 'object'
       ? Object.values(
-          attachments as Record<string, Partial<MessageAttachment>>
+          attachments as Record<string, Partial<Attachment>>
         )
       : [];
 
@@ -64,17 +64,24 @@ export const normalizeMessageAttachments = (
 };
 
 export const buildAttachmentRequestPayload = async (
-  files: File[],
-  metadata: MessageAttachment[]
+  attachments: Attachment[]
 ): Promise<AttachmentRequest[]> => {
-  if (!files.length) {
+  const attachmentsWithFile = attachments.filter(
+    (attachment): attachment is Attachment & { file: File } =>
+      attachment.file instanceof File
+  );
+
+  if (!attachmentsWithFile.length) {
     return [];
   }
 
   return Promise.all(
-    files.map(async (file, index) => ({
-      ...metadata[index],
-      data: await encodeFileToBase64(file),
+    attachmentsWithFile.map(async (attachment) => ({
+      id: attachment.id ?? getId(),
+      filename: attachment.name ?? attachment.file.name,
+      mime_type:
+        attachment.type || attachment.file.type || 'application/octet-stream',
+      data: await encodeFileToBase64(attachment.file),
     }))
   );
 };
@@ -101,7 +108,7 @@ export const formatFileSize = (bytes: number) => {
 export const getAttachmentDisplayType = ({
   name,
   type,
-}: Pick<MessageAttachment, 'name' | 'type'>) => {
+}: Pick<Attachment, 'name' | 'type'>) => {
   const extension = name?.split('.').pop();
   if (extension && extension.length <= 5) {
     return extension.toUpperCase();

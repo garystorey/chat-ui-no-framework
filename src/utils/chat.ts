@@ -1,11 +1,23 @@
-import type { Message } from '../atoms/chat';
-import type { ChatCompletionMessage, ChatCompletionResponse } from '../hooks';
-import type { ChatSummary } from '../types';
+import type {
+  ChatSummary,
+  Message,
+  ChatCompletionMessage,
+  ChatCompletionResponse,
+  ChatCompletionChoice,
+  ChatCompletionContentPart,
+} from '../types';
 import { getId } from './id';
 import { getPlainTextFromHtml, normalizeWhitespace, truncate } from './text';
 
 export const cloneMessages = (items: Message[]): Message[] =>
-  items.map((item) => ({ ...item }));
+  items.map((item) => ({
+    ...item,
+    ...(Array.isArray(item.attachments)
+      ? {
+          attachments: item.attachments.map((attachment) => ({ ...attachment })),
+        }
+      : {}),
+  }));
 
 export const getMessagePlainText = (message?: Message) => {
   if (!message) {
@@ -22,10 +34,52 @@ export const getMessagePlainText = (message?: Message) => {
 export const toChatCompletionMessages = (
   messages: Message[]
 ): ChatCompletionMessage[] =>
-  messages.map((message) => ({
-    role: message.sender === 'user' ? 'user' : 'assistant',
-    content: getMessagePlainText(message),
-  }));
+  messages.map((message) => {
+    const text = getMessagePlainText(message);
+    const isUserMessage = message.sender === 'user';
+    const hasAttachments =
+      isUserMessage && Array.isArray(message.attachments) && message.attachments.length > 0;
+
+    const attachments = hasAttachments
+      ? message.attachments?.map((attachment) => ({ id: attachment.id })) ?? []
+      : undefined;
+
+    const content: ChatCompletionContentPart[] = isUserMessage
+      ? [
+          {
+            type: 'input_text',
+            text: text ?? '',
+            ...(attachments && attachments.length > 0 ? { attachments } : {}),
+          },
+        ]
+      : [
+          {
+            type: 'text',
+            text: text ?? '',
+          },
+        ];
+
+    return {
+      role: isUserMessage ? 'user' : 'assistant',
+      content,
+    };
+  });
+
+export const getChatCompletionContentText = (
+  content: ChatCompletionMessage['content'] | undefined
+) => {
+  if (!content) {
+    return '';
+  }
+
+  if (typeof content === 'string') {
+    return content;
+  }
+
+  return content
+    .map((part) => ('text' in part && typeof part.text === 'string' ? part.text : ''))
+    .join('');
+};
 
 export const extractAssistantReply = (response: ChatCompletionResponse) => {
   if (!response?.choices?.length) {
@@ -33,9 +87,10 @@ export const extractAssistantReply = (response: ChatCompletionResponse) => {
   }
 
   const assistantChoice = response.choices.find(
-    (choice) => choice.message.role === 'assistant'
+    (choice: ChatCompletionChoice) => choice.message.role === 'assistant'
   );
-  return assistantChoice?.message?.content?.trim() ?? '';
+  const content = getChatCompletionContentText(assistantChoice?.message?.content);
+  return content.trim();
 };
 
 export const buildChatTitle = (

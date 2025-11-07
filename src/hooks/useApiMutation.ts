@@ -1,18 +1,7 @@
-import { useMutation, UseMutationOptions } from '@tanstack/react-query';
-import { ApiError, apiRequest, ApiRequestOptions } from '../utils';
+import { useMutation } from '@tanstack/react-query';
+import { ApiError, apiRequest  } from '../utils';
+import { ApiMutationVariables, UseApiMutationConfig } from '../types';
 
-export type ApiMutationVariables = Omit<ApiRequestOptions, 'path' | 'method'> & {
-  path?: string;
-};
-
-export type UseApiMutationConfig<TResponse> = {
-  path: string;
-  method?: string;
-  options?: Omit<
-    UseMutationOptions<TResponse, ApiError, ApiMutationVariables, unknown>,
-    'mutationFn'
-  >;
-};
 
 export function useApiMutation<TResponse>({
   path,

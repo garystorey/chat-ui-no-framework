@@ -1,44 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
-import { ApiError, apiStreamRequest } from '../utils';
-
-export type ChatCompletionRole = 'system' | 'user' | 'assistant';
-
-export type ChatCompletionMessage = {
-  role: ChatCompletionRole;
-  content: string;
-};
-
-export type ChatCompletionRequest = {
-  model: string;
-  messages: ChatCompletionMessage[];
-  stream?: boolean;
-  [key: string]: unknown;
-};
-
-export type ChatCompletionChoice = {
-  index: number;
-  message: ChatCompletionMessage;
-  finish_reason?: string | null;
-};
-
-export type ChatCompletionResponse = {
-  id?: string;
-  choices: ChatCompletionChoice[];
-};
-
-export type ChatCompletionStreamChoice = {
-  index: number;
-  delta?: Partial<ChatCompletionMessage>;
-  finish_reason?: string | null;
-};
-
-export type ChatCompletionStreamResponse = {
-  id?: string;
-  choices: ChatCompletionStreamChoice[];
-};
+import { ApiError, apiStreamRequest, getChatCompletionContentText } from '../utils';
+import { ChatCompletionRequest, ChatCompletionStreamResponse, ChatCompletionResponse, ChatCompletionChoice } from '../types';
 
 export const CHAT_COMPLETION_PATH = '/v1/chat/completions';
-
 export const DEFAULT_CHAT_MODEL = 'gpt-4o-mini';
 
 type ChatCompletionMutationVariables = {
@@ -68,7 +32,10 @@ const buildChatCompletionResponse = (
         existing.message.role = choice.delta.role;
       }
       if (choice.delta?.content) {
-        existing.message.content = `${existing.message.content ?? ''}${choice.delta.content}`;
+        const deltaText = getChatCompletionContentText(choice.delta.content);
+        if (deltaText) {
+          existing.message.content = `${existing.message.content ?? ''}${deltaText}`;
+        }
       }
       if (choice.finish_reason !== undefined) {
         existing.finish_reason = choice.finish_reason;

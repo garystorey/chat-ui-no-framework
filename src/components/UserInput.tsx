@@ -8,20 +8,13 @@ import {
   useImperativeHandle,
   useRef,
   useState,
-} from 'react';
-import { AttachmentIcon, MicIcon, SendIcon } from './icons';
-import { getId } from '../utils';
-import './UserInput.css';
-
-export type UserInputSendPayload = {
-  text: string;
-  attachments: File[];
-};
-
-type SelectedAttachment = {
-  id: string;
-  file: File;
-};
+} from "react";
+import { AttachmentIcon, MicIcon, SendIcon } from "./icons";
+import { buildAttachmentsFromFiles } from "../utils";
+import { Attachment, UserInputSendPayload } from "../types";
+import "./UserInput.css";
+import List from "./List";
+import Show from "./Show";
 
 type UserInputProps = {
   value: string;
@@ -29,31 +22,55 @@ type UserInputProps = {
   onSend: (payload: UserInputSendPayload) => Promise<boolean> | boolean;
 };
 
+type AttachmentListItemProps = {
+  attachment: Attachment;
+  handleRemoveAttachment: (id: string) => void;
+};
+
+function AttachmentListItem({
+  attachment,
+  handleRemoveAttachment,
+}: AttachmentListItemProps) {
+  return (
+    <li key={attachment.id} className="input-panel__attachment-item">
+      <span className="input-panel__attachment-name">{attachment.name}</span>
+      <button
+        type="button"
+        className="input-panel__attachment-remove"
+        onClick={() => handleRemoveAttachment(attachment.id)}
+      >
+        &times; <span className="sr-only">Remove {attachment.name}</span>
+      </button>
+    </li>
+  );
+}
+
 const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
   ({ value, onChange, onSend }, forwardedRef) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [attachments, setAttachments] = useState<SelectedAttachment[]>([]);
+    const [attachments, setAttachments] = useState<Attachment[]>([]);
 
     useImperativeHandle(forwardedRef, () => textareaRef.current!);
 
     useEffect(() => {
       const textarea = textareaRef.current;
       if (!textarea) return;
-      textarea.style.height = 'auto';
+      textarea.style.height = "auto";
       textarea.style.height = `${textarea.scrollHeight}px`;
     }, [value]);
 
     const sendMessage = useCallback(async () => {
       const trimmed = value.trim();
-      if (!trimmed) {
+
+      if (!trimmed && attachments.length === 0) {
         return false;
       }
 
       const sent = await Promise.resolve(
         onSend({
           text: trimmed,
-          attachments: attachments.map(({ file }) => file),
+          attachments,
         })
       );
 
@@ -74,7 +91,7 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
 
     const handleKeyDown = useCallback(
       (event: KeyboardEvent<HTMLTextAreaElement>) => {
-        if (event.key === 'Enter' && !event.shiftKey) {
+        if (event.key === "Enter" && !event.shiftKey) {
           event.preventDefault();
           void sendMessage();
         }
@@ -100,12 +117,14 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
           return;
         }
 
+        const selectedFiles = Array.from(files);
+
         setAttachments((current) => [
           ...current,
-          ...Array.from(files, (file) => ({ id: getId(), file })),
+          ...buildAttachmentsFromFiles(selectedFiles),
         ]);
 
-        event.target.value = '';
+        event.target.value = "";
       },
       []
     );
@@ -141,26 +160,19 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
               autoFocus
             />
           </div>
-          {attachments.length > 0 ? (
-            <ul className="input-panel__attachment-list">
-              {attachments.map(({ id, file }) => (
-                <li
-                  key={id}
-                  className="input-panel__attachment-item"
-                >
-                  <span className="input-panel__attachment-name">{file.name}</span>
-                  <button
-                    type="button"
-                    className="input-panel__attachment-remove"
-                    onClick={() => handleRemoveAttachment(id)}
-                    aria-label={`Remove ${file.name}`}
-                  >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : null}
+          <Show when={attachments.length > 0}>
+            <List<Attachment>
+              className="input-panel__attachment-list"
+              items={attachments}
+              keyfield="id"
+              as={(a) => (
+                <AttachmentListItem
+                  attachment={a}
+                  handleRemoveAttachment={handleRemoveAttachment}
+                />
+              )}
+            />
+          </Show>
           <div className="input-panel__controls">
             <input
               ref={fileInputRef}
@@ -194,6 +206,7 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
               type="submit"
               className="input-panel__submit"
               aria-label="Send message"
+              title="Send message"
             >
               <SendIcon />
             </button>
@@ -207,6 +220,6 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
   }
 );
 
-UserInput.displayName = 'UserInput';
+UserInput.displayName = "UserInput";
 
 export default UserInput;
