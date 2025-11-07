@@ -19,7 +19,13 @@ import type {
   ChatCompletionStreamResponse,
   AttachmentRequest,
 } from "./types";
-import { useTheme, useChatCompletion, DEFAULT_CHAT_MODEL } from "./hooks";
+import {
+  useTheme,
+  useChatCompletion,
+  DEFAULT_CHAT_MODEL,
+  useToggleBodyClass,
+  useUnmount,
+} from "./hooks";
 import "./App.css";
 import {
   buildAttachmentRequestPayload,
@@ -55,10 +61,10 @@ const App = () => {
     status: chatCompletionStatus,
   } = chatCompletion;
   const pendingRequestRef = useRef<AbortController | null>(null);
-  const cancelPendingResponseRef = useRef<() => void>(() => {});
   const isFreshChat = messages.length === 0;
 
   useTheme();
+  useToggleBodyClass("chat-open", isChatOpen);
 
   const cancelPendingResponse = useCallback(() => {
     if (pendingRequestRef.current) {
@@ -72,24 +78,7 @@ const App = () => {
 
     setTyping(false);
   }, [chatCompletionStatus, resetChatCompletion, setTyping]);
-
-
-  useEffect(() => {
-    document.body.classList.toggle("chat-open", isChatOpen);
-    return () => {
-      document.body.classList.remove("chat-open");
-    };
-  }, [isChatOpen]);
-
-   useEffect(() => {
-    cancelPendingResponseRef.current = cancelPendingResponse;
-  }, [cancelPendingResponse]);
-
-  useEffect(() => {
-    return () => {
-      cancelPendingResponseRef.current();
-    };
-  }, []);
+  useUnmount(cancelPendingResponse);
 
   useEffect(() => {
     setTyping(chatCompletionStatus === "pending");
