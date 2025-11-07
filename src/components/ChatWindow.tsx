@@ -1,8 +1,9 @@
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useRef } from 'react';
 import type { Message } from '../types';
 import ChatMessage from './ChatMessage';
 import ThinkingIndicator from './ThinkingIndicator';
 import './ChatWindow.css';
+import { usePrefersReducedMotion, useScrollToBottom } from '../hooks';
 
 type ChatWindowProps = {
   messages: Message[];
@@ -12,34 +13,11 @@ type ChatWindowProps = {
 
 const ChatWindow = ({ messages, isTyping, isOpen }: ChatWindowProps) => {
   const messagesRef = useRef<HTMLOListElement>(null);
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const handleChange = (event: MediaQueryListEvent) => {
-      setReduceMotion(event.matches);
-    };
-
-    setReduceMotion(mediaQuery.matches);
-    mediaQuery.addEventListener('change', handleChange);
-
-    return () => {
-      mediaQuery.removeEventListener('change', handleChange);
-    };
-  }, []);
-
-  useEffect(() => {
-    const container = messagesRef.current;
-    if (!container) return;
-    container.scrollTo({
-      top: container.scrollHeight,
-      behavior: reduceMotion ? 'auto' : 'smooth',
-    });
-  }, [messages, isTyping, reduceMotion]);
+  useScrollToBottom(messagesRef, [messages, isTyping, prefersReducedMotion], {
+    behavior: prefersReducedMotion ? 'auto' : 'smooth',
+  });
 
   return (
     <section

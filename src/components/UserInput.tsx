@@ -4,7 +4,6 @@ import {
   KeyboardEvent,
   forwardRef,
   useCallback,
-  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -15,6 +14,7 @@ import { Attachment, UserInputSendPayload } from "../types";
 import "./UserInput.css";
 import List from "./List";
 import Show from "./Show";
+import { useAutoResizeTextarea } from "../hooks";
 
 type UserInputProps = {
   value: string;
@@ -52,13 +52,7 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
     const [attachments, setAttachments] = useState<Attachment[]>([]);
 
     useImperativeHandle(forwardedRef, () => textareaRef.current!);
-
-    useEffect(() => {
-      const textarea = textareaRef.current;
-      if (!textarea) return;
-      textarea.style.height = "auto";
-      textarea.style.height = `${textarea.scrollHeight}px`;
-    }, [value]);
+    useAutoResizeTextarea(textareaRef, value);
 
     const sendMessage = useCallback(async () => {
       const trimmed = value.trim();
