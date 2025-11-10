@@ -1,9 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { ApiError, apiStreamRequest, getChatCompletionContentText } from '../utils';
 import { ChatCompletionRequest, ChatCompletionStreamResponse, ChatCompletionResponse, ChatCompletionChoice } from '../types';
-
-export const CHAT_COMPLETION_PATH = '/v1/chat/completions';
-export const DEFAULT_CHAT_MODEL = 'gpt-4o-mini';
+import { CHAT_COMPLETION_PATH } from '../App.config';
 
 type ChatCompletionMutationVariables = {
   body: ChatCompletionRequest;
@@ -51,7 +49,7 @@ const buildChatCompletionResponse = (
   };
 };
 
-export function useChatCompletion() {
+export default function useChatCompletion() {
   return useMutation<ChatCompletionResponse, ApiError, ChatCompletionMutationVariables>({
     mutationFn: async ({ body, signal, onChunk }) => {
       return apiStreamRequest<ChatCompletionStreamResponse, ChatCompletionResponse>({
