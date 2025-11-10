@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "../App.config";
+import { API_BASE_URL, OPENAI_API_KEY, OPENAI_BETA_FEATURES } from "../App.config";
 import { ApiRequestOptions } from "../types";
 
 export const isJsonLike = (value: unknown): value is Record<string, unknown> | unknown[] => {
@@ -53,6 +53,14 @@ export const buildRequest = ({
     Accept: 'application/json',
     ...headers,
   };
+
+  if (OPENAI_API_KEY && !requestHeaders.Authorization) {
+    requestHeaders.Authorization = `Bearer ${OPENAI_API_KEY}`;
+  }
+
+  if (OPENAI_BETA_FEATURES && !requestHeaders['OpenAI-Beta']) {
+    requestHeaders['OpenAI-Beta'] = OPENAI_BETA_FEATURES;
+  }
 
   let requestBody: BodyInit | undefined;
 
