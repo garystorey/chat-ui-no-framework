@@ -1,6 +1,3 @@
-import { UseMutationOptions } from '@tanstack/react-query';
-import { ApiError } from '../utils';
-
 export type Theme = 'light' | 'dark';
 
 export type AttachmentRequest = {
@@ -37,19 +34,6 @@ export type ChatSummary = {
 export type UserInputSendPayload = {
   text: string;
   attachments: Attachment[];
-};
-
-export type ApiMutationVariables = Omit<ApiRequestOptions, 'path' | 'method'> & {
-  path?: string;
-};
-
-export type UseApiMutationConfig<TResponse> = {
-  path: string;
-  method?: string;
-  options?: Omit<
-    UseMutationOptions<TResponse, ApiError, ApiMutationVariables, unknown>,
-    'mutationFn'
-  >;
 };
 
 export type ApiRequestOptions = {

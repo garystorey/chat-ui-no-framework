@@ -9,7 +9,6 @@ import {
 } from "react";
 import { messagesAtom, typingAtom } from "./atoms/chat";
 import { ChatWindow, Show, Sidebar, UserInput } from "./components";
-import type {} from "./components";
 import type {
   UserInputSendPayload,
   ChatSummary,
