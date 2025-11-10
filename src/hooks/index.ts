@@ -1,4 +1,3 @@
-export { useApiMutation } from './useApiMutation';
 export { default as useTheme } from './useTheme';
 export {
   useChatCompletion,
