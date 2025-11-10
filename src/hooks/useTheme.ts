@@ -1,10 +1,8 @@
 import { useAtom } from 'jotai';
 import { useCallback, useEffect, useMemo } from 'react';
-import { themeAtom } from '../atoms/chat';
+import { themeAtom } from '../atoms';
 import { Theme } from '../types';
 import useToggleBodyClass from './useToggleBodyClass';
-
-
 
 const prefersDarkSchemeQuery = '(prefers-color-scheme: dark)';
 const highlightThemeHref: Record<Theme, string> = {

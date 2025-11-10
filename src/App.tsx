@@ -7,8 +7,8 @@ import {
   useState,
   type MouseEvent,
 } from "react";
-import { messagesAtom, typingAtom } from "./atoms/chat";
-import { ChatWindow, Show, Sidebar, UserInput } from "./components";
+import { messagesAtom, typingAtom } from "./atoms";
+import { ChatWindow, Show, Sidebar, UserInput, Suggestions } from "./components";
 import type {
   UserInputSendPayload,
   ChatSummary,
@@ -21,11 +21,9 @@ import type {
 import {
   useTheme,
   useChatCompletion,
-  DEFAULT_CHAT_MODEL,
   useToggleBodyClass,
   useUnmount,
 } from "./hooks";
-import "./App.css";
 import {
   buildAttachmentRequestPayload,
   buildChatPreview,
@@ -38,10 +36,9 @@ import {
 } from "./utils";
 
 import { defaultChats, suggestions } from "./App.data";
-import Suggestions from "./components/Suggestions";
+import { ASSISTANT_ERROR_MESSAGE, DEFAULT_CHAT_MODEL } from "./App.config";
 
-const ASSISTANT_ERROR_MESSAGE =
-  "Sorry, I had trouble reaching the assistant. Please try again.";
+import "./App.css";
 
 const App = () => {
   const [messages, setMessages] = useAtom(messagesAtom);
