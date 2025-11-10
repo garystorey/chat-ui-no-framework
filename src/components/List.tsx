@@ -1,29 +1,33 @@
+import type { ComponentPropsWithRef, ReactNode } from 'react';
 
-type ListProps<ListItem> = React.ComponentPropsWithRef<"section"> & {
+type ListProps<ListItem> = ComponentPropsWithRef<'section'> & {
   items: ListItem[];
   keyfield: keyof ListItem | ((item: ListItem) => string);
   limit?: number;
-  as: (item: ListItem) => React.ReactNode;
+  as: (item: ListItem) => ReactNode;
 };
 
-export function List<ListItem>({
+const List = <ListItem,>({
   items,
   keyfield,
   limit = -1,
   as,
   ...props
-}: ListProps<ListItem>) {
+}: ListProps<ListItem>) => {
+  const getKey =
+    typeof keyfield === 'function'
+      ? keyfield
+      : (item: ListItem) => String(item[keyfield]);
+
+  const visibleItems = limit > -1 ? items.slice(0, limit) : items;
+
   return (
     <section {...props}>
-      {items.map((item: ListItem, index: number) => {
-        if (limit > -1 && index + 1 > limit) return null;
-        const key =
-          typeof keyfield === "function"
-            ? keyfield(item)
-            : (item[keyfield] as string);
-        return <div key={key}>{as(item)}</div>;
-      })}
+      {visibleItems.map((item) => (
+        <div key={getKey(item)}>{as(item)}</div>
+      ))}
     </section>
   );
-}
+};
+
 export default List;

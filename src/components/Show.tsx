@@ -1,15 +1,10 @@
-
+import type { ReactNode } from 'react';
 
 type ShowProps = {
-    when: boolean;
-    children: React.ReactNode;
+  when: boolean;
+  children: ReactNode;
 };
 
-export const Show = ({when,children}:ShowProps) => {
-    if (!when) {
-        return null;
-    }
-    return <>{children}</>;
-}
+const Show = ({ when, children }: ShowProps) => (when ? <>{children}</> : null);
 
 export default Show;
