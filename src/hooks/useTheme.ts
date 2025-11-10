@@ -2,6 +2,7 @@ import { useAtom } from 'jotai';
 import { useCallback, useEffect, useMemo } from 'react';
 import { themeAtom } from '../atoms/chat';
 import { Theme } from '../types';
+import useToggleBodyClass from './useToggleBodyClass';
 
 
 
@@ -41,13 +42,13 @@ const useTheme = () => {
     };
   }, [setTheme]);
 
+  useToggleBodyClass('light', theme === 'light');
+  useToggleBodyClass('dark', theme === 'dark');
+
   useEffect(() => {
     if (typeof document === 'undefined') {
       return;
     }
-
-    document.body.classList.remove('light', 'dark');
-    document.body.classList.add(theme);
 
     const highlightThemeLink = document.getElementById('hljs-theme');
     if (highlightThemeLink) {
