@@ -8,10 +8,9 @@ import { usePrefersReducedMotion, useScrollToBottom } from '../hooks';
 type ChatWindowProps = {
   messages: Message[];
   isTyping: boolean;
-  isOpen: boolean;
 };
 
-const ChatWindow = ({ messages, isTyping, isOpen }: ChatWindowProps) => {
+const ChatWindow = ({ messages, isTyping }: ChatWindowProps) => {
   const messagesRef = useRef<HTMLOListElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
 
@@ -21,8 +20,7 @@ const ChatWindow = ({ messages, isTyping, isOpen }: ChatWindowProps) => {
 
   return (
     <section
-      className={`chat-window ${isOpen ? 'chat-window--open' : ''}`}
-      aria-hidden={!isOpen}
+      className="chat-window chat-window--open"
       aria-labelledby="messages-heading"
     >
       <h2 id="messages-heading" className="sr-only">

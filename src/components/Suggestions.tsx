@@ -7,17 +7,11 @@ import './Card.css';
 type SuggesionsProps = {
     suggestions: Suggestion[];
     classes?: string[];
-    isVisible: boolean;
-};
-
-const Suggestions = ({suggestions, classes = [''], isVisible=false}: SuggesionsProps) => {
+}
+const Suggestions = ({suggestions, classes = ['']}: SuggesionsProps) => {
 
 return (
-    <section
-      className={classes.join(' ')}
-      aria-hidden={isVisible}
-      aria-labelledby="suggestions-heading"
-    >
+    <section className={classes.join(' ')}>
       <h2 id="suggestions-heading" className="sr-only">
         Suggested prompts
       </h2>

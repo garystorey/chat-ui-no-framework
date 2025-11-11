@@ -484,7 +484,7 @@ const App = () => {
   }, [setSidebarCollapsed]);
 
   return (
-    <div className="app">
+    <article className="app">
       <a href="#messages" className="skip-link" onClick={handleSkipToMessages}>
         Skip to conversation
       </a>
@@ -498,13 +498,13 @@ const App = () => {
         onRemoveChat={handleRemoveChat}
       />
       <main className="chat-wrapper" aria-label="Chat interface">
-        <div className="chat-main">
-          <div
-            className={`chat-main__content ${
-              isFreshChat ? "chat-main__content--centered" : ""
-            }`}
-          >
-            <Show when={isFreshChat}>
+        <div className="chat-main chat-main__content chat-main__content--centered">
+            <Show when={!isFreshChat}>
+              <ChatWindow
+                messages={messages}
+                isTyping={isTyping}
+              />
+            </Show>
               <div className="chat-main__inline-input">
                 <UserInput
                   ref={inputRef}
@@ -513,36 +513,15 @@ const App = () => {
                   onSend={handleSend}
                 />
               </div>
+            <Show when={isFreshChat}>
               <Suggestions
                 suggestions={suggestionItems}
                 classes={suggestionsClasses}
-                isVisible={isChatOpen}
               />
             </Show>
-            <Show when={!isFreshChat}>
-              <Suggestions
-                suggestions={suggestionItems}
-                classes={suggestionsClasses}
-                isVisible={isChatOpen}
-              />
-            </Show>
-            <ChatWindow
-              messages={messages}
-              isTyping={isTyping}
-              isOpen={isChatOpen}
-            />
           </div>
-        </div>
-        <Show when={!isFreshChat}>
-          <UserInput
-            ref={inputRef}
-            value={inputValue}
-            onChange={setInputValue}
-            onSend={handleSend}
-          />
-        </Show>
       </main>
-    </div>
+    </article>
   );
 };
 
