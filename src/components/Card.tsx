@@ -9,7 +9,7 @@ type CardProps = ComponentProps<'div'> & {
   onSelect: () => void;
 };
 
-function Card ({ title, description, label, icon, onSelect, className="" }: CardProps) {
+function Card ({ title, description, label, icon, onSelect, className="", ...props }: CardProps) {
   const titleId = useId();
   const descriptionId = useId();
 
@@ -21,6 +21,7 @@ function Card ({ title, description, label, icon, onSelect, className="" }: Card
 
   return (
     <div
+      {...props}
       className={classes}
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
