@@ -59,7 +59,7 @@ const App = () => {
     status: chatCompletionStatus,
   } = chatCompletion;
   const pendingRequestRef = useRef<AbortController | null>(null);
-  const isFreshChat = messages.length === 0;
+  const isNewChat = messages.length === 0;
 
   useTheme();
   useToggleBodyClass("chat-open", isChatOpen);
@@ -501,7 +501,7 @@ const App = () => {
       />
       <main className="chat-wrapper" aria-label="Chat interface">
         <div className="chat-main chat-main__content">
-            <Show when={!isFreshChat}>
+            <Show when={!isNewChat}>
               <ChatWindow
                 messages={messages}
                 isResponding={isResponding}
@@ -515,7 +515,7 @@ const App = () => {
                   onSend={handleSend}
                 />
               </div>
-            <Show when={isFreshChat}>
+            <Show when={isNewChat}>
               <Suggestions
                 suggestions={suggestionItems}
                 classes={suggestionsClasses}
