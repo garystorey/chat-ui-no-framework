@@ -76,12 +76,12 @@ const App = () => {
 
     setResponding(false);
   }, [chatCompletionStatus, resetChatCompletion, setResponding]);
+
   useUnmount(cancelPendingResponse);
 
   useEffect(() => {
     setResponding(chatCompletionStatus === "pending");
   }, [chatCompletionStatus, setResponding]);
-
 
 
   const updateActiveChat = useCallback(
