@@ -1,6 +1,6 @@
 import type { ComponentPropsWithRef, ReactNode } from 'react';
 
-type ListProps<ListItem> = ComponentPropsWithRef<'section'> & {
+type ListProps<ListItem> = ComponentPropsWithRef<'ul'> & {
   items: ListItem[];
   keyfield: keyof ListItem | ((item: ListItem) => string);
   limit?: number;
@@ -22,11 +22,11 @@ const List = <ListItem,>({
   const visibleItems = limit > -1 ? items.slice(0, limit) : items;
 
   return (
-    <section {...props}>
+    <ul {...props}>
       {visibleItems.map((item) => (
-        <div key={getKey(item)}>{as(item)}</div>
+        <li key={getKey(item)}>{as(item)}</li>
       ))}
-    </section>
+    </ul>
   );
 };
 

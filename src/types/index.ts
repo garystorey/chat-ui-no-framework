@@ -23,6 +23,12 @@ export type Message = {
   attachments?: Attachment[];
 };
 
+export type PreviewChat = {
+  id: string;
+  title: string;
+  preview: string;
+};
+
 export type ChatSummary = {
   id: string;
   title: string;

@@ -4,12 +4,12 @@ import './Card.css';
 type CardProps = {
   title: string;
   description: string;
-  actionLabel: string;
+  label: string;
   icon: string;
   onSelect: () => void;
 };
 
-function Card ({ title, description, actionLabel, icon, onSelect }: CardProps) {
+function Card ({ title, description, label, icon, onSelect }: CardProps) {
   const titleId = useId();
   const descriptionId = useId();
 
@@ -18,7 +18,7 @@ function Card ({ title, description, actionLabel, icon, onSelect }: CardProps) {
   }, [onSelect]);
 
   return (
-    <article
+    <div
       className="suggestion-card"
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
@@ -38,9 +38,9 @@ function Card ({ title, description, actionLabel, icon, onSelect }: CardProps) {
         onClick={handleClick}
         aria-describedby={`${titleId} ${descriptionId}`}
       >
-        {actionLabel}
+        {label}
       </button>
-    </article>
+    </div>
   );
 };
 

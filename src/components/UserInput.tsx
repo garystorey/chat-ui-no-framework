@@ -11,10 +11,11 @@ import {
 import { AttachmentIcon, MicIcon, SendIcon } from "./icons";
 import { buildAttachmentsFromFiles } from "../utils";
 import { Attachment, UserInputSendPayload } from "../types";
-import "./UserInput.css";
+import { useAutoResizeTextarea } from "../hooks";
 import List from "./List";
 import Show from "./Show";
-import { useAutoResizeTextarea } from "../hooks";
+
+import "./UserInput.css";
 
 type UserInputProps = {
   value: string;

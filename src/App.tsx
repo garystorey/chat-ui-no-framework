@@ -7,8 +7,10 @@ import {
   useState,
   type MouseEvent,
 } from "react";
-import { messagesAtom, typingAtom } from "./atoms";
-import { ChatWindow, Show, Sidebar, UserInput, Suggestions } from "./components";
+import { messagesAtom, respondingAtom } from "./atoms";
+import { Show, UserInput, Suggestions } from "./components";
+import {ChatWindow, Sidebar} from "./features/";
+
 import type {
   UserInputSendPayload,
   ChatSummary,
@@ -42,7 +44,7 @@ import "./App.css";
 
 const App = () => {
   const [messages, setMessages] = useAtom(messagesAtom);
-  const [isTyping, setTyping] = useAtom(typingAtom);
+  const [isResponding, setResponding] = useAtom(respondingAtom);
   const [inputValue, setInputValue] = useState("");
   const [isChatOpen, setChatOpen] = useState(false);
   const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -72,13 +74,13 @@ const App = () => {
       resetChatCompletion();
     }
 
-    setTyping(false);
-  }, [chatCompletionStatus, resetChatCompletion, setTyping]);
+    setResponding(false);
+  }, [chatCompletionStatus, resetChatCompletion, setResponding]);
   useUnmount(cancelPendingResponse);
 
   useEffect(() => {
-    setTyping(chatCompletionStatus === "pending");
-  }, [chatCompletionStatus, setTyping]);
+    setResponding(chatCompletionStatus === "pending");
+  }, [chatCompletionStatus, setResponding]);
 
 
 
@@ -200,7 +202,7 @@ const App = () => {
       });
 
       setInputValue("");
-      setTyping(true);
+      setResponding(true);
 
       const controller = new AbortController();
       pendingRequestRef.current = controller;
@@ -313,7 +315,7 @@ const App = () => {
             if (pendingRequestRef.current === controller) {
               pendingRequestRef.current = null;
             }
-            setTyping(false);
+            setResponding(false);
           },
         }
       );
@@ -329,7 +331,7 @@ const App = () => {
       setChatOpen,
       setInputValue,
       setMessages,
-      setTyping,
+      setResponding,
       updateActiveChat,
     ]
   );
@@ -502,7 +504,7 @@ const App = () => {
             <Show when={!isFreshChat}>
               <ChatWindow
                 messages={messages}
-                isTyping={isTyping}
+                isResponding={isResponding}
               />
             </Show>
               <div className="chat-main__inline-input">
