@@ -2,38 +2,32 @@ import { memo} from 'react';
 import Card from './Card';
 import { Suggestion } from '../types';
 import './Card.css';
-
+import List from './List';
 
 type SuggesionsProps = {
     suggestions: Suggestion[];
     classes?: string[];
-    isVisible: boolean;
-};
+}
 
-const Suggestions = ({suggestions, classes = [''], isVisible=false}: SuggesionsProps) => {
-
-return (
-    <section
-      className={classes.join(' ')}
-      aria-hidden={isVisible}
-      aria-labelledby="suggestions-heading"
-    >
+const Suggestions = ({suggestions, classes = ['']}: SuggesionsProps) => {
+  return (
+    <section className={classes.join(' ')}>
       <h2 id="suggestions-heading" className="sr-only">
         Suggested prompts
       </h2>
-      <ul className="suggestions__list">
-        {suggestions.map((suggestion: Suggestion) => (
-          <li key={suggestion.id} className="suggestions__item">
-            <Card
+        <List<Suggestion>
+          className="suggestions__list"
+          items={suggestions}
+          keyfield="id"
+          as={(suggestion) => (
+              <Card key={suggestion.id} className="suggestions__item"
               title={suggestion.title}
               description={suggestion.description}
-              actionLabel={suggestion.actionLabel}
+              label={suggestion.actionLabel}
               icon={suggestion.icon}
               onSelect={suggestion.handleSelect}
             />
-          </li>
-        ))}
-      </ul>
+          )} />
     </section>
   );
 };

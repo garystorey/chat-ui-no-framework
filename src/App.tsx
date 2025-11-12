@@ -7,8 +7,10 @@ import {
   useState,
   type MouseEvent,
 } from "react";
-import { messagesAtom, typingAtom } from "./atoms";
-import { ChatWindow, Show, Sidebar, UserInput, Suggestions } from "./components";
+import { messagesAtom, respondingAtom } from "./atoms";
+import { Show, UserInput, Suggestions } from "./components";
+import {ChatWindow, Sidebar} from "./features/";
+
 import type {
   UserInputSendPayload,
   ChatSummary,
@@ -42,7 +44,7 @@ import "./App.css";
 
 const App = () => {
   const [messages, setMessages] = useAtom(messagesAtom);
-  const [isTyping, setTyping] = useAtom(typingAtom);
+  const [isResponding, setResponding] = useAtom(respondingAtom);
   const [inputValue, setInputValue] = useState("");
   const [isChatOpen, setChatOpen] = useState(false);
   const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -57,7 +59,7 @@ const App = () => {
     status: chatCompletionStatus,
   } = chatCompletion;
   const pendingRequestRef = useRef<AbortController | null>(null);
-  const isFreshChat = messages.length === 0;
+  const isNewChat = messages.length === 0;
 
   useTheme();
   useToggleBodyClass("chat-open", isChatOpen);
@@ -72,14 +74,14 @@ const App = () => {
       resetChatCompletion();
     }
 
-    setTyping(false);
-  }, [chatCompletionStatus, resetChatCompletion, setTyping]);
+    setResponding(false);
+  }, [chatCompletionStatus, resetChatCompletion, setResponding]);
+
   useUnmount(cancelPendingResponse);
 
   useEffect(() => {
-    setTyping(chatCompletionStatus === "pending");
-  }, [chatCompletionStatus, setTyping]);
-
+    setResponding(chatCompletionStatus === "pending");
+  }, [chatCompletionStatus, setResponding]);
 
 
   const updateActiveChat = useCallback(
@@ -200,7 +202,7 @@ const App = () => {
       });
 
       setInputValue("");
-      setTyping(true);
+      setResponding(true);
 
       const controller = new AbortController();
       pendingRequestRef.current = controller;
@@ -313,7 +315,7 @@ const App = () => {
             if (pendingRequestRef.current === controller) {
               pendingRequestRef.current = null;
             }
-            setTyping(false);
+            setResponding(false);
           },
         }
       );
@@ -329,7 +331,7 @@ const App = () => {
       setChatOpen,
       setInputValue,
       setMessages,
-      setTyping,
+      setResponding,
       updateActiveChat,
     ]
   );
@@ -484,7 +486,7 @@ const App = () => {
   }, [setSidebarCollapsed]);
 
   return (
-    <div className="app">
+    <article className="app">
       <a href="#messages" className="skip-link" onClick={handleSkipToMessages}>
         Skip to conversation
       </a>
@@ -498,13 +500,13 @@ const App = () => {
         onRemoveChat={handleRemoveChat}
       />
       <main className="chat-wrapper" aria-label="Chat interface">
-        <div className="chat-main">
-          <div
-            className={`chat-main__content ${
-              isFreshChat ? "chat-main__content--centered" : ""
-            }`}
-          >
-            <Show when={isFreshChat}>
+        <div className="chat-main chat-main__content">
+            <Show when={!isNewChat}>
+              <ChatWindow
+                messages={messages}
+                isResponding={isResponding}
+              />
+            </Show>
               <div className="chat-main__inline-input">
                 <UserInput
                   ref={inputRef}
@@ -513,36 +515,15 @@ const App = () => {
                   onSend={handleSend}
                 />
               </div>
+            <Show when={isNewChat}>
               <Suggestions
                 suggestions={suggestionItems}
                 classes={suggestionsClasses}
-                isVisible={isChatOpen}
               />
             </Show>
-            <Show when={!isFreshChat}>
-              <Suggestions
-                suggestions={suggestionItems}
-                classes={suggestionsClasses}
-                isVisible={isChatOpen}
-              />
-            </Show>
-            <ChatWindow
-              messages={messages}
-              isTyping={isTyping}
-              isOpen={isChatOpen}
-            />
           </div>
-        </div>
-        <Show when={!isFreshChat}>
-          <UserInput
-            ref={inputRef}
-            value={inputValue}
-            onChange={setInputValue}
-            onSend={handleSend}
-          />
-        </Show>
       </main>
-    </div>
+    </article>
   );
 };
 

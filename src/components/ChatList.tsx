@@ -1,9 +1,10 @@
+import { PreviewChat } from "../types";
+import ChatListItem from "./ChatListItem";
+import List from "./List";
+import Show from "./Show";
+
 type ChatListProps = {
-  chats: {
-    id: string;
-    title: string;
-    preview: string;
-  }[];
+  chats: PreviewChat[];
   activeChatId: string | null;
   onSelectChat: (chatId: string) => void;
   onRemoveChat: (chatId: string) => void;
@@ -18,38 +19,16 @@ function ChatList({
   return (
     <nav className="sidebar__chats" aria-label="Previous chats">
       <h2 className="sidebar__section-title">Chats</h2>
-      <ul className="sidebar__chat-list">
-        {chats.map((chat) => (
-          <li key={chat.id} className="sidebar__chat-item">
-            <button
-              type="button"
-              className={`sidebar__chat ${
-                chat.id === activeChatId ? "sidebar__chat--active" : ""
-              }`}
-              onClick={() => onSelectChat(chat.id)}
-              title={chat.title}
-            >
-              <span className="sidebar__chat-title">{chat.title}</span>
-              <span className="sidebar__chat-preview">{chat.preview}</span>
-            </button>
-            <button
-              type="button"
-              className="sidebar__chat-remove"
-              onClick={(event) => {
-                event.stopPropagation();
-                onRemoveChat(chat.id);
-              }}
-              aria-label={`Remove ${chat.title}`}
-              title={`Remove ${chat.title}`}
-            >
-              ×
-            </button>
-          </li>
-        ))}
-        {chats.length === 0 && (
-          <li className="sidebar__empty">No chats found</li>
-        )}
-      </ul>
+      <List<PreviewChat>
+        className="sidebar__chat-list"
+        items={chats}
+        keyfield="id"
+        as={(chat) => (
+          <ChatListItem chat={chat} activeChatId={activeChatId} onSelectChat={onSelectChat} onRemoveChat={onRemoveChat} />
+        )} />
+        <Show when={chats.length === 0}>
+          <div className="sidebar__empty">No chats found</div>
+        </Show> 
     </nav>
   );
 }

@@ -1,15 +1,15 @@
-import { memo, useCallback, useId } from 'react';
+import { ComponentProps, memo, useCallback, useId } from 'react';
 import './Card.css';
 
-type CardProps = {
+type CardProps = ComponentProps<'div'> & {
   title: string;
   description: string;
-  actionLabel: string;
+  label: string;
   icon: string;
   onSelect: () => void;
 };
 
-function Card ({ title, description, actionLabel, icon, onSelect }: CardProps) {
+function Card ({ title, description, label, icon, onSelect, className="", ...props }: CardProps) {
   const titleId = useId();
   const descriptionId = useId();
 
@@ -17,9 +17,12 @@ function Card ({ title, description, actionLabel, icon, onSelect }: CardProps) {
     onSelect();
   }, [onSelect]);
 
+  const classes =`suggestion-card ${className}`.trim();
+
   return (
-    <article
-      className="suggestion-card"
+    <div
+      {...props}
+      className={classes}
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
     >
@@ -38,9 +41,9 @@ function Card ({ title, description, actionLabel, icon, onSelect }: CardProps) {
         onClick={handleClick}
         aria-describedby={`${titleId} ${descriptionId}`}
       >
-        {actionLabel}
+        {label}
       </button>
-    </article>
+    </div>
   );
 };
 
