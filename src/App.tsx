@@ -500,7 +500,7 @@ const App = () => {
         onRemoveChat={handleRemoveChat}
       />
       <main className="chat-wrapper" aria-label="Chat interface">
-        <div className="chat-main chat-main__content chat-main__content--centered">
+        <div className="chat-main chat-main__content">
             <Show when={!isFreshChat}>
               <ChatWindow
                 messages={messages}

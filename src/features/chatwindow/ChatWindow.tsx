@@ -27,21 +27,18 @@ const ChatWindow = ({ messages, isResponding }: ChatWindowProps) => {
       <h2 id="messages-heading" className="sr-only">
         Conversation
       </h2>
-      <ol
-        ref={messagesRef}
-        className="chat-window__messages"
-        role="log"
-        aria-live="polite"
-        aria-relevant="additions"
-        id="messages"
-        tabIndex={-1}
-      >
         <List<Message>
           items={messages}
           keyfield="id"
           as={(message) => <ChatMessage message={message} />}
+          ref={messagesRef}
+          className="chat-window__messages"
+          role="log"
+          aria-live="polite"
+          aria-relevant="additions"
+          id="messages"
+          tabIndex={-1}
         />
-      </ol>
       <Show when={isResponding}>
         <div className="chat-window__message chat-window__message--status">
           <ThinkingIndicator />

@@ -50,19 +50,14 @@
   flex-direction: column;
   gap: 1.75rem;
   min-height: 0;
-}
-
-.chat-main__content--centered {
   justify-content: center;
   align-items: center;
-  margin-bottom:10rem;
 }
 
 .chat-main__inline-input {
   max-width: var(--max-chat-width);
   margin: 0 auto;
   width: 100%;
-  margin-bottom: 2.5rem;
 }
 
 .suggestions {
