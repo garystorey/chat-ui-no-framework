@@ -4,14 +4,13 @@ import { Suggestion } from '../types';
 import './Card.css';
 import List from './List';
 
-
 type SuggesionsProps = {
     suggestions: Suggestion[];
     classes?: string[];
 }
-const Suggestions = ({suggestions, classes = ['']}: SuggesionsProps) => {
 
-return (
+const Suggestions = ({suggestions, classes = ['']}: SuggesionsProps) => {
+  return (
     <section className={classes.join(' ')}>
       <h2 id="suggestions-heading" className="sr-only">
         Suggested prompts
@@ -21,15 +20,14 @@ return (
           items={suggestions}
           keyfield="id"
           as={(suggestion) => (
-            <div key={suggestion.id} className="suggestions__item">
-              <Card
+              <Card key={suggestion.id} className="suggestions__item"
               title={suggestion.title}
               description={suggestion.description}
               label={suggestion.actionLabel}
               icon={suggestion.icon}
               onSelect={suggestion.handleSelect}
             />
-          </div> )} />
+          )} />
     </section>
   );
 };

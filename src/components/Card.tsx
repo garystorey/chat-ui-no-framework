@@ -6,10 +6,11 @@ type CardProps = {
   description: string;
   label: string;
   icon: string;
+  className?: string;
   onSelect: () => void;
 };
 
-function Card ({ title, description, label, icon, onSelect }: CardProps) {
+function Card ({ title, description, label, icon, onSelect, className="" }: CardProps) {
   const titleId = useId();
   const descriptionId = useId();
 
@@ -17,9 +18,11 @@ function Card ({ title, description, label, icon, onSelect }: CardProps) {
     onSelect();
   }, [onSelect]);
 
+  const classes =`suggestion-card ${className}`.trim();
+
   return (
     <div
-      className="suggestion-card"
+      className={classes}
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
     >
