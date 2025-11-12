@@ -1,12 +1,11 @@
-import { memo, useCallback, useId } from 'react';
+import { ComponentProps, memo, useCallback, useId } from 'react';
 import './Card.css';
 
-type CardProps = {
+type CardProps = ComponentProps<'div'> & {
   title: string;
   description: string;
   label: string;
   icon: string;
-  className?: string;
   onSelect: () => void;
 };
 
