@@ -5,4 +5,5 @@ export { default as useScrollToBottom } from './useScrollToBottom';
 export { default as useToggleBodyClass } from './useToggleBodyClass';
 export { default as useUnmount } from './useUnmount';
 export { default as useAutoResizeTextarea } from './useAutoResizeTextarea';
+export { default as useLatestref } from './useLatestRef';
 
