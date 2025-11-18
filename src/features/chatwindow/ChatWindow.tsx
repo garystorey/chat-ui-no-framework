@@ -1,7 +1,11 @@
 import { memo, useRef } from "react";
 import type { Message } from "../../types";
-import { usePrefersReducedMotion, useScrollToBottom } from "../../hooks";
-import {ThinkingIndicator,ChatMessage, Show, List} from "../../components";
+import {
+  useChatLogLiveRegion,
+  usePrefersReducedMotion,
+  useScrollToBottom,
+} from "../../hooks";
+import { ThinkingIndicator, ChatMessage, Show, List } from "../../components";
 
 import "./ChatWindow.css";
 
@@ -13,6 +17,10 @@ type ChatWindowProps = {
 const ChatWindow = ({ messages, isResponding }: ChatWindowProps) => {
   const messagesRef = useRef<HTMLOListElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
+  const { liveMode, ariaRelevant, ariaAtomic } = useChatLogLiveRegion({
+    messages,
+    isResponding,
+  });
 
   useScrollToBottom(
     messagesRef,
@@ -34,8 +42,9 @@ const ChatWindow = ({ messages, isResponding }: ChatWindowProps) => {
           ref={messagesRef}
           className="chat-window__messages"
           role="log"
-          aria-live="polite"
-          aria-relevant="additions"
+          aria-live={liveMode}
+          aria-relevant={ariaRelevant}
+          aria-atomic={ariaAtomic}
           id="messages"
           tabIndex={-1}
         />
