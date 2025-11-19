@@ -1,18 +1,10 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
 import type { Attachment, Message } from '../../src/types';
-
-vi.mock('../../src/utils', () => ({
-  normalizeMessageAttachments: vi.fn(),
-  renderMarkdown: vi.fn(),
-}));
-
-import { normalizeMessageAttachments, renderMarkdown } from '../../src/utils';
 import ChatMessage from '../../src/components/ChatMessage';
 
 afterEach(() => {
   cleanup();
-  vi.clearAllMocks();
 });
 
 const baseMessage: Message = {
@@ -23,49 +15,51 @@ const baseMessage: Message = {
 };
 
 describe('ChatMessage', () => {
-  beforeEach(() => {
-    vi.mocked(renderMarkdown).mockReturnValue('<p>Converted content</p>');
-    vi.mocked(normalizeMessageAttachments).mockReturnValue([]);
-  });
+  it('renders markdown content when renderAsHtml is not set', () => {
+    const markdownMessage: Message = {
+      ...baseMessage,
+      id: 'msg-markdown',
+      content: '# Markdown heading',
+    };
 
-  it('converts markdown content when renderAsHtml is not set', () => {
-    render(<ChatMessage message={baseMessage} />);
+    render(<ChatMessage message={markdownMessage} />);
 
-    expect(renderMarkdown).toHaveBeenCalledWith(baseMessage.content);
-    expect(screen.getByText('Converted content')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', {
+        level: 1,
+        name: 'Markdown heading',
+      })
+    ).toBeInTheDocument();
   });
 
   it('uses the provided html content when renderAsHtml is true', () => {
     const htmlMessage: Message = {
       ...baseMessage,
-      id: 'msg-2',
+      id: 'msg-html',
       renderAsHtml: true,
-      content: '<strong>Trusted content</strong>',
+      content: '<strong data-testid="trusted">Trusted content</strong>',
     };
 
     render(<ChatMessage message={htmlMessage} />);
 
-    expect(renderMarkdown).not.toHaveBeenCalled();
-    expect(screen.getByText('Trusted content')).toBeInTheDocument();
+    expect(screen.getByTestId('trusted')).toHaveTextContent('Trusted content');
   });
 
-  it('renders attachments when they are returned by the normalizer', () => {
-    const normalizedAttachments: Attachment[] = [
-      { id: 'att-1', name: 'Plan.txt', size: 1, type: 'text/plain' },
-    ];
-
-    vi.mocked(normalizeMessageAttachments).mockReturnValue(normalizedAttachments);
+  it('renders attachments that require normalization', () => {
+    const rawAttachments = {
+      first: { name: 'Plan.txt', size: '1024', type: 'text/plain' },
+    } satisfies Record<string, Partial<Attachment>>;
 
     render(
       <ChatMessage
-        message={{ ...baseMessage, attachments: normalizedAttachments }}
+        message={{
+          ...baseMessage,
+          id: 'msg-with-attachments',
+          attachments: rawAttachments as unknown as Attachment[],
+        }}
       />
     );
 
-    expect(normalizeMessageAttachments).toHaveBeenCalledWith(
-      normalizedAttachments,
-      baseMessage.id
-    );
     expect(
       screen.getByRole('list', { name: 'Message attachments' })
     ).toBeInTheDocument();
