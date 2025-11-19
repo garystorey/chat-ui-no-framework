@@ -89,11 +89,7 @@ export const buildAttachmentRequestPayload = async (
 const FILE_SIZE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB'];
 
 export const formatFileSize = (bytes: number) => {
-  if (!Number.isFinite(bytes) || bytes < 0) {
-    return '0 B';
-  }
-
-  if (bytes === 0) {
+  if (!Number.isFinite(bytes) || bytes <= 0) {
     return '0 B';
   }
 
@@ -102,7 +98,13 @@ export const formatFileSize = (bytes: number) => {
     FILE_SIZE_UNITS.length - 1
   );
   const value = bytes / 1024 ** exponent;
-  return `${value >= 100 ? Math.round(value) : value.toFixed(value >= 10 ? 1 : 2)} ${FILE_SIZE_UNITS[exponent]}`;
+
+  if (value >= 100) {
+    return `${Math.round(value)} ${FILE_SIZE_UNITS[exponent]}`;
+  }
+
+  const decimals = value < 10 ? 1 : 0;
+  return `${value.toFixed(decimals)} ${FILE_SIZE_UNITS[exponent]}`;
 };
 
 export const getAttachmentDisplayType = ({

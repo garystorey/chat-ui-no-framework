@@ -11,7 +11,7 @@ const AttachmentView = memo(({ attachment }: AttachmentViewProps) => {
   const sizeLabel = formatFileSize(attachment.size);
 
   return (
-    <li className="message__attachment">
+    <div className="message__attachment">
       <div className="message__attachment-details">
         <span className="message__attachment-name" title={attachment.name}>
           {attachment.name}
@@ -20,7 +20,7 @@ const AttachmentView = memo(({ attachment }: AttachmentViewProps) => {
           {typeLabel ? `${typeLabel} • ${sizeLabel}` : sizeLabel}
         </span>
       </div>
-    </li>
+    </div>
   );
 });
 
