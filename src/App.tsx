@@ -513,6 +513,8 @@ const App = () => {
                   value={inputValue}
                   onChange={setInputValue}
                   onSend={handleSend}
+                  onStop={cancelPendingResponse}
+                  isResponding={isResponding}
                 />
               </div>
             <Show when={isNewChat}>
