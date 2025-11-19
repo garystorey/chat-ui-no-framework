@@ -33,7 +33,7 @@ function AttachmentListItem({
   handleRemoveAttachment,
 }: AttachmentListItemProps) {
   return (
-    <li key={attachment.id} className="input-panel__attachment-item">
+    <div className="input-panel__attachment-item">
       <span className="input-panel__attachment-name">{attachment.name}</span>
       <button
         type="button"
@@ -42,7 +42,7 @@ function AttachmentListItem({
       >
         &times; <span className="sr-only">Remove {attachment.name}</span>
       </button>
-    </li>
+    </div>
   );
 }
 

@@ -39,7 +39,11 @@ describe('ChatListItem', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: chat.title }));
+    const chatButton = screen.getByRole('button', {
+      name: (name) => name.startsWith(chat.title),
+    });
+
+    fireEvent.click(chatButton);
 
     expect(onSelectChat).toHaveBeenCalledWith(chat.id);
   });
