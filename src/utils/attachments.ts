@@ -18,11 +18,6 @@ const readFileAsArrayBuffer = async (file: FileLike): Promise<ArrayBuffer> => {
     return file.arrayBuffer();
   }
 
-  if (typeof Response === 'function') {
-    const response = new Response(file);
-    return response.arrayBuffer();
-  }
-
   if (typeof FileReader !== 'undefined') {
     return new Promise<ArrayBuffer>((resolve, reject) => {
       const reader = new FileReader();
@@ -30,6 +25,11 @@ const readFileAsArrayBuffer = async (file: FileLike): Promise<ArrayBuffer> => {
       reader.onload = () => resolve(reader.result as ArrayBuffer);
       reader.readAsArrayBuffer(file as Blob);
     });
+  }
+
+  if (typeof Response === 'function') {
+    const response = new Response(file);
+    return response.arrayBuffer();
   }
 
   throw new Error('File reading is not supported in this environment.');
