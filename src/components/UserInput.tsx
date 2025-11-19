@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { AttachmentIcon, MicIcon, SendIcon } from "./icons";
+import { AttachmentIcon, MicIcon, SendIcon, StopIcon } from "./icons";
 import { buildAttachmentsFromFiles } from "../utils";
 import { Attachment, UserInputSendPayload } from "../types";
 import { useAutoResizeTextarea } from "../hooks";
@@ -21,6 +21,8 @@ type UserInputProps = {
   value: string;
   onChange: (value: string) => void;
   onSend: (payload: UserInputSendPayload) => Promise<boolean> | boolean;
+  onStop: () => void;
+  isResponding: boolean;
 };
 
 type AttachmentListItemProps = {
@@ -47,7 +49,7 @@ function AttachmentListItem({
 }
 
 const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
-  ({ value, onChange, onSend }, forwardedRef) => {
+  ({ value, onChange, onSend, onStop, isResponding }, forwardedRef) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [attachments, setAttachments] = useState<Attachment[]>([]);
@@ -197,14 +199,26 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
                 <MicIcon />
               </button>
             </div>
-            <button
-              type="submit"
-              className="input-panel__submit"
-              aria-label="Send message"
-              title="Send message"
-            >
-              <SendIcon />
-            </button>
+            {isResponding ? (
+              <button
+                type="button"
+                className="input-panel__submit"
+                aria-label="Stop response"
+                title="Stop response"
+                onClick={onStop}
+              >
+                <StopIcon />
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="input-panel__submit"
+                aria-label="Send message"
+                title="Send message"
+              >
+                <SendIcon />
+              </button>
+            )}
           </div>
           <div id="inputHint" className="sr-only">
             Press Enter to send and Shift+Enter for newline
