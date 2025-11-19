@@ -31,13 +31,13 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
     <article className={`message message--${message.sender}`} aria-label={ariaLabel}>
       <div className="message__body" dangerouslySetInnerHTML={{ __html: content }} />
       <Show when={attachments.length > 0}>
-        <ul className="message__attachments" aria-label="Message attachments">
-          <List<Attachment>
-            items={attachments}
-            keyfield="id"
-            as={(attachment) => <AttachmentView attachment={attachment} />}
-          />
-        </ul>
+        <List<Attachment>
+          className="message__attachments"
+          aria-label="Message attachments"
+          items={attachments}
+          keyfield="id"
+          as={(attachment) => <AttachmentView attachment={attachment} />}
+        />
       </Show>
     </article>
   );

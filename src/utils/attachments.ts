@@ -4,6 +4,37 @@ import type { AttachmentRequest, Attachment } from '../types';
 
 const BASE64_CHUNK_SIZE = 0x8000;
 
+type FileLike = Pick<File, 'name' | 'type'> & {
+  arrayBuffer?: () => Promise<ArrayBuffer>;
+};
+
+const isFileLike = (value: unknown): value is FileLike =>
+  typeof value === 'object' &&
+  value !== null &&
+  typeof (value as Partial<FileLike>).arrayBuffer === 'function';
+
+const readFileAsArrayBuffer = async (file: FileLike): Promise<ArrayBuffer> => {
+  if (typeof file.arrayBuffer === 'function') {
+    return file.arrayBuffer();
+  }
+
+  if (typeof FileReader !== 'undefined') {
+    return new Promise<ArrayBuffer>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(reader.error ?? new Error('Unable to read file.'));
+      reader.onload = () => resolve(reader.result as ArrayBuffer);
+      reader.readAsArrayBuffer(file as Blob);
+    });
+  }
+
+  if (typeof Response === 'function') {
+    const response = new Response(file);
+    return response.arrayBuffer();
+  }
+
+  throw new Error('File reading is not supported in this environment.');
+};
+
 export const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
   let binary = '';
   const bytes = new Uint8Array(buffer);
@@ -20,8 +51,8 @@ export const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
   throw new Error('Base64 encoding is not supported in this environment.');
 };
 
-export const encodeFileToBase64 = async (file: File) => {
-  const buffer = await file.arrayBuffer();
+export const encodeFileToBase64 = async (file: FileLike) => {
+  const buffer = await readFileAsArrayBuffer(file);
   return arrayBufferToBase64(buffer);
 };
 
@@ -63,13 +94,26 @@ export const normalizeMessageAttachments = (
   });
 };
 
+const hasReadableFile = (
+  attachment: Attachment
+): attachment is Attachment & { file: FileLike } => {
+  const candidate = attachment.file as unknown as FileLike | undefined;
+
+  if (!candidate) {
+    return false;
+  }
+
+  if (typeof File !== 'undefined' && candidate instanceof File) {
+    return true;
+  }
+
+  return isFileLike(candidate);
+};
+
 export const buildAttachmentRequestPayload = async (
   attachments: Attachment[]
 ): Promise<AttachmentRequest[]> => {
-  const attachmentsWithFile = attachments.filter(
-    (attachment): attachment is Attachment & { file: File } =>
-      attachment.file instanceof File
-  );
+  const attachmentsWithFile = attachments.filter(hasReadableFile);
 
   if (!attachmentsWithFile.length) {
     return [];
@@ -89,11 +133,7 @@ export const buildAttachmentRequestPayload = async (
 const FILE_SIZE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB'];
 
 export const formatFileSize = (bytes: number) => {
-  if (!Number.isFinite(bytes) || bytes < 0) {
-    return '0 B';
-  }
-
-  if (bytes === 0) {
+  if (!Number.isFinite(bytes) || bytes <= 0) {
     return '0 B';
   }
 
@@ -102,7 +142,13 @@ export const formatFileSize = (bytes: number) => {
     FILE_SIZE_UNITS.length - 1
   );
   const value = bytes / 1024 ** exponent;
-  return `${value >= 100 ? Math.round(value) : value.toFixed(value >= 10 ? 1 : 2)} ${FILE_SIZE_UNITS[exponent]}`;
+
+  if (value >= 100) {
+    return `${Math.round(value)} ${FILE_SIZE_UNITS[exponent]}`;
+  }
+
+  const decimals = value < 10 ? 1 : 0;
+  return `${value.toFixed(decimals)} ${FILE_SIZE_UNITS[exponent]}`;
 };
 
 export const getAttachmentDisplayType = ({
