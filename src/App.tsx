@@ -37,8 +37,7 @@ import {
   toChatCompletionMessages,
 } from "./utils";
 
-import { defaultChats, suggestions } from "./App.data";
-import { ASSISTANT_ERROR_MESSAGE, DEFAULT_CHAT_MODEL } from "./App.config";
+import { ASSISTANT_ERROR_MESSAGE, DEFAULT_CHAT_MODEL,defaultChats, suggestions } from "./config";
 
 import "./App.css";
 
