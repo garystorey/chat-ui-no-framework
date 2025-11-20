@@ -8,6 +8,8 @@ afterEach(() => {
 
 type Item = { id: string; label: string };
 
+const ItemElement = ({ item }: { item: Item }) => <span>{item.label}</span>;
+
 const sampleItems: Item[] = [
   { id: '1', label: 'Alpha' },
   { id: '2', label: 'Bravo' },
@@ -20,7 +22,7 @@ describe('List', () => {
       <List<Item>
         items={sampleItems}
         keyfield="id"
-        as={(item) => <span>{item.label}</span>}
+        as={(item) => <ItemElement item={item}/>}
       />
     );
 
@@ -35,7 +37,7 @@ describe('List', () => {
         items={sampleItems}
         keyfield="id"
         limit={1}
-        as={(item) => <span>{item.label}</span>}
+        as={(item) => <ItemElement item={item}/>}
       />
     );
 
@@ -49,7 +51,7 @@ describe('List', () => {
       <List<Item>
         items={sampleItems}
         keyfield={(item) => `${item.label}-key`}
-        as={(item) => <span>{item.label}</span>}
+        as={(item) => <ItemElement item={item}/>}
       />
     );
 

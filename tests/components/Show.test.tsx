@@ -9,7 +9,7 @@ afterEach(() => {
 describe('Show', () => {
   it('renders its children when the condition is true', () => {
     render(
-      <Show when>
+      <Show when={true}>
         <p>Visible content</p>
       </Show>
     );

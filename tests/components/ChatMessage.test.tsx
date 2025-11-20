@@ -47,7 +47,7 @@ describe('ChatMessage', () => {
 
   it('renders attachments that require normalization', () => {
     const rawAttachments = {
-      first: { name: 'Plan.txt', size: '1024', type: 'text/plain' },
+      first: { name: 'Plan.txt', size: 1024, type: 'text/plain' },
     } satisfies Record<string, Partial<Attachment>>;
 
     render(
