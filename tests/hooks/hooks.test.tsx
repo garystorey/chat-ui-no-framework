@@ -29,7 +29,11 @@ const setMockMatchMedia = (matches: boolean) => {
     onchange: null,
   };
 
-  vi.spyOn(window, 'matchMedia').mockImplementation(() => mediaQueryList);
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    configurable: true,
+    value: vi.fn().mockImplementation(() => mediaQueryList),
+  });
 
   return (nextMatches: boolean) => {
     mediaQueryList.matches = nextMatches;
@@ -95,7 +99,7 @@ describe('usePrefersReducedMotion', () => {
 describe('useScrollToBottom', () => {
   it('scrolls to the bottom of the referenced element when dependencies change', async () => {
     const element = document.createElement('div');
-    element.scrollHeight = 500;
+    Object.defineProperty(element, 'scrollHeight', { value: 500, configurable: true });
     const scrollTo = vi.fn();
     element.scrollTo = scrollTo;
     const ref = { current: element } as React.RefObject<HTMLDivElement>;
