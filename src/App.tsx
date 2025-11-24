@@ -1,7 +1,6 @@
 import { useAtom } from "jotai";
 import {
   useCallback,
-  useEffect,
   useMemo,
   useRef,
   useState,
@@ -27,6 +26,7 @@ import {
   usePersistChatHistory,
   usePersistActiveChatId,
   useUnmount,
+  useRespondingStatus,
 } from "./hooks";
 import {
   buildAttachmentRequestPayload,
@@ -66,6 +66,7 @@ const App = () => {
   useToggleBodyClass("chat-open", isChatOpen);
   usePersistChatHistory(chatHistory, setChatHistory);
   usePersistActiveChatId(activeChatId, setActiveChatId);
+  useRespondingStatus(chatCompletionStatus, setResponding);
 
   const cancelPendingResponse = useCallback(() => {
     if (pendingRequestRef.current) {
@@ -81,11 +82,6 @@ const App = () => {
   }, [chatCompletionStatus, resetChatCompletion, setResponding]);
 
   useUnmount(cancelPendingResponse);
-
-  useEffect(() => {
-    setResponding(chatCompletionStatus === "pending");
-  }, [chatCompletionStatus, setResponding]);
-
 
   const updateActiveChat = useCallback(
     (nextMessages: Message[], previewMessage?: Message) => {

@@ -3,6 +3,7 @@ export { default as useChatCompletion} from './useChatCompletion';
 export { default as useChatLogLiveRegion } from './useChatLogLiveRegion';
 export { default as useLatestRef } from './useLatestRef';
 export { default as usePrefersReducedMotion } from './usePrefersReducedMotion';
+export { default as useRespondingStatus } from './useRespondingStatus';
 export { default as useScrollToBottom } from './useScrollToBottom';
 export { default as useTheme } from './useTheme';
 export { default as useToggleBodyClass } from './useToggleBodyClass';
