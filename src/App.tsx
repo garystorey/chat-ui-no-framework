@@ -25,6 +25,7 @@ import {
   useToggleBodyClass,
   usePersistChatHistory,
   usePersistActiveChatId,
+  useHydrateActiveChat,
   useUnmount,
   useRespondingStatus,
 } from "./hooks";
@@ -67,6 +68,12 @@ const App = () => {
   usePersistChatHistory(chatHistory, setChatHistory);
   usePersistActiveChatId(activeChatId, setActiveChatId);
   useRespondingStatus(chatCompletionStatus, setResponding);
+  useHydrateActiveChat({
+    activeChatId,
+    chatHistory,
+    setMessages,
+    setChatOpen,
+  });
 
   const cancelPendingResponse = useCallback(() => {
     if (pendingRequestRef.current) {
