@@ -1,5 +1,4 @@
-import { ChatSummary } from "../types";
-
+import type { ChatSummary } from "../types";
 
 export const suggestions = [
   {
