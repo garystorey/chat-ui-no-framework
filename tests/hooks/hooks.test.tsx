@@ -118,6 +118,35 @@ describe('useScrollToBottom', () => {
       expect(scrollTo).toHaveBeenLastCalledWith({ top: 500, behavior: 'auto' });
     });
   });
+
+  it('responds when dependency values change without a new array reference', async () => {
+    const element = document.createElement('div');
+    Object.defineProperty(element, 'scrollHeight', { value: 300, configurable: true });
+    const scrollTo = vi.fn();
+    element.scrollTo = scrollTo;
+    const ref = { current: element } as React.RefObject<HTMLDivElement>;
+
+    const deps = [1];
+
+    const { rerender } = renderHook(
+      ({ deps }) => useScrollToBottom(ref, deps, { behavior: 'auto' }),
+      {
+        initialProps: { deps },
+      }
+    );
+
+    await waitFor(() => {
+      expect(scrollTo).toHaveBeenCalledWith({ top: 300, behavior: 'auto' });
+    });
+
+    scrollTo.mockClear();
+    deps[0] = 2;
+    rerender({ deps });
+
+    await waitFor(() => {
+      expect(scrollTo).toHaveBeenCalledWith({ top: 300, behavior: 'auto' });
+    });
+  });
 });
 
 describe('useAutoResizeTextarea', () => {
