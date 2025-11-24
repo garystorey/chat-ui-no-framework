@@ -23,6 +23,8 @@ import {
   useTheme,
   useChatCompletion,
   useToggleBodyClass,
+  usePersistChatHistory,
+  usePersistActiveChatId,
   useUnmount,
   useRespondingStatus,
 } from "./hooks";
@@ -62,6 +64,8 @@ const App = () => {
 
   useTheme();
   useToggleBodyClass("chat-open", isChatOpen);
+  usePersistChatHistory(chatHistory, setChatHistory);
+  usePersistActiveChatId(activeChatId, setActiveChatId);
   useRespondingStatus(chatCompletionStatus, setResponding);
 
   const cancelPendingResponse = useCallback(() => {
