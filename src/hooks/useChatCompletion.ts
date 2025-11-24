@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { ApiError, apiStreamRequest, getChatCompletionContentText } from '../utils';
 import { ChatCompletionRequest, ChatCompletionStreamResponse, ChatCompletionResponse, ChatCompletionChoice } from '../types';
-import { CHAT_COMPLETION_PATH } from '../App.config';
+import { CHAT_COMPLETION_PATH } from '../config';
 
 type ChatCompletionMutationVariables = {
   body: ChatCompletionRequest;
