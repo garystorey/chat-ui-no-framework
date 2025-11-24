@@ -32,7 +32,7 @@ describe('apiStreamRequest', () => {
       method: 'POST',
       body: JSON.stringify({ query: 'hello' }),
       headers: expect.objectContaining({
-        Accept: 'application/json',
+        Accept: 'text/event-stream',
         'Content-Type': 'application/json',
         'x-test': 'true',
       }),
