@@ -1,20 +1,24 @@
-import { useEffect } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import type { ChatSummary } from '../types';
 
 const CHAT_HISTORY_STORAGE_KEY = 'chatHistory';
 
 const usePersistChatHistory = (
   chatHistory: ChatSummary[],
-  setChatHistory: (history: ChatSummary[] | ((previous: ChatSummary[]) => ChatSummary[])) => void,
+  setChatHistory: Dispatch<SetStateAction<ChatSummary[]>>,
 ) => {
+  const [hasHydrated, setHasHydrated] = useState(false);
+
   useEffect(() => {
     if (typeof window === 'undefined') {
+      setHasHydrated(true);
       return;
     }
 
     const storedChatHistory = window.localStorage.getItem(CHAT_HISTORY_STORAGE_KEY);
 
     if (!storedChatHistory) {
+      setHasHydrated(true);
       return;
     }
 
@@ -24,15 +28,17 @@ const usePersistChatHistory = (
     } catch (error) {
       console.error('Unable to parse stored chat history', error);
     }
+
+    setHasHydrated(true);
   }, [setChatHistory]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === 'undefined' || !hasHydrated) {
       return;
     }
 
     window.localStorage.setItem(CHAT_HISTORY_STORAGE_KEY, JSON.stringify(chatHistory));
-  }, [chatHistory]);
+  }, [chatHistory, hasHydrated]);
 };
 
 export default usePersistChatHistory;

@@ -1,25 +1,30 @@
-import { useEffect } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 const ACTIVE_CHAT_ID_STORAGE_KEY = 'activeChatId';
 
 const usePersistActiveChatId = (
   activeChatId: string | null,
-  setActiveChatId: (chatId: string | null) => void,
+  setActiveChatId: Dispatch<SetStateAction<string | null>>,
 ) => {
+  const [hasHydrated, setHasHydrated] = useState(false);
+
   useEffect(() => {
     if (typeof window === 'undefined') {
+      setHasHydrated(true);
       return;
     }
 
     const storedActiveChatId = window.localStorage.getItem(ACTIVE_CHAT_ID_STORAGE_KEY);
 
-    if (storedActiveChatId) {
+    if (storedActiveChatId !== null) {
       setActiveChatId(storedActiveChatId);
     }
+
+    setHasHydrated(true);
   }, [setActiveChatId]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === 'undefined' || !hasHydrated) {
       return;
     }
 
@@ -29,7 +34,7 @@ const usePersistActiveChatId = (
     }
 
     window.localStorage.removeItem(ACTIVE_CHAT_ID_STORAGE_KEY);
-  }, [activeChatId]);
+  }, [activeChatId, hasHydrated]);
 };
 
 export default usePersistActiveChatId;
