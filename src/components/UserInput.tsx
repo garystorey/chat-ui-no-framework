@@ -4,6 +4,7 @@ import {
   KeyboardEvent,
   forwardRef,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -53,6 +54,15 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [attachments, setAttachments] = useState<Attachment[]>([]);
+    const [isRecording, setIsRecording] = useState(false);
+    const [canRecord, setCanRecord] = useState(false);
+
+    useEffect(() => {
+      setCanRecord(
+        typeof navigator !== "undefined" &&
+          Boolean(navigator.mediaDevices?.getUserMedia)
+      );
+    }, []);
 
     useImperativeHandle(forwardedRef, () => textareaRef.current!);
     useAutoResizeTextarea(textareaRef, value);
@@ -132,6 +142,45 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
       );
     }, []);
 
+    const handleToggleRecording = useCallback(() => {
+      if (isResponding || !canRecord) {
+        return;
+      }
+
+      setIsRecording((current) => {
+        const nextState = !current;
+        const textarea = textareaRef.current;
+
+        if (nextState) {
+          textarea?.blur();
+        } else {
+          textarea?.focus();
+        }
+
+        return nextState;
+      });
+    }, [canRecord, isResponding]);
+
+    useEffect(() => {
+      if (!isRecording) {
+        return;
+      }
+
+      if (isResponding || !canRecord) {
+        setIsRecording(false);
+        textareaRef.current?.focus();
+      }
+    }, [canRecord, isRecording, isResponding]);
+
+    const micButtonClasses = [
+      "input-panel__icon-button",
+      "input-panel__icon-button--muted",
+    ];
+
+    if (isRecording) {
+      micButtonClasses.push("input-panel__icon-button--recording");
+    }
+
     return (
       <form
         className="input-panel"
@@ -192,9 +241,11 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
               </button>
               <button
                 type="button"
-                className="input-panel__icon-button input-panel__icon-button--muted"
-                aria-label="Start voice input"
-                title="Start voice input"
+                className={micButtonClasses.join(" ")}
+                onClick={handleToggleRecording}
+                aria-label={isRecording ? "Stop voice input" : "Start voice input"}
+                title={isRecording ? "Stop voice input" : "Start voice input"}
+                disabled={isResponding || !canRecord}
               >
                 <MicIcon />
               </button>
