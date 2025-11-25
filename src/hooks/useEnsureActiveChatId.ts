@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 
 import type { ChatSummary, Message } from "../types";
 import { cloneMessages } from "../utils";
@@ -18,7 +18,18 @@ const useEnsureActiveChatId = ({
   setMessages,
   setChatOpen,
 }: UseEnsureActiveChatIdParams) => {
+  const previousActiveChatIdRef = useRef<string | null>(null);
+
   useEffect(() => {
+    const clearedActiveChat =
+      previousActiveChatIdRef.current !== null && activeChatId === null;
+
+    previousActiveChatIdRef.current = activeChatId;
+
+    if (clearedActiveChat) {
+      return;
+    }
+
     const activeChat = chatHistory.find((chat) => chat.id === activeChatId);
     const [nextChat] = chatHistory;
     const nextActiveChatId = activeChat ? activeChatId : nextChat?.id ?? null;
