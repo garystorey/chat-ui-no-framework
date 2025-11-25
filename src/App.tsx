@@ -8,7 +8,8 @@ import {
 } from "react";
 import { messagesAtom, respondingAtom } from "./atoms";
 import { Show, UserInput, Suggestions } from "./components";
-import {ChatWindow, Sidebar} from "./features/";
+import { ChatWindow, Sidebar } from "./features/";
+import type { ConnectionStatus } from "./hooks/useConnectionListeners";
 
 import type {
   UserInputSendPayload,
@@ -20,11 +21,11 @@ import type {
   AttachmentRequest,
 } from "./types";
 import {
+  useConnectionListeners,
   useTheme,
   useChatCompletion,
   useToggleBodyClass,
   usePersistChatHistory,
-  usePersistActiveChatId,
   useHydrateActiveChat,
   useUnmount,
   useRespondingStatus,
@@ -40,7 +41,7 @@ import {
   toChatCompletionMessages,
 } from "./utils";
 
-import { ASSISTANT_ERROR_MESSAGE, DEFAULT_CHAT_MODEL,defaultChats, suggestions } from "./config";
+import { ASSISTANT_ERROR_MESSAGE, DEFAULT_CHAT_MODEL, defaultChats, suggestions } from "./config";
 
 import "./App.css";
 
@@ -54,6 +55,9 @@ const App = () => {
     [...defaultChats].sort((a, b) => b.updatedAt - a.updatedAt)
   );
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
+    "offline"
+  );
   const chatCompletion = useChatCompletion();
   const {
     mutate: sendChatCompletion,
@@ -62,18 +66,6 @@ const App = () => {
   } = chatCompletion;
   const pendingRequestRef = useRef<AbortController | null>(null);
   const isNewChat = messages.length === 0;
-
-  useTheme();
-  useToggleBodyClass("chat-open", isChatOpen);
-  usePersistChatHistory(chatHistory, setChatHistory);
-  usePersistActiveChatId(activeChatId, setActiveChatId);
-  useRespondingStatus(chatCompletionStatus, setResponding);
-  useHydrateActiveChat({
-    activeChatId,
-    chatHistory,
-    setMessages,
-    setChatOpen,
-  });
 
   const cancelPendingResponse = useCallback(() => {
     if (pendingRequestRef.current) {
@@ -88,33 +80,55 @@ const App = () => {
     setResponding(false);
   }, [chatCompletionStatus, resetChatCompletion, setResponding]);
 
+  useTheme();
+  useToggleBodyClass("chat-open", isChatOpen);
+  usePersistChatHistory(chatHistory, setChatHistory);
+  useRespondingStatus(chatCompletionStatus, setResponding);
+  useHydrateActiveChat({
+    activeChatId,
+    chatHistory,
+    setMessages,
+    setChatOpen,
+  });
+  useConnectionListeners({
+    cancelPendingResponse,
+    setConnectionStatus,
+  });
+
   useUnmount(cancelPendingResponse);
 
   const updateActiveChat = useCallback(
-    (nextMessages: Message[], previewMessage?: Message) => {
-      if (!activeChatId) {
+    (
+      nextMessages: Message[],
+      chatId: string | null,
+      previewMessage?: Message
+    ) => {
+      if (!chatId) {
         return;
       }
 
       const previewCandidate =
         previewMessage ?? nextMessages[nextMessages.length - 1];
 
-      setChatHistory((current) =>
-        current
-          .map((chat) =>
-            chat.id === activeChatId
-              ? {
-                  ...chat,
-                  preview: buildChatPreview(previewCandidate, chat.preview),
-                  updatedAt: Date.now(),
-                  messages: cloneMessages(nextMessages),
-                }
-              : chat
-          )
-          .sort((a, b) => b.updatedAt - a.updatedAt)
-      );
+      setChatHistory((current) => {
+        const existingChat = current.find((chat) => chat.id === chatId);
+        const updatedChat = existingChat
+          ? {
+              ...existingChat,
+              preview: buildChatPreview(previewCandidate, existingChat.preview),
+              updatedAt: Date.now(),
+              messages: cloneMessages(nextMessages),
+            }
+          : { ...createChatRecordFromMessages(nextMessages), id: chatId };
+
+        const nextHistory = existingChat
+          ? current.map((chat) => (chat.id === chatId ? updatedChat : chat))
+          : [updatedChat, ...current];
+
+        return nextHistory.sort((a, b) => b.updatedAt - a.updatedAt);
+      });
     },
-    [activeChatId]
+    [setChatHistory]
   );
 
   const archiveCurrentConversation = useCallback(() => {
@@ -182,6 +196,12 @@ const App = () => {
         }));
       }
 
+      const chatId = activeChatId ?? getId();
+
+      if (!activeChatId) {
+        setActiveChatId(chatId);
+      }
+
       const userMessage: Message = {
         id: getId(),
         sender: "user",
@@ -203,7 +223,7 @@ const App = () => {
 
       setMessages((current) => {
         const next = [...current, userMessage, assistantMessage];
-        updateActiveChat(next, userMessage);
+        updateActiveChat(next, chatId, userMessage);
         return next;
       });
 
@@ -253,7 +273,7 @@ const App = () => {
               });
 
               if (previewMessage) {
-                updateActiveChat(next, previewMessage);
+                updateActiveChat(next, chatId, previewMessage);
               }
 
               return next;
@@ -283,7 +303,7 @@ const App = () => {
               });
 
               if (previewMessage) {
-                updateActiveChat(next, previewMessage);
+                updateActiveChat(next, chatId, previewMessage);
               }
 
               return next;
@@ -311,7 +331,7 @@ const App = () => {
               });
 
               if (previewMessage) {
-                updateActiveChat(next, previewMessage);
+                updateActiveChat(next, chatId, previewMessage);
               }
 
               return next;
@@ -330,12 +350,14 @@ const App = () => {
     },
     [
       chatCompletionStatus,
+      activeChatId,
       isChatOpen,
       messages,
       resetChatCompletion,
       sendChatCompletion,
       setChatOpen,
       setInputValue,
+      setActiveChatId,
       setMessages,
       setResponding,
       updateActiveChat,
@@ -405,9 +427,7 @@ const App = () => {
   const handleRemoveChat = useCallback(
     (chatId: string) => {
       let removalOccurred = false;
-      let nextActiveId: string | null = activeChatId;
-      let nextMessages: Message[] = [];
-      let shouldReset = false;
+      const isRemovingActiveChat = chatId === activeChatId;
 
       setChatHistory((current) => {
         if (current.length === 0) {
@@ -422,19 +442,6 @@ const App = () => {
 
         removalOccurred = true;
 
-        if (filtered.length === 0) {
-          nextActiveId = null;
-          shouldReset = true;
-          return filtered;
-        }
-
-        if (chatId === activeChatId) {
-          const [nextChat] = filtered;
-          nextActiveId = nextChat?.id ?? null;
-          nextMessages = nextChat ? cloneMessages(nextChat.messages) : [];
-          shouldReset = !nextActiveId;
-        }
-
         return filtered;
       });
 
@@ -444,25 +451,18 @@ const App = () => {
 
       cancelPendingResponse();
 
-      if (shouldReset || !nextActiveId) {
+      if (isRemovingActiveChat) {
         setActiveChatId(null);
         setMessages([]);
         setChatOpen(false);
         setSidebarCollapsed(false);
-        setInputValue("");
-        return;
-      }
-
-      if (chatId === activeChatId && nextActiveId) {
-        setActiveChatId(nextActiveId);
-        setMessages(nextMessages);
-        setChatOpen(true);
         setInputValue("");
       }
     },
     [
       activeChatId,
       cancelPendingResponse,
+      setActiveChatId,
       setChatOpen,
       setInputValue,
       setMessages,
@@ -501,6 +501,7 @@ const App = () => {
         onToggle={handleToggleSidebar}
         chats={chatHistory}
         activeChatId={activeChatId}
+        connectionStatus={connectionStatus}
         onSelectChat={handleSelectChat}
         onNewChat={handleNewChat}
         onRemoveChat={handleRemoveChat}

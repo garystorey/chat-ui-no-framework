@@ -8,7 +8,7 @@ export { default as useScrollToBottom } from './useScrollToBottom';
 export { default as useTheme } from './useTheme';
 export { default as useToggleBodyClass } from './useToggleBodyClass';
 export { default as usePersistChatHistory } from './usePersistChatHistory';
-export { default as usePersistActiveChatId } from './usePersistActiveChatId';
 export { default as useHydrateActiveChat } from './useHydrateActiveChat';
 export { default as useUnmount } from './useUnmount';
+export { default as useConnectionListeners } from './useConnectionListeners';
 

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ChatSummary } from "../../types";
 import {ThemeToggle, Show, ChatList} from "../../components";
+import type { ConnectionStatus } from "../../hooks/useConnectionListeners";
 
 import "./Sidebar.css";
 
@@ -8,6 +9,7 @@ type SidebarProps = {
   collapsed: boolean;
   chats: ChatSummary[];
   activeChatId: string | null;
+  connectionStatus: ConnectionStatus;
   onToggle: () => void;
   onNewChat: () => void;
   onSelectChat: (chatId: string) => void;
@@ -18,12 +20,14 @@ const Sidebar = ({
   collapsed,
   chats,
   activeChatId,
+  connectionStatus,
   onToggle,
   onNewChat,
   onSelectChat,
   onRemoveChat,
 }: SidebarProps) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const statusLabel = connectionStatus === "online" ? "Online" : "Offline";
 
   useEffect(() => {
     if (collapsed) {
@@ -50,6 +54,24 @@ const Sidebar = ({
     >
       <div className="sidebar__inner">
         <div className="sidebar__header">
+
+          <div
+            className="sidebar__status"
+            role="status"
+            aria-live="polite"
+            aria-label={`Connection status: ${statusLabel}`}
+            title={`Connection status: ${statusLabel}`}
+          >
+            <span
+              className={`sidebar__status-dot sidebar__status-dot--${connectionStatus}`}
+              aria-hidden="true"
+            />
+            <span
+              className={`sidebar__status-label ${collapsed ? "sr-only" : ""}`}
+            >
+              {statusLabel}
+            </span>
+          </div>
 
           <ThemeToggle />
           
