@@ -28,6 +28,7 @@ import {
   usePersistChatHistory,
   usePersistActiveChatId,
   useHydrateActiveChat,
+  useEnsureActiveChatId,
   useUnmount,
   useRespondingStatus,
 } from "./hooks";
@@ -101,6 +102,13 @@ const App = () => {
     cancelPendingResponse,
     setConnectionStatus,
     setIsOnline,
+  });
+  useEnsureActiveChatId({
+    activeChatId,
+    chatHistory,
+    setActiveChatId,
+    setMessages,
+    setChatOpen,
   });
 
   useUnmount(cancelPendingResponse);
