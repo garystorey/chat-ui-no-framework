@@ -46,10 +46,6 @@ import { ASSISTANT_ERROR_MESSAGE, DEFAULT_CHAT_MODEL, defaultChats, suggestions 
 import "./App.css";
 
 const App = () => {
-  const isNavigatorOnline =
-    typeof navigator !== "undefined" && "onLine" in navigator
-      ? navigator.onLine
-      : true;
   const [messages, setMessages] = useAtom(messagesAtom);
   const [isResponding, setResponding] = useAtom(respondingAtom);
   const [inputValue, setInputValue] = useState("");
@@ -59,9 +55,8 @@ const App = () => {
     [...defaultChats].sort((a, b) => b.updatedAt - a.updatedAt)
   );
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
-  const [isOnline, setIsOnline] = useState(isNavigatorOnline);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
-    isNavigatorOnline ? "online" : "offline"
+    "offline"
   );
   const chatCompletion = useChatCompletion();
   const {
@@ -98,7 +93,6 @@ const App = () => {
   useConnectionListeners({
     cancelPendingResponse,
     setConnectionStatus,
-    setIsOnline,
   });
 
   useUnmount(cancelPendingResponse);
