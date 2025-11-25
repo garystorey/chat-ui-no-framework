@@ -1,4 +1,4 @@
-import { API_BASE_URL, OPENAI_API_KEY, OPENAI_BETA_FEATURES } from "../App.config";
+import { API_BASE_URL, OPENAI_API_KEY, OPENAI_BETA_FEATURES } from "../config";
 import { ApiRequestOptions } from "../types";
 
 export const isJsonLike = (value: unknown): value is Record<string, unknown> | unknown[] => {

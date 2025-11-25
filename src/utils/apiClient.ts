@@ -1,45 +1,5 @@
-import { ApiRequestOptions, ApiStreamRequestOptions } from "../types";
+import { ApiStreamRequestOptions } from "../types";
 import { buildRequest, parseJson, isJsonLike, ApiError } from "./request";
-
-export async function apiRequest<TResponse>({
-  path,
-  method = 'GET',
-  body,
-  headers,
-  signal,
-}: ApiRequestOptions): Promise<TResponse> {
-  const { url, requestHeaders, requestBody } = buildRequest({
-    path,
-    method,
-    body,
-    headers,
-    signal,
-  });
-
-  const response = await fetch(url, {
-    method,
-    body: requestBody,
-    headers: requestHeaders,
-    signal,
-  });
-
-  if (!response.ok) {
-    const errorData = await parseJson(response).catch(() => null);
-    const message =
-      (errorData && isJsonLike(errorData) && 'message' in errorData && typeof errorData.message === 'string'
-        ? errorData.message
-        : response.statusText) || 'Request failed';
-
-    throw new ApiError(message, response.status, errorData);
-  }
-
-  if (response.status === 204) {
-    return undefined as TResponse;
-  }
-
-  const data = await parseJson(response);
-  return data as TResponse;
-}
 
 const parseSseEvents = <TMessage>(
   chunk: string,
