@@ -2,32 +2,32 @@ import type { ChatSummary } from "../types";
 
 export const suggestions = [
   {
-    id: 12312,
-    title: 'Top Python developers',
+    id: -1,
+    title: 'Godot',
     description:
-      'Find me the top 5 Python developers with 5+ years of experience that have worked on at least 2 Endava projects.',
+      'Create a 2d platformer game using the Godot engine with basic player movement and enemy AI.',
     prompt:
-      'Find me the top 5 Python developers with 5+ years of experience that have worked on at least 2 Endava projects.',
+      '',
     actionLabel: 'Start',
-    icon: '🐍',
+    icon: '👨‍💻',
   },
   {
-    id: 234242,
-    title: 'Match candidates to a SOW',
+    id: -2,
+    title: 'ComfyUI',
     description:
-      'Below is a statement of work. Give me the top 5 candidates for each position listed. Make sure they match the required skills and experience.',
+      'Create a ComfyUI workflow that generates images based on text prompts using stable diffusion models.',
     prompt:
-      'Below is a statement of work. Give me the top 5 candidates for each position listed. Make sure they match the required skills and experience.',
+      'Create a ComfyUI workflow that generates images based on text prompts using stable diffusion models. The workflow should include nodes for text input, image generation, and output display. Configure the nodes to use appropriate models and settings for high-quality image generation.',
     actionLabel: 'Start',
-    icon: '📝',
+    icon: '🤖',
   },
   {
-    id: 345345,
-    title: 'React availability check',
+    id: -3,
+    title: 'React',
     description:
-      'Show me React developers available in the next two weeks with strong TypeScript and Tailwind CSS skills.',
+      'Create a React application that fetches data from an API and displays it in a user-friendly interface.',
     prompt:
-      'Show me React developers available in the next two weeks with strong TypeScript and Tailwind CSS skills.',
+      'Create a React application that fetches data from an API and displays it in a user-friendly interface. The application should include components for displaying lists and details, handle loading and error states, and be styled using CSS.',
     actionLabel: 'Start',
     icon: '⚛️',
   },
