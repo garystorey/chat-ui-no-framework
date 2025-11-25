@@ -524,6 +524,7 @@ const App = () => {
         onToggle={handleToggleSidebar}
         chats={chatHistory}
         activeChatId={activeChatId}
+        connectionStatus={connectionStatus}
         onSelectChat={handleSelectChat}
         onNewChat={handleNewChat}
         onRemoveChat={handleRemoveChat}
