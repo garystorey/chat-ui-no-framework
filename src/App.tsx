@@ -8,7 +8,8 @@ import {
 } from "react";
 import { messagesAtom, respondingAtom } from "./atoms";
 import { Show, UserInput, Suggestions } from "./components";
-import {ChatWindow, Sidebar} from "./features/";
+import { ChatWindow, Sidebar } from "./features/";
+import type { ConnectionStatus } from "./hooks/useConnectionListeners";
 
 import type {
   UserInputSendPayload,
@@ -20,6 +21,7 @@ import type {
   AttachmentRequest,
 } from "./types";
 import {
+  useConnectionListeners,
   useTheme,
   useChatCompletion,
   useToggleBodyClass,
@@ -41,11 +43,15 @@ import {
   toChatCompletionMessages,
 } from "./utils";
 
-import { ASSISTANT_ERROR_MESSAGE, DEFAULT_CHAT_MODEL,defaultChats, suggestions } from "./config";
+import { ASSISTANT_ERROR_MESSAGE, DEFAULT_CHAT_MODEL, defaultChats, suggestions } from "./config";
 
 import "./App.css";
 
 const App = () => {
+  const isNavigatorOnline =
+    typeof navigator !== "undefined" && "onLine" in navigator
+      ? navigator.onLine
+      : true;
   const [messages, setMessages] = useAtom(messagesAtom);
   const [isResponding, setResponding] = useAtom(respondingAtom);
   const [inputValue, setInputValue] = useState("");
@@ -55,6 +61,10 @@ const App = () => {
     [...defaultChats].sort((a, b) => b.updatedAt - a.updatedAt)
   );
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [isOnline, setIsOnline] = useState(isNavigatorOnline);
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
+    isNavigatorOnline ? "online" : "offline"
+  );
   const chatCompletion = useChatCompletion();
   const {
     mutate: sendChatCompletion,
@@ -63,25 +73,6 @@ const App = () => {
   } = chatCompletion;
   const pendingRequestRef = useRef<AbortController | null>(null);
   const isNewChat = messages.length === 0;
-
-  useTheme();
-  useToggleBodyClass("chat-open", isChatOpen);
-  usePersistChatHistory(chatHistory, setChatHistory);
-  usePersistActiveChatId(activeChatId, setActiveChatId);
-  useRespondingStatus(chatCompletionStatus, setResponding);
-  useHydrateActiveChat({
-    activeChatId,
-    chatHistory,
-    setMessages,
-    setChatOpen,
-  });
-  useEnsureActiveChatId({
-    activeChatId,
-    chatHistory,
-    setActiveChatId,
-    setMessages,
-    setChatOpen,
-  });
 
   const cancelPendingResponse = useCallback(() => {
     if (pendingRequestRef.current) {
@@ -95,6 +86,30 @@ const App = () => {
 
     setResponding(false);
   }, [chatCompletionStatus, resetChatCompletion, setResponding]);
+
+  useTheme();
+  useToggleBodyClass("chat-open", isChatOpen);
+  usePersistChatHistory(chatHistory, setChatHistory);
+  usePersistActiveChatId(activeChatId, setActiveChatId);
+  useRespondingStatus(chatCompletionStatus, setResponding);
+  useHydrateActiveChat({
+    activeChatId,
+    chatHistory,
+    setMessages,
+    setChatOpen,
+  });
+  useConnectionListeners({
+    cancelPendingResponse,
+    setConnectionStatus,
+    setIsOnline,
+  });
+  useEnsureActiveChatId({
+    activeChatId,
+    chatHistory,
+    setActiveChatId,
+    setMessages,
+    setChatOpen,
+  });
 
   useUnmount(cancelPendingResponse);
 
