@@ -26,6 +26,7 @@ import {
   usePersistChatHistory,
   usePersistActiveChatId,
   useHydrateActiveChat,
+  useEnsureActiveChatId,
   useUnmount,
   useRespondingStatus,
 } from "./hooks";
@@ -71,6 +72,13 @@ const App = () => {
   useHydrateActiveChat({
     activeChatId,
     chatHistory,
+    setMessages,
+    setChatOpen,
+  });
+  useEnsureActiveChatId({
+    activeChatId,
+    chatHistory,
+    setActiveChatId,
     setMessages,
     setChatOpen,
   });
