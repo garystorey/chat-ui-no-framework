@@ -19,28 +19,24 @@ const useEnsureActiveChatId = ({
   setChatOpen,
 }: UseEnsureActiveChatIdParams) => {
   useEffect(() => {
-    if (!activeChatId) {
-      return;
-    }
-
     const activeChat = chatHistory.find((chat) => chat.id === activeChatId);
+    const [nextChat] = chatHistory;
+    const nextActiveChatId = activeChat ? activeChatId : nextChat?.id ?? null;
 
-    if (activeChat) {
+    if (nextActiveChatId === activeChatId && activeChat) {
       return;
     }
-
-    const [nextChat] = chatHistory;
-    const nextActiveChatId = nextChat?.id ?? null;
 
     setActiveChatId(nextActiveChatId);
 
-    if (nextChat) {
+    if (nextChat && nextActiveChatId) {
       setMessages(cloneMessages(nextChat.messages));
       setChatOpen(true);
-    } else {
-      setMessages([]);
-      setChatOpen(false);
+      return;
     }
+
+    setMessages([]);
+    setChatOpen(false);
   }, [activeChatId, chatHistory, setActiveChatId, setChatOpen, setMessages]);
 };
 
