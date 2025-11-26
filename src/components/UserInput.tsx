@@ -247,6 +247,10 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
     }, [value]);
 
     useEffect(() => {
+      if (!isRecording) {
+        return;
+      }
+
       const combinedValue = combineValueWithTranscript(
         manualValueRef.current,
         transcript
@@ -260,7 +264,7 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
 
       applyingTranscriptRef.current = true;
       onChange(combinedValue);
-    }, [onChange, transcript, value]);
+    }, [isRecording, onChange, transcript, value]);
 
     useEffect(() => {
       const wasRecording = wasRecordingRef.current;
