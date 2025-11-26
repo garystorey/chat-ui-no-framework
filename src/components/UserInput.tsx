@@ -94,6 +94,7 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [attachments, setAttachments] = useState<Attachment[]>([]);
     const [canRecord, setCanRecord] = useState(false);
+    const [recordingStatus, setRecordingStatus] = useState("");
     const manualValueRef = useRef(value);
     const lastTranscriptRef = useRef("");
     const applyingTranscriptRef = useRef(false);
@@ -105,6 +106,7 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
       stop: stopRecording,
       isRecording,
       transcript,
+      error: recordingError,
     } = useSpeechRecognition();
 
     useEffect(() => {
@@ -114,6 +116,27 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
           Boolean(navigator.mediaDevices?.getUserMedia)
       );
     }, [speechSupported]);
+
+    useEffect(() => {
+      if (recordingError) {
+        setRecordingStatus(recordingError);
+        // eslint-disable-next-line no-console
+        console.error("Speech recognition error:", recordingError);
+        return;
+      }
+
+      if (isRecording) {
+        setRecordingStatus("Recording in progress");
+        return;
+      }
+
+      if (!canRecord) {
+        setRecordingStatus("Voice input unavailable");
+        return;
+      }
+
+      setRecordingStatus("");
+    }, [canRecord, isRecording, recordingError]);
 
     useImperativeHandle(forwardedRef, () => textareaRef.current!);
     useAutoResizeTextarea(textareaRef, value);
@@ -294,6 +317,7 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
     const micButtonClasses = [
       "input-panel__icon-button",
       "input-panel__icon-button--muted",
+      "input-panel__icon-button--mic",
     ];
 
     if (isRecording) {
@@ -368,6 +392,13 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
               >
                 <MicIcon />
               </button>
+            </div>
+            <div
+              className="input-panel__mic-status"
+              aria-live="polite"
+              role="status"
+            >
+              {recordingStatus && <span>{recordingStatus}</span>}
             </div>
             {isResponding ? (
               <button
