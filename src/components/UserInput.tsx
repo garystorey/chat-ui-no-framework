@@ -12,7 +12,7 @@ import {
 import { AttachmentIcon, MicIcon, SendIcon, StopIcon } from "./icons";
 import { buildAttachmentsFromFiles } from "../utils";
 import { Attachment, UserInputSendPayload } from "../types";
-import { useAutoResizeTextarea } from "../hooks";
+import { useAutoResizeTextarea, useSpeechRecognition } from "../hooks";
 import List from "./List";
 import Show from "./Show";
 
@@ -24,6 +24,7 @@ type UserInputProps = {
   onSend: (payload: UserInputSendPayload) => Promise<boolean> | boolean;
   onStop: () => void;
   isResponding: boolean;
+  autoSendOnSpeechEnd?: boolean;
 };
 
 type AttachmentListItemProps = {
@@ -49,44 +50,98 @@ function AttachmentListItem({
   );
 }
 
+const trimTrailingTranscript = (value: string, transcript: string) => {
+  if (!transcript) {
+    return value;
+  }
+
+  if (value === transcript) {
+    return "";
+  }
+
+  if (value.endsWith(transcript)) {
+    return value.slice(0, value.length - transcript.length).replace(/[ \t]*$/, "");
+  }
+
+  return value;
+};
+
+const combineValueWithTranscript = (value: string, transcript: string) => {
+  if (!transcript) {
+    return value;
+  }
+
+  if (!value) {
+    return transcript;
+  }
+
+  const needsSeparator =
+    !value.endsWith(" ") && !value.endsWith("\n") && !value.endsWith("\t");
+
+  return `${value}${needsSeparator ? " " : ""}${transcript}`;
+};
+
 const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
-  ({ value, onChange, onSend, onStop, isResponding }, forwardedRef) => {
+  ({
+    value,
+    onChange,
+    onSend,
+    onStop,
+    isResponding,
+    autoSendOnSpeechEnd = false,
+  }, forwardedRef) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [attachments, setAttachments] = useState<Attachment[]>([]);
-    const [isRecording, setIsRecording] = useState(false);
     const [canRecord, setCanRecord] = useState(false);
+    const manualValueRef = useRef(value);
+    const lastTranscriptRef = useRef("");
+    const applyingTranscriptRef = useRef(false);
+    const wasRecordingRef = useRef(false);
+
+    const {
+      supported: speechSupported,
+      start: startRecording,
+      stop: stopRecording,
+      isRecording,
+      transcript,
+    } = useSpeechRecognition();
 
     useEffect(() => {
       setCanRecord(
-        typeof navigator !== "undefined" &&
+        speechSupported &&
+          typeof navigator !== "undefined" &&
           Boolean(navigator.mediaDevices?.getUserMedia)
       );
-    }, []);
+    }, [speechSupported]);
 
     useImperativeHandle(forwardedRef, () => textareaRef.current!);
     useAutoResizeTextarea(textareaRef, value);
 
-    const sendMessage = useCallback(async () => {
-      const trimmed = value.trim();
+    const sendMessage = useCallback(
+      async (overrideText?: string) => {
+        const messageText = overrideText ?? value;
+        const trimmed = messageText.trim();
 
-      if (!trimmed && attachments.length === 0) {
-        return false;
-      }
+        if (!trimmed && attachments.length === 0) {
+          return false;
+        }
 
-      const sent = await Promise.resolve(
-        onSend({
-          text: trimmed,
-          attachments,
-        })
-      );
+        const sent = await Promise.resolve(
+          onSend({
+            text: trimmed,
+            attachments,
+          })
+        );
 
-      if (sent) {
-        setAttachments([]);
-      }
+        if (sent) {
+          setAttachments([]);
+        }
 
-      return sent;
-    }, [attachments, onSend, value]);
+        return sent;
+      },
+      [attachments, onSend, value]
+    );
 
     const handleSubmit = useCallback(
       (event: FormEvent<HTMLFormElement>) => {
@@ -108,7 +163,12 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
 
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLTextAreaElement>) => {
-        onChange(event.target.value);
+        const nextValue = event.target.value;
+        manualValueRef.current = trimTrailingTranscript(
+          nextValue,
+          lastTranscriptRef.current
+        );
+        onChange(nextValue);
       },
       [onChange]
     );
@@ -147,19 +207,13 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
         return;
       }
 
-      setIsRecording((current) => {
-        const nextState = !current;
-        const textarea = textareaRef.current;
+      if (isRecording) {
+        stopRecording();
+        return;
+      }
 
-        if (nextState) {
-          textarea?.blur();
-        } else {
-          textarea?.focus();
-        }
-
-        return nextState;
-      });
-    }, [canRecord, isResponding]);
+      startRecording();
+    }, [canRecord, isRecording, isResponding, startRecording, stopRecording]);
 
     useEffect(() => {
       if (!isRecording) {
@@ -167,10 +221,71 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
       }
 
       if (isResponding || !canRecord) {
-        setIsRecording(false);
+        stopRecording();
         textareaRef.current?.focus();
       }
-    }, [canRecord, isRecording, isResponding]);
+    }, [canRecord, isRecording, isResponding, stopRecording]);
+
+    useEffect(() => {
+      if (isRecording) {
+        textareaRef.current?.blur();
+      } else {
+        textareaRef.current?.focus();
+      }
+    }, [isRecording]);
+
+    useEffect(() => {
+      if (applyingTranscriptRef.current) {
+        applyingTranscriptRef.current = false;
+        return;
+      }
+
+      manualValueRef.current = trimTrailingTranscript(
+        value,
+        lastTranscriptRef.current
+      );
+    }, [value]);
+
+    useEffect(() => {
+      const combinedValue = combineValueWithTranscript(
+        manualValueRef.current,
+        transcript
+      );
+
+      lastTranscriptRef.current = transcript;
+
+      if (combinedValue === value) {
+        return;
+      }
+
+      applyingTranscriptRef.current = true;
+      onChange(combinedValue);
+    }, [onChange, transcript, value]);
+
+    useEffect(() => {
+      const wasRecording = wasRecordingRef.current;
+      wasRecordingRef.current = isRecording;
+
+      if (
+        !autoSendOnSpeechEnd ||
+        isRecording ||
+        !wasRecording ||
+        isResponding
+      ) {
+        return;
+      }
+
+      const composedText = combineValueWithTranscript(
+        manualValueRef.current,
+        transcript
+      ).trim();
+
+      if (!composedText) {
+        return;
+      }
+
+      void sendMessage(composedText);
+    }, [autoSendOnSpeechEnd, isRecording, isResponding, sendMessage, transcript]);
 
     const micButtonClasses = [
       "input-panel__icon-button",
