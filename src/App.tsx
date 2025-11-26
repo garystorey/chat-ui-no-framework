@@ -65,6 +65,10 @@ const App = () => {
     status: chatCompletionStatus,
   } = chatCompletion;
   const pendingRequestRef = useRef<AbortController | null>(null);
+  const streamBufferRef = useRef("");
+  const streamFlushTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
   const isNewChat = messages.length === 0;
 
   const cancelPendingResponse = useCallback(() => {
@@ -217,9 +221,47 @@ const App = () => {
         sender: "bot",
         content: "",
       };
-      
+
       let assistantReply = "";
       const conversationForRequest = [...messages, userMessage];
+
+      const flushStreamBuffer = () => {
+        if (!streamBufferRef.current) {
+          return;
+        }
+
+        assistantReply += streamBufferRef.current;
+        streamBufferRef.current = "";
+
+        setMessages((current) => {
+          let previewMessage: Message | undefined;
+          const next = current.map((message) => {
+            if (message.id === assistantMessageId) {
+              const updated = { ...message, content: assistantReply };
+              previewMessage = updated;
+              return updated;
+            }
+            return message;
+          });
+
+          if (previewMessage) {
+            updateActiveChat(next, chatId, previewMessage);
+          }
+
+          return next;
+        });
+      };
+
+      const scheduleStreamFlush = () => {
+        if (streamFlushTimeoutRef.current) {
+          return;
+        }
+
+        streamFlushTimeoutRef.current = window.setTimeout(() => {
+          streamFlushTimeoutRef.current = null;
+          flushStreamBuffer();
+        }, 100);
+      };
 
       setMessages((current) => {
         const next = [...current, userMessage, assistantMessage];
@@ -259,33 +301,25 @@ const App = () => {
               return;
             }
 
-            assistantReply += contentDelta;
-
-            setMessages((current) => {
-              let previewMessage: Message | undefined;
-              const next = current.map((message) => {
-                if (message.id === assistantMessageId) {
-                  const updated = { ...message, content: assistantReply };
-                  previewMessage = updated;
-                  return updated;
-                }
-                return message;
-              });
-
-              if (previewMessage) {
-                updateActiveChat(next, chatId, previewMessage);
-              }
-
-              return next;
-            });
+            streamBufferRef.current += contentDelta;
+            scheduleStreamFlush();
           },
         },
         {
           onSuccess: (response: ChatCompletionResponse) => {
+            if (streamFlushTimeoutRef.current) {
+              clearTimeout(streamFlushTimeoutRef.current);
+              streamFlushTimeoutRef.current = null;
+            }
+
+            flushStreamBuffer();
+
             const finalAssistantReply = extractAssistantReply(response);
             if (!finalAssistantReply) {
               return;
             }
+
+            assistantReply = finalAssistantReply;
 
             setMessages((current) => {
               let previewMessage: Message | undefined;
@@ -310,6 +344,13 @@ const App = () => {
             });
           },
           onError: (error: unknown) => {
+            if (streamFlushTimeoutRef.current) {
+              clearTimeout(streamFlushTimeoutRef.current);
+              streamFlushTimeoutRef.current = null;
+            }
+
+            streamBufferRef.current = "";
+
             if (error instanceof DOMException && error.name === "AbortError") {
               return;
             }
@@ -341,6 +382,13 @@ const App = () => {
             if (pendingRequestRef.current === controller) {
               pendingRequestRef.current = null;
             }
+
+            if (streamFlushTimeoutRef.current) {
+              clearTimeout(streamFlushTimeoutRef.current);
+              streamFlushTimeoutRef.current = null;
+            }
+
+            streamBufferRef.current = "";
             setResponding(false);
           },
         }
