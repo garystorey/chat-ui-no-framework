@@ -1,6 +1,7 @@
 export * from './apiClient';
 export * from './attachments';
 export * from './chat';
+export * from './chatCompletion';
 export * from './id';
 export * from './markdown';
 export * from './text';

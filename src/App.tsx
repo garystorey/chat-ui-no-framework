@@ -18,7 +18,6 @@ import type {
   Attachment,
   ChatCompletionResponse,
   ChatCompletionStreamResponse,
-  AttachmentRequest,
 } from "./types";
 import {
   useConnectionListeners,
@@ -31,14 +30,12 @@ import {
   useRespondingStatus,
 } from "./hooks";
 import {
-  buildAttachmentRequestPayload,
   buildChatPreview,
   cloneMessages,
   createChatRecordFromMessages,
   extractAssistantReply,
   getChatCompletionContentText,
   getId,
-  toChatCompletionMessages,
 } from "./utils";
 
 import { ASSISTANT_ERROR_MESSAGE, DEFAULT_CHAT_MODEL, defaultChats, suggestions } from "./config";
@@ -185,16 +182,8 @@ const App = () => {
       }
 
       let messageAttachments: Attachment[] = [];
-      let requestAttachments: AttachmentRequest[] = [];
 
       if (attachments.length) {
-        try {
-          requestAttachments = await buildAttachmentRequestPayload(attachments);
-        } catch (error) {
-          console.error("Unable to read attachments", error);
-          return false;
-        }
-
         messageAttachments = attachments.map<Attachment>(({ file, ...metadata }) => ({
           ...metadata,
         }));
@@ -277,14 +266,9 @@ const App = () => {
 
       sendChatCompletion(
         {
-          body: {
-            model: DEFAULT_CHAT_MODEL,
-            messages: toChatCompletionMessages(conversationForRequest),
-            stream: true,
-            ...(requestAttachments.length
-              ? { attachments: requestAttachments }
-              : {}),
-          },
+          model: DEFAULT_CHAT_MODEL,
+          messages: conversationForRequest,
+          attachments,
           signal: controller.signal,
           onChunk: (chunk: ChatCompletionStreamResponse) => {
             const contentDelta = chunk?.choices?.reduce((acc, choice) => {

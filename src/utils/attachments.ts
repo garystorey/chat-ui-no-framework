@@ -110,6 +110,25 @@ const hasReadableFile = (
   return isFileLike(candidate);
 };
 
+export const readAttachmentTextContent = async (attachment: Attachment) => {
+  const candidate = attachment.file as unknown as FileLike | undefined;
+
+  if (!candidate) {
+    return '';
+  }
+
+  if (typeof (candidate as File).text === 'function') {
+    return (candidate as File).text();
+  }
+
+  if (typeof Response === 'function') {
+    const response = new Response(candidate);
+    return response.text();
+  }
+
+  return '';
+};
+
 export const buildAttachmentRequestPayload = async (
   attachments: Attachment[]
 ): Promise<AttachmentRequest[]> => {
