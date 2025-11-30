@@ -12,4 +12,5 @@ export { default as useHydrateActiveChat } from './useHydrateActiveChat';
 export { default as useUnmount } from './useUnmount';
 export { default as useConnectionListeners } from './useConnectionListeners';
 export { default as useSpeechRecognition } from './useSpeechRecognition';
+export { default as useAvailableModels } from './useAvailableModels';
 

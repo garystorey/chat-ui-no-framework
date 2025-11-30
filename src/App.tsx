@@ -29,6 +29,7 @@ import {
   useHydrateActiveChat,
   useUnmount,
   useRespondingStatus,
+  useAvailableModels,
 } from "./hooks";
 import {
   buildAttachmentRequestPayload,
@@ -58,6 +59,11 @@ const App = () => {
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
     "offline"
   );
+  const [availableModels, setAvailableModels] = useState<string[]>([
+    DEFAULT_CHAT_MODEL,
+  ]);
+  const [selectedModel, setSelectedModel] = useState(DEFAULT_CHAT_MODEL);
+  const [isLoadingModels, setIsLoadingModels] = useState(false);
   const chatCompletion = useChatCompletion();
   const {
     mutate: sendChatCompletion,
@@ -97,6 +103,13 @@ const App = () => {
   useConnectionListeners({
     cancelPendingResponse,
     setConnectionStatus,
+  });
+
+  useAvailableModels({
+    connectionStatus,
+    setAvailableModels,
+    setSelectedModel,
+    setIsLoadingModels,
   });
 
   useUnmount(cancelPendingResponse);
@@ -275,15 +288,15 @@ const App = () => {
       const controller = new AbortController();
       pendingRequestRef.current = controller;
 
-      sendChatCompletion(
-        {
-          body: {
-            model: DEFAULT_CHAT_MODEL,
-            messages: toChatCompletionMessages(conversationForRequest),
-            stream: true,
-            ...(requestAttachments.length
-              ? { attachments: requestAttachments }
-              : {}),
+          sendChatCompletion(
+            {
+              body: {
+                model: selectedModel,
+                messages: toChatCompletionMessages(conversationForRequest),
+                stream: true,
+                ...(requestAttachments.length
+                  ? { attachments: requestAttachments }
+                  : {}),
           },
           signal: controller.signal,
           onChunk: (chunk: ChatCompletionStreamResponse) => {
@@ -408,6 +421,7 @@ const App = () => {
       setActiveChatId,
       setMessages,
       setResponding,
+      selectedModel,
       updateActiveChat,
     ]
   );
@@ -570,6 +584,10 @@ const App = () => {
                   onSend={handleSend}
                   onStop={cancelPendingResponse}
                   isResponding={isResponding}
+                  availableModels={availableModels}
+                  selectedModel={selectedModel}
+                  onSelectModel={setSelectedModel}
+                  isLoadingModels={isLoadingModels}
                 />
               </div>
             <Show when={isNewChat}>
