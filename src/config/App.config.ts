@@ -2,7 +2,18 @@
 const envApiBaseUrl =
   import.meta.env?.VITE_APP_API_BASE_URL ?? import.meta.env?.VITE_API_BASE_URL;
 
-export const API_BASE_URL = envApiBaseUrl || 'http://192.168.86.24:1234';
+const normalizeBaseUrl = (value: string | undefined) =>
+  (value ?? '').replace(/\/+$/, '');
+
+const defaultBaseUrl = () => {
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return window.location.origin;
+  }
+
+  return 'http://localhost:1234';
+};
+
+export const API_BASE_URL = normalizeBaseUrl(envApiBaseUrl) || defaultBaseUrl();
 export const CHAT_COMPLETION_PATH = '/v1/chat/completions';
 export const RESPONSES_PATH = '/v1/responses';
 export const MODELS_PATH = '/v1/models';
