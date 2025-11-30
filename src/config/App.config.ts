@@ -10,7 +10,7 @@ const defaultBaseUrl = () => {
     return window.location.origin;
   }
 
-  return 'http://localhost:1234';
+  return 'http://127.0.0.1:1234';
 };
 
 export const API_BASE_URL = normalizeBaseUrl(envApiBaseUrl) || defaultBaseUrl();
