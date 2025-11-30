@@ -388,9 +388,9 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
               aria-hidden="true"
             />
             <div className="input-panel__model-select">
-              <label htmlFor="modelSelect">Model</label>
               <select
                 id="modelSelect"
+                aria-label="Model"
                 value={selectedModel}
                 onChange={handleModelChange}
                 disabled={isResponding || isLoadingModels}
