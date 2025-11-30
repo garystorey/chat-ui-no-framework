@@ -4,6 +4,7 @@ import { buildChatCompletionResponse } from '../utils/chatCompletion';
 import {
   Attachment,
   ChatCompletionContentPart,
+  ChatCompletionMessage,
   ChatCompletionResponse,
   ChatCompletionStreamResponse,
   Message,
