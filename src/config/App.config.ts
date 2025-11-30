@@ -5,12 +5,19 @@ const envApiBaseUrl =
 const normalizeBaseUrl = (value: string | undefined) =>
   (value ?? '').replace(/\/+$/, '');
 
+export const DEFAULT_API_BASE_URL = '';
+
 const defaultBaseUrl = () => {
+  const configuredBaseUrl = normalizeBaseUrl(DEFAULT_API_BASE_URL || undefined);
+  if (configuredBaseUrl) {
+    return configuredBaseUrl;
+  }
+
   if (typeof window !== 'undefined' && window.location?.origin) {
     return window.location.origin;
   }
 
-  return 'http://127.0.0.1:1234';
+  return '';
 };
 
 export const API_BASE_URL = normalizeBaseUrl(envApiBaseUrl) || defaultBaseUrl();
@@ -31,4 +38,5 @@ export default {
   ASSISTANT_ERROR_MESSAGE,
   OPENAI_API_KEY,
   OPENAI_BETA_FEATURES,
+  DEFAULT_API_BASE_URL,
 };
