@@ -1,70 +1,21 @@
 import { useMutation } from '@tanstack/react-query';
-import { ApiError, apiStreamRequest, getChatCompletionContentText } from '../utils';
-import {
-  ChatCompletionRequest,
-  ChatCompletionStreamResponse,
-  ChatCompletionResponse,
-  ChatCompletionChoice,
-} from '../types';
-import { CHAT_COMPLETION_PATH } from '../config';
+import { ApiError } from '../utils';
+import { ChatCompletionResponse, ChatCompletionStreamResponse, Message } from '../types';
+import { useChatClient } from '../services/chatClientContext';
 
 type ChatCompletionMutationVariables = {
-  body: ChatCompletionRequest;
+  model: string;
+  messages: Message[];
+  attachments?: Message['attachments'];
   signal?: AbortSignal;
   onChunk?: (chunk: ChatCompletionStreamResponse) => void;
 };
 
-const buildChatCompletionResponse = (
-  chunks: ChatCompletionStreamResponse[]
-): ChatCompletionResponse => {
-  if (!chunks.length) {
-    return { choices: [] };
-  }
-
-  const aggregated = new Map<number, ChatCompletionChoice>();
-
-  chunks.forEach((chunk) => {
-    chunk.choices?.forEach((choice) => {
-      const existing = aggregated.get(choice.index) ?? {
-        index: choice.index,
-        message: { role: 'assistant', content: '' },
-        finish_reason: null,
-      };
-
-      if (choice.delta?.role) {
-        existing.message.role = choice.delta.role;
-      }
-      if (choice.delta?.content) {
-        const deltaText = getChatCompletionContentText(choice.delta.content);
-        if (deltaText) {
-          existing.message.content = `${existing.message.content ?? ''}${deltaText}`;
-        }
-      }
-      if (choice.finish_reason !== undefined) {
-        existing.finish_reason = choice.finish_reason;
-      }
-
-      aggregated.set(choice.index, existing);
-    });
-  });
-
-  return {
-    id: chunks[chunks.length - 1]?.id,
-    choices: Array.from(aggregated.values()).sort((a, b) => a.index - b.index),
-  };
-};
-
 export default function useChatCompletion() {
+  const client = useChatClient();
+
   return useMutation<ChatCompletionResponse, ApiError, ChatCompletionMutationVariables>({
-    mutationFn: async ({ body, signal, onChunk }) => {
-      return apiStreamRequest<ChatCompletionStreamResponse, ChatCompletionResponse>({
-        path: CHAT_COMPLETION_PATH,
-        method: 'POST',
-        body,
-        signal,
-        onMessage: onChunk,
-        buildResponse: buildChatCompletionResponse,
-      });
-    },
+    mutationFn: async ({ model, messages, attachments, signal, onChunk }) =>
+      client.send({ model, messages, attachments, signal, onChunk }),
   });
 }

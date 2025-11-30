@@ -1,6 +1,6 @@
 import { useEffect, type SetStateAction } from "react";
 
-import { API_BASE_URL } from "../config";
+import { API_BASE_URL, MODELS_PATH } from "../config";
 import useLatestRef from "./useLatestRef";
 
 export type ConnectionStatus = "online" | "offline";
@@ -11,8 +11,10 @@ type UseConnectionListenersProps = {
 };
 
 const checkApiAvailability = async (signal?: AbortSignal) => {
+  const modelsUrl = new URL(MODELS_PATH, API_BASE_URL).toString();
+
   try {
-    const response = await fetch(API_BASE_URL, { method: "HEAD", signal });
+    const response = await fetch(modelsUrl, { method: "GET", signal });
     if (response.ok) {
       return true;
     }
@@ -23,6 +25,10 @@ const checkApiAvailability = async (signal?: AbortSignal) => {
 
     return false;
   } catch (error) {
+    if ((error as Error)?.name === "AbortError") {
+      return false;
+    }
+
     console.error("API availability check failed", error);
     return false;
   }
