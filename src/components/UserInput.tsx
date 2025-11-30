@@ -25,6 +25,10 @@ type UserInputProps = {
   onStop: () => void;
   isResponding: boolean;
   autoSendOnSpeechEnd?: boolean;
+  availableModels: string[];
+  selectedModel: string;
+  onSelectModel: (model: string) => void;
+  isLoadingModels: boolean;
 };
 
 type AttachmentListItemProps = {
@@ -89,6 +93,10 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
     onStop,
     isResponding,
     autoSendOnSpeechEnd = false,
+    availableModels,
+    selectedModel,
+    onSelectModel,
+    isLoadingModels,
   }, forwardedRef) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -314,6 +322,13 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
       void sendMessage(composedText);
     }, [autoSendOnSpeechEnd, isRecording, isResponding, sendMessage, transcript]);
 
+    const handleModelChange = useCallback(
+      (event: ChangeEvent<HTMLSelectElement>) => {
+        onSelectModel(event.target.value);
+      },
+      [onSelectModel]
+    );
+
     const micButtonClasses = [
       "input-panel__icon-button",
       "input-panel__icon-button--muted",
@@ -372,6 +387,22 @@ const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
               tabIndex={-1}
               aria-hidden="true"
             />
+            <div className="input-panel__model-select">
+              <label htmlFor="modelSelect">Model</label>
+              <select
+                id="modelSelect"
+                value={selectedModel}
+                onChange={handleModelChange}
+                disabled={isResponding || isLoadingModels}
+              >
+                {availableModels.map((model) => (
+                  <option key={model} value={model}>
+                    {model}
+                  </option>
+                ))}
+              </select>
+              {isLoadingModels && <span className="input-panel__model-hint">Loading…</span>}
+            </div>
             <div className="input-panel__actions">
               <button
                 type="button"

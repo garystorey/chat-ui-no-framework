@@ -109,6 +109,42 @@ body.chat-open .input-panel {
   align-items: center;
   justify-content: flex-end;
   gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.input-panel__model-select {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 12rem;
+  margin-right: auto;
+}
+
+.input-panel__model-select label {
+  font-size: 0.85rem;
+  color: color-mix(in oklab, var(--text-subtle) 75%, transparent);
+  font-weight: 600;
+}
+
+.input-panel__model-select select {
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.65rem;
+  border: 1px solid color-mix(in oklab, var(--panel-border) 70%, transparent);
+  background: color-mix(in oklab, var(--panel-solid) 92%, var(--brand-shell) 8%);
+  color: var(--text);
+  font: inherit;
+  min-height: 2.6rem;
+  cursor: pointer;
+}
+
+.input-panel__model-select select:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.input-panel__model-hint {
+  font-size: 0.85rem;
+  color: color-mix(in oklab, var(--text-subtle) 85%, transparent);
 }
 
 .input-panel__actions {
@@ -255,6 +291,11 @@ body.chat-open .input-panel {
     flex-direction: column;
     align-items: stretch;
     gap: 0.65rem;
+  }
+
+  .input-panel__model-select {
+    width: 100%;
+    margin-right: 0;
   }
 
   .input-panel__actions {

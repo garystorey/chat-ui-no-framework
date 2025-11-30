@@ -112,6 +112,18 @@ export type ChatCompletionStreamResponse = {
   choices: ChatCompletionStreamChoice[];
 };
 
+export type ModelInfo = {
+  id: string;
+  object?: string;
+  owned_by?: string;
+  created?: number;
+  [key: string]: unknown;
+};
+
+export type ModelListResponse = {
+  data: ModelInfo[];
+};
+
 export type Suggestion = {
   id: number;
   title: string;
