@@ -42,11 +42,15 @@ const useAvailableModels = ({
           return;
         }
 
-        const models = Array.isArray((data as { data?: unknown }).data)
-          ? ((data as { data: Array<{ id?: unknown }> }).data
-              .map((model) => model?.id)
-              .filter((id): id is string => typeof id === "string"))
+        const modelsData = Array.isArray((data as { data?: unknown }).data)
+          ? (data as { data: Array<unknown> }).data
           : [];
+
+        const models = modelsData
+          .map((model) =>
+            isJsonLike(model) ? (model as { id?: unknown }).id : undefined
+          )
+          .filter((id): id is string => typeof id === "string");
 
         if (!models.length) {
           return;
@@ -54,8 +58,39 @@ const useAvailableModels = ({
 
         const uniqueModels = Array.from(new Set(models));
 
+        const loadedModelId = modelsData
+          .filter(
+            (model): model is {
+              id: string;
+              loaded?: unknown;
+              isDefault?: unknown;
+              is_default?: unknown;
+            } => isJsonLike(model) && typeof (model as { id?: unknown }).id === "string"
+          )
+          .find(
+            ({ loaded, isDefault, is_default }) =>
+              loaded === true || isDefault === true || is_default === true
+          )?.id;
+
+        const defaultModelId =
+          isJsonLike(data) && typeof (data as { default?: unknown }).default === "string"
+            ? (data as { default: string }).default
+            : undefined;
+
+        const preferredServerModel = [loadedModelId, defaultModelId].find(
+          (modelId): modelId is string =>
+            typeof modelId === "string" && uniqueModels.includes(modelId)
+        );
+
         setAvailableModels(uniqueModels);
         setSelectedModel((current) => {
+          if (
+            preferredServerModel &&
+            (current === DEFAULT_CHAT_MODEL || !uniqueModels.includes(current))
+          ) {
+            return preferredServerModel;
+          }
+
           if (uniqueModels.includes(current)) {
             return current;
           }
