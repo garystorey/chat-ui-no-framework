@@ -191,12 +191,12 @@ const App = () => {
 
       let messageAttachments: Attachment[] = [];
       let requestAttachments: AttachmentRequest[] = [];
-      let attachmentPrompt = "";
+      let attachmentPrompts = { display: "", request: "" };
 
       if (attachments.length) {
         try {
           requestAttachments = await buildAttachmentRequestPayload(attachments);
-          attachmentPrompt = buildAttachmentPromptText(attachments);
+          attachmentPrompts = await buildAttachmentPromptText(attachments);
         } catch (error) {
           console.error("Unable to read attachments", error);
           return false;
@@ -213,19 +213,30 @@ const App = () => {
         setActiveChatId(chatId);
       }
 
-      const contentWithAttachments = attachmentPrompt
+      const contentForDisplay = attachmentPrompts.display
         ? text
-          ? `${text}\n${attachmentPrompt}`
-          : attachmentPrompt
+          ? `${text}\n${attachmentPrompts.display}`
+          : attachmentPrompts.display
+        : text;
+
+      const contentForRequest = attachmentPrompts.request
+        ? text
+          ? `${text}\n${attachmentPrompts.request}`
+          : attachmentPrompts.request
         : text;
 
       const userMessage: Message = {
         id: getId(),
         sender: "user",
-        content: contentWithAttachments,
+        content: contentForDisplay,
         ...(messageAttachments.length
           ? { attachments: messageAttachments }
           : {}),
+      };
+
+      const userMessageForRequest: Message = {
+        ...userMessage,
+        content: contentForRequest,
       };
 
       const assistantMessageId = getId();
@@ -235,7 +246,7 @@ const App = () => {
         content: "",
       };
 
-      const conversationForRequest = [...messages, userMessage];
+      const conversationForRequest = [...messages, userMessageForRequest];
       const updateAssistantMessage = (content: string) => {
         setMessages((current) => {
           let previewMessage: Message | undefined;
