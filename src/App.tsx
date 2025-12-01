@@ -16,20 +16,18 @@ import type {
   ChatSummary,
   Message,
   Attachment,
-  ChatCompletionResponse,
-  ChatCompletionStreamResponse,
   AttachmentRequest,
 } from "./types";
 import {
   useConnectionListeners,
   useTheme,
-  useChatCompletion,
   useToggleBodyClass,
   usePersistChatHistory,
   useHydrateActiveChat,
   useUnmount,
   useRespondingStatus,
   useAvailableModels,
+  useChatCompletionStream,
 } from "./hooks";
 import {
   buildAttachmentRequestPayload,
@@ -37,8 +35,6 @@ import {
   buildChatPreview,
   cloneMessages,
   createChatRecordFromMessages,
-  extractAssistantReply,
-  getChatCompletionContentText,
   getId,
   toChatCompletionMessages,
 } from "./utils";
@@ -65,17 +61,12 @@ const App = () => {
   ]);
   const [selectedModel, setSelectedModel] = useState(DEFAULT_CHAT_MODEL);
   const [isLoadingModels, setIsLoadingModels] = useState(false);
-  const chatCompletion = useChatCompletion();
   const {
-    mutate: sendChatCompletion,
-    reset: resetChatCompletion,
     status: chatCompletionStatus,
-  } = chatCompletion;
-  const pendingRequestRef = useRef<AbortController | null>(null);
-  const streamBufferRef = useRef("");
-  const streamFlushTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  );
+    reset: resetChatCompletion,
+    send: sendChatCompletion,
+    pendingRequestRef,
+  } = useChatCompletionStream();
   const isNewChat = messages.length === 0;
 
   const cancelPendingResponse = useCallback(() => {
@@ -244,22 +235,13 @@ const App = () => {
         content: "",
       };
 
-      let assistantReply = "";
       const conversationForRequest = [...messages, userMessage];
-
-      const flushStreamBuffer = () => {
-        if (!streamBufferRef.current) {
-          return;
-        }
-
-        assistantReply += streamBufferRef.current;
-        streamBufferRef.current = "";
-
+      const updateAssistantMessage = (content: string) => {
         setMessages((current) => {
           let previewMessage: Message | undefined;
           const next = current.map((message) => {
             if (message.id === assistantMessageId) {
-              const updated = { ...message, content: assistantReply };
+              const updated = { ...message, content };
               previewMessage = updated;
               return updated;
             }
@@ -274,15 +256,26 @@ const App = () => {
         });
       };
 
-      const scheduleStreamFlush = () => {
-        if (streamFlushTimeoutRef.current) {
-          return;
-        }
+      const handleCompletionError = (error: unknown) => {
+        console.error("Chat completion request failed", error);
 
-        streamFlushTimeoutRef.current = window.setTimeout(() => {
-          streamFlushTimeoutRef.current = null;
-          flushStreamBuffer();
-        }, 100);
+        setMessages((current) => {
+          let previewMessage: Message | undefined;
+          const next = current.map((message) => {
+            if (message.id === assistantMessageId) {
+              const updated = { ...message, content: ASSISTANT_ERROR_MESSAGE };
+              previewMessage = updated;
+              return updated;
+            }
+            return message;
+          });
+
+          if (previewMessage) {
+            updateActiveChat(next, chatId, previewMessage);
+          }
+
+          return next;
+        });
       };
 
       setMessages((current) => {
@@ -294,127 +287,48 @@ const App = () => {
       setInputValue("");
       setResponding(true);
 
-      const controller = new AbortController();
-      pendingRequestRef.current = controller;
-
-          sendChatCompletion(
-            {
-              body: {
-                model: selectedModel,
-                messages: toChatCompletionMessages(conversationForRequest),
-                stream: true,
-                ...(requestAttachments.length
-                  ? { attachments: requestAttachments }
-                  : {}),
-          },
-          signal: controller.signal,
-          onChunk: (chunk: ChatCompletionStreamResponse) => {
-            const contentDelta = chunk?.choices?.reduce((acc, choice) => {
-              if (choice.delta?.content) {
-                const deltaText = getChatCompletionContentText(choice.delta.content);
-                if (deltaText) {
-                  return acc + deltaText;
-                }
+      const handleFinalAssistantReply = (finalAssistantReply: string) => {
+        setMessages((current) => {
+          let previewMessage: Message | undefined;
+          const next = current.map((message) => {
+            if (message.id === assistantMessageId) {
+              if (message.content === finalAssistantReply) {
+                previewMessage = message;
+                return message;
               }
-              return acc;
-            }, "");
-
-            if (!contentDelta) {
-              return;
+              const updated = { ...message, content: finalAssistantReply };
+              previewMessage = updated;
+              return updated;
             }
+            return message;
+          });
 
-            streamBufferRef.current += contentDelta;
-            scheduleStreamFlush();
-          },
+          if (previewMessage) {
+            updateActiveChat(next, chatId, previewMessage);
+          }
+
+          return next;
+        });
+      };
+
+      sendChatCompletion({
+        body: {
+          model: selectedModel,
+          messages: toChatCompletionMessages(conversationForRequest),
+          stream: true,
+          ...(requestAttachments.length
+            ? { attachments: requestAttachments }
+            : {}),
         },
-        {
-          onSuccess: (response: ChatCompletionResponse) => {
-            if (streamFlushTimeoutRef.current) {
-              clearTimeout(streamFlushTimeoutRef.current);
-              streamFlushTimeoutRef.current = null;
-            }
-
-            flushStreamBuffer();
-
-            const finalAssistantReply = extractAssistantReply(response);
-            if (!finalAssistantReply) {
-              return;
-            }
-
-            assistantReply = finalAssistantReply;
-
-            setMessages((current) => {
-              let previewMessage: Message | undefined;
-              const next = current.map((message) => {
-                if (message.id === assistantMessageId) {
-                  if (message.content === finalAssistantReply) {
-                    previewMessage = message;
-                    return message;
-                  }
-                  const updated = { ...message, content: finalAssistantReply };
-                  previewMessage = updated;
-                  return updated;
-                }
-                return message;
-              });
-
-              if (previewMessage) {
-                updateActiveChat(next, chatId, previewMessage);
-              }
-
-              return next;
-            });
-          },
-          onError: (error: unknown) => {
-            if (streamFlushTimeoutRef.current) {
-              clearTimeout(streamFlushTimeoutRef.current);
-              streamFlushTimeoutRef.current = null;
-            }
-
-            streamBufferRef.current = "";
-
-            if (error instanceof DOMException && error.name === "AbortError") {
-              return;
-            }
-
-            console.error("Chat completion request failed", error);
-
-            setMessages((current) => {
-              let previewMessage: Message | undefined;
-              const next = current.map((message) => {
-                if (message.id === assistantMessageId) {
-                  const updated = {
-                    ...message,
-                    content: ASSISTANT_ERROR_MESSAGE,
-                  };
-                  previewMessage = updated;
-                  return updated;
-                }
-                return message;
-              });
-
-              if (previewMessage) {
-                updateActiveChat(next, chatId, previewMessage);
-              }
-
-              return next;
-            });
-          },
-          onSettled: () => {
-            if (pendingRequestRef.current === controller) {
-              pendingRequestRef.current = null;
-            }
-
-            if (streamFlushTimeoutRef.current) {
-              clearTimeout(streamFlushTimeoutRef.current);
-              streamFlushTimeoutRef.current = null;
-            }
-
-            streamBufferRef.current = "";
-            setResponding(false);
-          },
-        }
-      );
+        chatId,
+        assistantMessageId,
+        onStreamUpdate: updateAssistantMessage,
+        onStreamComplete: handleFinalAssistantReply,
+        onError: handleCompletionError,
+        onSettled: () => {
+          setResponding(false);
+        },
+      });
 
       return true;
     },
