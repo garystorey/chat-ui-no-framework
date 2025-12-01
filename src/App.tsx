@@ -33,6 +33,7 @@ import {
 } from "./hooks";
 import {
   buildAttachmentRequestPayload,
+  buildAttachmentPromptText,
   buildChatPreview,
   cloneMessages,
   createChatRecordFromMessages,
@@ -199,10 +200,12 @@ const App = () => {
 
       let messageAttachments: Attachment[] = [];
       let requestAttachments: AttachmentRequest[] = [];
+      let attachmentPrompt = "";
 
       if (attachments.length) {
         try {
           requestAttachments = await buildAttachmentRequestPayload(attachments);
+          attachmentPrompt = buildAttachmentPromptText(attachments);
         } catch (error) {
           console.error("Unable to read attachments", error);
           return false;
@@ -219,10 +222,16 @@ const App = () => {
         setActiveChatId(chatId);
       }
 
+      const contentWithAttachments = attachmentPrompt
+        ? text
+          ? `${text}\n${attachmentPrompt}`
+          : attachmentPrompt
+        : text;
+
       const userMessage: Message = {
         id: getId(),
         sender: "user",
-        content: text,
+        content: contentWithAttachments,
         ...(messageAttachments.length
           ? { attachments: messageAttachments }
           : {}),
