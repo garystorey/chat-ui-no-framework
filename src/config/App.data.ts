@@ -7,7 +7,7 @@ export const suggestions = [
     description:
       'Create a 2d platformer game using the Godot engine with basic player movement and enemy AI.',
     prompt:
-      'Create a 2d platformer game using the Godot engine with basic player movement and enemy AI.',
+      'Create a 2d platformer game using the Godot engine with basic player movement and enemy AI. Use a single scene with a player character that can move left, right, and jump. Add simple enemy characters that patrol a set area and cause the player to lose health on contact.',
     actionLabel: 'Start',
     icon: '👨‍💻',
   },
