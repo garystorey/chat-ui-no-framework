@@ -205,7 +205,7 @@ const App = () => {
       if (attachments.length) {
         try {
           requestAttachments = await buildAttachmentRequestPayload(attachments);
-          attachmentPrompt = await buildAttachmentPromptText(attachments);
+          attachmentPrompt = buildAttachmentPromptText(attachments);
         } catch (error) {
           console.error("Unable to read attachments", error);
           return false;

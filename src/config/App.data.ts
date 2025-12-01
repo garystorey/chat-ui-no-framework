@@ -7,7 +7,7 @@ export const suggestions = [
     description:
       'Create a 2d platformer game using the Godot engine with basic player movement and enemy AI.',
     prompt:
-      '',
+      'Create a 2d platformer game using the Godot engine with basic player movement and enemy AI.',
     actionLabel: 'Start',
     icon: '👨‍💻',
   },
