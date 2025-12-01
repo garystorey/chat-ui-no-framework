@@ -1,5 +1,6 @@
 export { default as useAutoResizeTextarea } from './useAutoResizeTextarea';
-export { default as useChatCompletion} from './useChatCompletion';
+export { default as useChatCompletion } from './useChatCompletion';
+export { default as useChatCompletionStream } from './useChatCompletionStream';
 export { default as useChatLogLiveRegion } from './useChatLogLiveRegion';
 export { default as useLatestRef } from './useLatestRef';
 export { default as usePrefersReducedMotion } from './usePrefersReducedMotion';
