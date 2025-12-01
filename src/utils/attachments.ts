@@ -153,24 +153,18 @@ export const buildAttachmentRequestPayload = async (
   );
 };
 
-export const buildAttachmentPromptText = async (
-  attachments: Attachment[]
-): Promise<string> => {
-  const attachmentsWithFile = attachments.filter(hasReadableFile);
-
-  if (!attachmentsWithFile.length) {
+export const buildAttachmentPromptText = (attachments: Attachment[]): string => {
+  if (!attachments.length) {
     return '';
   }
 
-  const prompts = await Promise.all(
-    attachmentsWithFile.map(async (attachment) => {
-      const content = await readFileAsText(attachment.file);
-      const filename = attachment.name ?? attachment.file.name;
-      return `attachment ${filename} added. content: ${content}`;
+  return attachments
+    .map((attachment, index) => {
+      const filename =
+        attachment.name ?? attachment.file?.name ?? `Attachment ${index + 1}`;
+      return `attachment ${filename} content added`;
     })
-  );
-
-  return prompts.join('\n');
+    .join('\n');
 };
 
 const FILE_SIZE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB'];
