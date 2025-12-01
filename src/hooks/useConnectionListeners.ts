@@ -23,6 +23,14 @@ const checkApiAvailability = async (signal?: AbortSignal) => {
 
     return false;
   } catch (error) {
+    if (
+      error instanceof DOMException || error instanceof Error
+        ? error.name === "AbortError"
+        : false
+    ) {
+      return false;
+    }
+
     console.error("API availability check failed", error);
     return false;
   }
