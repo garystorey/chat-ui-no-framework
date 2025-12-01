@@ -6,6 +6,7 @@ const BASE64_CHUNK_SIZE = 0x8000;
 
 type FileLike = Pick<File, 'name' | 'type'> & {
   arrayBuffer?: () => Promise<ArrayBuffer>;
+  text?: () => Promise<string>;
 };
 
 const isFileLike = (value: unknown): value is FileLike =>
@@ -30,6 +31,28 @@ const readFileAsArrayBuffer = async (file: FileLike): Promise<ArrayBuffer> => {
   if (typeof Response === 'function') {
     const response = new Response(file);
     return response.arrayBuffer();
+  }
+
+  throw new Error('File reading is not supported in this environment.');
+};
+
+const readFileAsText = async (file: FileLike): Promise<string> => {
+  if (typeof file.text === 'function') {
+    return file.text();
+  }
+
+  if (typeof FileReader !== 'undefined') {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(reader.error ?? new Error('Unable to read file.'));
+      reader.onload = () => resolve(reader.result as string);
+      reader.readAsText(file as Blob);
+    });
+  }
+
+  if (typeof Response === 'function') {
+    const response = new Response(file);
+    return response.text();
   }
 
   throw new Error('File reading is not supported in this environment.');
@@ -128,6 +151,26 @@ export const buildAttachmentRequestPayload = async (
       data: await encodeFileToBase64(attachment.file),
     }))
   );
+};
+
+export const buildAttachmentPromptText = async (
+  attachments: Attachment[]
+): Promise<string> => {
+  const attachmentsWithFile = attachments.filter(hasReadableFile);
+
+  if (!attachmentsWithFile.length) {
+    return '';
+  }
+
+  const prompts = await Promise.all(
+    attachmentsWithFile.map(async (attachment) => {
+      const content = await readFileAsText(attachment.file);
+      const filename = attachment.name ?? attachment.file.name;
+      return `attachment ${filename} added. content: ${content}`;
+    })
+  );
+
+  return prompts.join('\n');
 };
 
 const FILE_SIZE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB'];
