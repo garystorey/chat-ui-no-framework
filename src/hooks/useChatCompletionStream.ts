@@ -1,0 +1,152 @@
+import { useCallback, useRef } from "react";
+import {
+  extractAssistantReply,
+  getChatCompletionContentText,
+} from "../utils";
+import type {
+  ChatCompletionRequest,
+  ChatCompletionResponse,
+  ChatCompletionStreamResponse,
+} from "../types";
+import useChatCompletion from "./useChatCompletion";
+
+export type ChatCompletionStreamArgs = {
+  body: ChatCompletionRequest;
+  chatId: string;
+  assistantMessageId: string;
+  onStreamUpdate: (content: string) => void;
+  onStreamComplete: (content: string) => void;
+  onError: (error: unknown) => void;
+  onSettled: () => void;
+};
+
+export default function useChatCompletionStream() {
+  const {
+    mutate: sendChatCompletion,
+    reset: resetChatCompletion,
+    status: chatCompletionStatus,
+  } = useChatCompletion();
+  const pendingRequestRef = useRef<AbortController | null>(null);
+  const streamBufferRef = useRef("");
+  const streamFlushTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
+
+  const send = useCallback(
+    ({
+      body,
+      chatId: _chatId,
+      assistantMessageId: _assistantMessageId,
+      onStreamUpdate,
+      onStreamComplete,
+      onError,
+      onSettled,
+    }: ChatCompletionStreamArgs) => {
+      let assistantReply = "";
+      void _chatId;
+      void _assistantMessageId;
+
+      const flushStreamBuffer = () => {
+        if (!streamBufferRef.current) {
+          return;
+        }
+
+        assistantReply += streamBufferRef.current;
+        streamBufferRef.current = "";
+        onStreamUpdate(assistantReply);
+      };
+
+      const scheduleStreamFlush = () => {
+        if (streamFlushTimeoutRef.current) {
+          return;
+        }
+
+        streamFlushTimeoutRef.current = window.setTimeout(() => {
+          streamFlushTimeoutRef.current = null;
+          flushStreamBuffer();
+        }, 100);
+      };
+
+      const controller = new AbortController();
+      pendingRequestRef.current = controller;
+
+      sendChatCompletion(
+        {
+          body,
+          signal: controller.signal,
+          onChunk: (chunk: ChatCompletionStreamResponse) => {
+            const contentDelta = chunk?.choices?.reduce((acc, choice) => {
+              if (choice.delta?.content) {
+                const deltaText = getChatCompletionContentText(choice.delta.content);
+                if (deltaText) {
+                  return acc + deltaText;
+                }
+              }
+              return acc;
+            }, "");
+
+            if (!contentDelta) {
+              return;
+            }
+
+            streamBufferRef.current += contentDelta;
+            scheduleStreamFlush();
+          },
+        },
+        {
+          onSuccess: (response: ChatCompletionResponse) => {
+            if (streamFlushTimeoutRef.current) {
+              clearTimeout(streamFlushTimeoutRef.current);
+              streamFlushTimeoutRef.current = null;
+            }
+
+            flushStreamBuffer();
+
+            const finalAssistantReply = extractAssistantReply(response);
+            if (!finalAssistantReply) {
+              return;
+            }
+
+            assistantReply = finalAssistantReply;
+            onStreamComplete(finalAssistantReply);
+          },
+          onError: (error: unknown) => {
+            if (streamFlushTimeoutRef.current) {
+              clearTimeout(streamFlushTimeoutRef.current);
+              streamFlushTimeoutRef.current = null;
+            }
+
+            streamBufferRef.current = "";
+
+            if (error instanceof DOMException && error.name === "AbortError") {
+              return;
+            }
+
+            onError(error);
+          },
+          onSettled: () => {
+            if (pendingRequestRef.current === controller) {
+              pendingRequestRef.current = null;
+            }
+
+            if (streamFlushTimeoutRef.current) {
+              clearTimeout(streamFlushTimeoutRef.current);
+              streamFlushTimeoutRef.current = null;
+            }
+
+            streamBufferRef.current = "";
+            onSettled();
+          },
+        }
+      );
+    },
+    [sendChatCompletion]
+  );
+
+  return {
+    status: chatCompletionStatus,
+    reset: resetChatCompletion,
+    pendingRequestRef,
+    send,
+  };
+}

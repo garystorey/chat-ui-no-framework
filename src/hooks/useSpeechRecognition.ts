@@ -4,6 +4,11 @@ import useUnmount from './useUnmount';
 interface UseSpeechRecognitionOptions {
   locale?: string;
   autoStop?: boolean;
+  /**
+   * Milliseconds of silence to wait before automatically stopping recognition
+   * when {@link autoStop} is enabled.
+   */
+  silenceTimeoutMs?: number;
 }
 
 type SpeechRecognitionConstructor = new () => SpeechRecognition;
@@ -31,6 +36,7 @@ const getSpeechRecognitionConstructor = (): SpeechRecognitionWithVendor | null =
 const useSpeechRecognition = ({
   locale,
   autoStop = true,
+  silenceTimeoutMs = 2500,
 }: UseSpeechRecognitionOptions = {}) => {
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState('');
@@ -38,6 +44,7 @@ const useSpeechRecognition = ({
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const finalTranscriptRef = useRef('');
+  const silenceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const SpeechRecognitionConstructor = useMemo(
     () => getSpeechRecognitionConstructor(),
@@ -47,13 +54,38 @@ const useSpeechRecognition = ({
   const supported = Boolean(SpeechRecognitionConstructor);
 
   const resetState = useCallback(() => {
+    if (silenceTimeoutRef.current) {
+      clearTimeout(silenceTimeoutRef.current);
+      silenceTimeoutRef.current = null;
+    }
+
     setIsRecording(false);
     setTranscript(finalTranscriptRef.current.trim());
   }, []);
 
   const stop = useCallback(() => {
+    if (silenceTimeoutRef.current) {
+      clearTimeout(silenceTimeoutRef.current);
+      silenceTimeoutRef.current = null;
+    }
+
     recognitionRef.current?.stop();
   }, []);
+
+  const scheduleAutoStop = useCallback(() => {
+    if (!autoStop) {
+      return;
+    }
+
+    if (silenceTimeoutRef.current) {
+      clearTimeout(silenceTimeoutRef.current);
+    }
+
+    silenceTimeoutRef.current = setTimeout(() => {
+      silenceTimeoutRef.current = null;
+      stop();
+    }, silenceTimeoutMs);
+  }, [autoStop, silenceTimeoutMs, stop]);
 
   const handleResult = useCallback(
     (event: SpeechRecognitionEvent) => {
@@ -72,8 +104,10 @@ const useSpeechRecognition = ({
 
       const combinedTranscript = `${finalTranscriptRef.current} ${interimTranscript}`.trim();
       setTranscript(combinedTranscript);
+
+      scheduleAutoStop();
     },
-    [],
+    [scheduleAutoStop],
   );
 
   const handleError = useCallback((event: SpeechRecognitionErrorEvent) => {
@@ -113,7 +147,7 @@ const useSpeechRecognition = ({
     const recognition = new SpeechRecognitionConstructor();
     recognition.lang = locale ?? recognition.lang;
     recognition.interimResults = true;
-    recognition.continuous = !autoStop;
+    recognition.continuous = true;
     recognition.onresult = handleResult;
     recognition.onerror = handleError;
     recognition.onend = handleEnd;
@@ -121,7 +155,8 @@ const useSpeechRecognition = ({
     recognitionRef.current = recognition;
     setIsRecording(true);
     recognition.start();
-  }, [SpeechRecognitionConstructor, autoStop, handleEnd, handleError, handleResult, locale, supported]);
+    scheduleAutoStop();
+  }, [SpeechRecognitionConstructor, handleEnd, handleError, handleResult, locale, scheduleAutoStop, supported]);
 
   useEffect(() => {
     if (!supported) {
