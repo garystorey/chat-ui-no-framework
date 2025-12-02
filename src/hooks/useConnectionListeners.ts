@@ -1,4 +1,4 @@
-import { useEffect, type SetStateAction } from "react";
+import { useCallback, useEffect, type SetStateAction } from "react";
 
 import { API_BASE_URL } from "../config";
 import useLatestRef from "./useLatestRef";
@@ -23,6 +23,10 @@ const checkApiAvailability = async (signal?: AbortSignal) => {
 
     return false;
   } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      return false;
+    }
+
     console.error("API availability check failed", error);
     return false;
   }
@@ -34,26 +38,38 @@ const useConnectionListeners = ({
 }: UseConnectionListenersProps) => {
   const cancelPendingResponseRef = useLatestRef(cancelPendingResponse);
 
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    const updateStatus = async () => {
-      const isApiAvailable = await checkApiAvailability(abortController.signal);
+  const updateStatus = useCallback(
+    async (signal?: AbortSignal) => {
+      const isApiAvailable = await checkApiAvailability(signal);
       setConnectionStatus(isApiAvailable ? "online" : "offline");
+
       if (isApiAvailable) {
         cancelPendingResponseRef.current();
       }
-    };
 
-    updateStatus();
+      return isApiAvailable;
+    },
+    [cancelPendingResponseRef, setConnectionStatus]
+  );
+
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    updateStatus(abortController.signal).catch(() => {
+      /* handled in updateStatus */
+    });
 
     const handleOnline = () => {
-      updateStatus();
+      updateStatus(abortController.signal).catch(() => {
+        /* handled in updateStatus */
+      });
     };
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
-        updateStatus();
+        updateStatus(abortController.signal).catch(() => {
+          /* handled in updateStatus */
+        });
       }
     };
 
@@ -65,7 +81,9 @@ const useConnectionListeners = ({
       window.removeEventListener("online", handleOnline);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [cancelPendingResponseRef, setConnectionStatus]);
+  }, [updateStatus]);
+
+  return useCallback(() => updateStatus(), [updateStatus]);
 };
 
 export default useConnectionListeners;
