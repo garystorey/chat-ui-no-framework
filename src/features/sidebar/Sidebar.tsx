@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ChatSummary } from "../../types";
-import {ThemeToggle, Show, ChatList} from "../../components";
+import { ChatList, Show, ThemeToggle } from "../../components";
 import type { ConnectionStatus } from "../../hooks/useConnectionListeners";
 
 import "./Sidebar.css";
@@ -14,6 +14,7 @@ type SidebarProps = {
   onNewChat: () => void;
   onSelectChat: (chatId: string) => void;
   onRemoveChat: (chatId: string) => void;
+  onRetryConnection: () => void;
 };
 
 const Sidebar = ({
@@ -25,15 +26,23 @@ const Sidebar = ({
   onNewChat,
   onSelectChat,
   onRemoveChat,
+  onRetryConnection,
 }: SidebarProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const statusLabel = connectionStatus === "online" ? "Online" : "Offline";
+  const isOffline = connectionStatus === "offline";
+  const statusLabel = isOffline ? "Offline" : "Online";
 
   useEffect(() => {
     if (collapsed) {
       setSearchTerm("");
     }
   }, [collapsed]);
+
+  const handleRetryConnection = () => {
+    if (isOffline) {
+      onRetryConnection();
+    }
+  };
 
   const filteredChats = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
@@ -55,12 +64,23 @@ const Sidebar = ({
       <div className="sidebar__inner">
         <div className="sidebar__header">
 
-          <div
+          <button
+            type="button"
             className="sidebar__status"
             role="status"
             aria-live="polite"
-            aria-label={`Connection status: ${statusLabel}`}
-            title={`Connection status: ${statusLabel}`}
+            aria-label={
+              isOffline
+                ? "Connection offline. Click to retry connection."
+                : `Connection status: ${statusLabel}`
+            }
+            title={
+              isOffline
+                ? "Connection offline. Click to retry connection."
+                : `Connection status: ${statusLabel}`
+            }
+            onClick={handleRetryConnection}
+            disabled={!isOffline}
           >
             <span
               className={`sidebar__status-dot sidebar__status-dot--${connectionStatus}`}
@@ -69,9 +89,9 @@ const Sidebar = ({
             <span
               className={`sidebar__status-label ${collapsed ? "sr-only" : ""}`}
             >
-              {statusLabel}
+              {isOffline ? "Offline · Retry" : statusLabel}
             </span>
-          </div>
+          </button>
 
           <ThemeToggle />
           

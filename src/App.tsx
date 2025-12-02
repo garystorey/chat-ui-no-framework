@@ -92,7 +92,7 @@ const App = () => {
     setMessages,
     setChatOpen,
   });
-  useConnectionListeners({
+  const retryConnection = useConnectionListeners({
     cancelPendingResponse,
     setConnectionStatus,
   });
@@ -487,6 +487,7 @@ const App = () => {
         chats={chatHistory}
         activeChatId={activeChatId}
         connectionStatus={connectionStatus}
+        onRetryConnection={retryConnection}
         onSelectChat={handleSelectChat}
         onNewChat={handleNewChat}
         onRemoveChat={handleRemoveChat}
