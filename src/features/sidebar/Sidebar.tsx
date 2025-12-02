@@ -89,7 +89,7 @@ const Sidebar = ({
             <span
               className={`sidebar__status-label ${collapsed ? "sr-only" : ""}`}
             >
-              {isOffline ? "Offline · Retry" : statusLabel}
+              {isOffline ? "Offline" : statusLabel}
             </span>
           </button>
 
