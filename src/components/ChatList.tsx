@@ -1,5 +1,6 @@
 import { PreviewChat } from "../types";
 import ChatListItem from "./ChatListItem";
+import Heading from "./Heading";
 import List from "./List";
 import Show from "./Show";
 
@@ -16,11 +17,11 @@ function ChatList({
   onSelectChat,
   onRemoveChat,
 }: ChatListProps) {
-  return (
-    <nav className="sidebar__chats" aria-label="Previous chats">
-      <h2 className="sidebar__section-title">Chats</h2>
-      <List<PreviewChat>
-        className="sidebar__chat-list"
+      return (
+        <nav className="sidebar__chats" aria-label="Previous chats">
+        <Heading as="h2" size="medium" variant="Underlined" className="sidebar__section-title">Chats</Heading>
+        <List<PreviewChat>
+          className="sidebar__chat-list"
         items={chats}
         keyfield="id"
         as={(chat) => (
