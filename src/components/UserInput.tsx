@@ -10,7 +10,11 @@ import {
   useState,
 } from "react";
 import { AttachmentIcon, MicIcon, SendIcon, StopIcon } from "./icons";
-import { buildAttachmentsFromFiles } from "../utils";
+import {
+  combineValueWithTranscript,
+  trimTrailingTranscript,
+  buildAttachmentsFromFiles,
+} from "../utils";
 import { Attachment, UserInputSendPayload } from "../types";
 import { useAutoResizeTextarea, useSpeechRecognition } from "../hooks";
 import List from "./List";
@@ -53,37 +57,6 @@ function AttachmentListItem({
     </div>
   );
 }
-
-const trimTrailingTranscript = (value: string, transcript: string) => {
-  if (!transcript) {
-    return value;
-  }
-
-  if (value === transcript) {
-    return "";
-  }
-
-  if (value.endsWith(transcript)) {
-    return value.slice(0, value.length - transcript.length).replace(/[ \t]*$/, "");
-  }
-
-  return value;
-};
-
-const combineValueWithTranscript = (value: string, transcript: string) => {
-  if (!transcript) {
-    return value;
-  }
-
-  if (!value) {
-    return transcript;
-  }
-
-  const needsSeparator =
-    !value.endsWith(" ") && !value.endsWith("\n") && !value.endsWith("\t");
-
-  return `${value}${needsSeparator ? " " : ""}${transcript}`;
-};
 
 const UserInput = forwardRef<HTMLTextAreaElement, UserInputProps>(
   ({
