@@ -26,3 +26,34 @@ export const getPlainTextFromHtml = (value: string) => {
 
   return normalizeWhitespace(value.replace(/<[^>]*>/g, ' '));
 };
+
+export const trimTrailingTranscript = (value: string, transcript: string) => {
+  if (!transcript) {
+    return value;
+  }
+
+  if (value === transcript) {
+    return '';
+  }
+
+  if (value.endsWith(transcript)) {
+    return value.slice(0, value.length - transcript.length).replace(/[ \t]*$/, '');
+  }
+
+  return value;
+};
+
+export const combineValueWithTranscript = (value: string, transcript: string) => {
+  if (!transcript) {
+    return value;
+  }
+
+  if (!value) {
+    return transcript;
+  }
+
+  const needsSeparator =
+    !value.endsWith(' ') && !value.endsWith('\n') && !value.endsWith('\t');
+
+  return `${value}${needsSeparator ? ' ' : ''}${transcript}`;
+};
