@@ -1,4 +1,5 @@
 import { ComponentProps, memo, useCallback, useId } from 'react';
+import Heading from './Heading';
 import './Card.css';
 
 type CardProps = ComponentProps<'div'> & {
@@ -29,9 +30,15 @@ function Card ({ title, description, label, icon, onSelect, className="", ...pro
       <div className="suggestion-card__icon" aria-hidden="true">
         {icon}
       </div>
-      <h3 id={titleId} className="suggestion-card__title">
+      <Heading
+        as="h3"
+        size="medium"
+        variant="caps"
+        id={titleId}
+        className="suggestion-card__title"
+      >
         {title}
-      </h3>
+      </Heading>
       <p id={descriptionId} className="suggestion-card__description">
         {description}
       </p>

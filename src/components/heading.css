@@ -1,0 +1,47 @@
+.header {
+  margin: 0;
+}
+
+.headerVariantStandard {
+}
+
+.headerVariantUnderlined {
+  text-decoration: underline;
+}
+
+.headerVariantCapitalized {
+  text-transform: uppercase;
+}
+
+.headerVariantCapsUnderlined {
+  text-transform: uppercase;
+  text-decoration: underline;
+}
+
+.headerSizeSmall {
+  font-size: 0.875rem;
+}
+
+.headerSizeMedium {
+  font-size: 1rem;
+}
+
+.headerSizeLarge {
+  font-size: 1.125rem;
+}
+
+.headerTextAlignLeft {
+  text-align: left;
+}
+
+.headerTextAlignRight {
+  text-align: right;
+}
+
+.headerTextAlignCenter {
+  text-align: center;
+}
+
+.headerTextAlignIndent {
+  text-indent: 1.5rem;
+}

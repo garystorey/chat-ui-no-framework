@@ -1,5 +1,6 @@
 import { memo} from 'react';
 import Card from './Card';
+import Heading from './Heading';
 import { Suggestion } from '../types';
 import './Card.css';
 import List from './List';
@@ -12,9 +13,9 @@ type SuggesionsProps = {
 const Suggestions = ({suggestions, classes = ['']}: SuggesionsProps) => {
   return (
     <section className={classes.join(' ')}>
-      <h2 id="suggestions-heading" className="sr-only">
-        Suggested prompts
-      </h2>
+        <Heading as="h2" size="medium" variant="Underlined" id="suggestions-heading" className="sr-only">
+          Suggested prompts
+        </Heading>
         <List<Suggestion>
           className="suggestions__list"
           items={suggestions}

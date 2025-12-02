@@ -5,7 +5,7 @@ import {
   usePrefersReducedMotion,
   useScrollToBottom,
 } from "../../hooks";
-import { ThinkingIndicator, ChatMessage, Show, List } from "../../components";
+import { Heading, ThinkingIndicator, ChatMessage, Show, List } from "../../components";
 
 import "./ChatWindow.css";
 
@@ -32,9 +32,9 @@ const ChatWindow = ({ messages, isResponding }: ChatWindowProps) => {
 
   return (
     <section className="chat-window chat-window--open">
-      <h2 id="messages-heading" className="sr-only">
-        Conversation
-      </h2>
+        <Heading as="h2" size="medium" variant="Underlined" id="messages-heading" className="sr-only">
+          Conversation
+        </Heading>
         <List<Message>
           items={messages}
           keyfield="id"
