@@ -13,7 +13,7 @@ type SuggesionsProps = {
 const Suggestions = ({suggestions, classes = ['']}: SuggesionsProps) => {
   return (
     <section className={classes.join(' ')}>
-        <Heading as="h2" size="medium" variant="Underlined" id="suggestions-heading" className="sr-only">
+        <Heading as="h2" size="medium" textAlign="center"  id="suggestions-heading" className="sr-only">
           Suggested prompts
         </Heading>
         <List<Suggestion>

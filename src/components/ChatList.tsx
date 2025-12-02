@@ -19,7 +19,7 @@ function ChatList({
 }: ChatListProps) {
       return (
         <nav className="sidebar__chats" aria-label="Previous chats">
-        <Heading as="h2" size="medium" variant="Underlined" className="sidebar__section-title">Chats</Heading>
+        <Heading as="h2" size="medium" variant="caps"  >Chats</Heading>
         <List<PreviewChat>
           className="sidebar__chat-list"
         items={chats}

@@ -32,7 +32,7 @@ const ChatWindow = ({ messages, isResponding }: ChatWindowProps) => {
 
   return (
     <section className="chat-window chat-window--open">
-        <Heading as="h2" size="medium" variant="Underlined" id="messages-heading" className="sr-only">
+        <Heading as="h2" size="medium"  id="messages-heading" className="sr-only">
           Conversation
         </Heading>
         <List<Message>

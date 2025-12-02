@@ -2,46 +2,52 @@
   margin: 0;
 }
 
-.headerVariantStandard {
+
+.header_variant_standard {
+  text-decoration: none;
+  text-transform: none;
 }
 
-.headerVariantUnderlined {
+.header_variant_underlined {
   text-decoration: underline;
 }
 
-.headerVariantCapitalized {
+.header_variant_caps {
   text-transform: uppercase;
 }
 
-.headerVariantCapsUnderlined {
+.header_variant_caps-underline {
   text-transform: uppercase;
   text-decoration: underline;
 }
 
-.headerSizeSmall {
+
+
+.header_size_small {
   font-size: 0.875rem;
 }
 
-.headerSizeMedium {
+.header_size_medium {
   font-size: 1rem;
 }
 
-.headerSizeLarge {
+.header_size_large {
   font-size: 1.125rem;
-}
+} 
 
-.headerTextAlignLeft {
+.header_text-align_left {
   text-align: left;
 }
 
-.headerTextAlignRight {
+.header_text-align_right {
   text-align: right;
 }
 
-.headerTextAlignCenter {
+.header_text-align_center {
   text-align: center;
 }
 
-.headerTextAlignIndent {
+.header_text-align_indent {
   text-indent: 1.5rem;
 }
+
